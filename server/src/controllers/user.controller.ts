@@ -51,7 +51,7 @@ export const signup = async (req: Request, res: Response) => {
         isVerified: false,
         verificationTokenExpires: new Date(Date.now() + 3 * 60 * 1000), // 3 minutes
       })
-      console.log("User email:",User.email)
+      console.log("User email:", User.email)
       await sendVerificationEmail(
         User.email,
         verificationToken
@@ -135,6 +135,69 @@ export const signin = async (req: Request, res: Response) => {
     });
   }
 }
+
+
+
+
+
+
+/**
+     * Email-Sending API
+     * @description: This API is used to login a user.
+     * @route /api/auth/send-email
+*/
+
+
+
+
+export const sendVerification = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { email } = req.body;
+
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is already verified",
+      });
+    }
+    if (!user.verificationToken) {
+      return res.status(400).json({
+        success: false,
+        message: "Verification token not found",
+      });
+    }
+    await sendVerificationEmail(
+      user.email,
+      user.verificationToken
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Verification email sent successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+
+
+
 
 /**
      * Email Verification API
