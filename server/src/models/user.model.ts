@@ -47,7 +47,20 @@ const userSchema = new mongoose.Schema({
     },
     shopName: {
         type: String,
-    }
+    },
+
+    isVerified: {
+        type: Boolean,
+        default: false,
+    },
+
+    verificationToken: {
+        type: String,
+    },
+
+    verificationTokenExpires: {
+        type: Date,
+    },
 
 }, { timestamps: true });
 
