@@ -1,5 +1,4 @@
 import { transporter } from "../config/mail";
-
 export const sendVerificationEmail = async (
   email: string,
   token: string
@@ -20,4 +19,3 @@ export const sendVerificationEmail = async (
     `,
   });
 };
-

@@ -92,6 +92,7 @@ export const signup = async (req: Request, res: Response) => {
      * @description: This API is used to login a user.
      * @route /api/auth/signup
 */
+
 export const signin = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body
@@ -136,29 +137,21 @@ export const signin = async (req: Request, res: Response) => {
   }
 }
 
-
-
-
-
-
 /**
      * Email-Sending API
-     * @description: This API is used to login a user.
+     * @description: This API is used by client to send their email to the backend.
      * @route /api/auth/send-email
 */
-
-
-
-
 export const sendVerification = async (
   req: Request,
   res: Response
 ) => {
   try {
     const { email } = req.body;
-
+    console.log(req.body);
+    console.log("Email:", req.body.email);
     const user = await UserModel.findOne({ email });
-
+    console.log(user)
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -195,8 +188,63 @@ export const sendVerification = async (
   }
 };
 
+/**
+     * Resend Email API
+     * @description: This API is used by client to resend their email to the backend.
+     * @route /api/auth/resend-email
+*/
+export const resendVerificationEmail = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { email } = req.body;
 
+    const user = await UserModel.findOne({ email });
 
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is already verified",
+      });
+    }
+
+    // Generate new token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+
+    user.verificationToken = verificationToken;
+    user.verificationTokenExpires = new Date(
+      Date.now() + 30 * 60 * 1000
+    );
+
+    await user.save();
+
+    await sendVerificationEmail(
+      user.email,
+      verificationToken
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Verification email sent successfully",
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
 
 
 /**
