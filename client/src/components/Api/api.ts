@@ -4,18 +4,30 @@ const api = axios.create({
     baseURL: "http://localhost:3000/api"
 })
 
-import type { LoginFormData } from "../Validation/login.schema";
-import type { RegisterFormData } from "../Validation/register.schema";
-
-type LoginRequest = LoginFormData & {
-  role: "Customer" | "Farmer";
-};
+type LoginRequest =
+  | {
+      email: string;
+      password: string;
+    }
+  | {
+      phoneNumber: string;
+      password: string;
+    };
 
 export const userLogin = async (data: LoginRequest) => {
+  console.log(data)
   return await api.post("/auth/signin", data);
 };
 
-type RegisterRequest = RegisterFormData;
+
+
+type RegisterRequest = {
+  role: "Customer" | "Farmer";
+  username: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+};
 
 export const userRegister = async (data: RegisterRequest) => {
   console.log("user",data);

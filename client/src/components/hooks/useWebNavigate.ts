@@ -6,11 +6,13 @@ const useWebNavigate = () => {
   const gotoRegister = () => navigate("/register");
   const gotoLogin = () => navigate("/login");
   const gotoTerms = () => navigate("/terms");
+  const gotoVerifyEmail = () => navigate("/veryifyEmail");
 
   return {
     gotoRegister,
     gotoLogin,
-    gotoTerms
+    gotoTerms,
+    gotoVerifyEmail
   };
 };
 
