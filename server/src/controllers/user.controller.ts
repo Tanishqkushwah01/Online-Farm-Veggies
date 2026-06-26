@@ -16,7 +16,7 @@ export const signup = async (req: Request, res: Response) => {
   try {
 
     const details = req.body;
-    console.log("data =",details)
+    console.log("data =", details)
     const validUser = userValidation.safeParse(details)
     // console.log(validUser)
     if (validUser.success) {
@@ -45,7 +45,7 @@ export const signup = async (req: Request, res: Response) => {
       }
       const hashedPass = await bcrypt.hash(details.password, 10)
       const verificationToken = crypto.randomBytes(32).toString("hex");
-      console.log(hashedPass,verificationToken)
+      console.log(hashedPass, verificationToken)
       const User = await UserModel.create({
         ...details,
         password: hashedPass,
@@ -65,31 +65,33 @@ export const signup = async (req: Request, res: Response) => {
         {
           expiresIn: "7d",
         });
-      res.status(201).json({ msg: "registered", User:{
-        email:User.email,
-        username:User.username,
-        role:User.role,
-        phoneNumber:User.phoneNumber
-      }, token })
-  }
+      res.status(201).json({
+        msg: "registered", User: {
+          email: User.email,
+          username: User.username,
+          role: User.role,
+          phoneNumber: User.phoneNumber
+        }, token
+      })
+    }
   } catch (error: any) {
 
-  console.error("Signup Error:", error);
+    console.error("Signup Error:", error);
 
-  if (error.code === 11000) {
-    return res.status(409).json({
-      success: false,
-      message: "Email or phone number already exists",
-    });
-  }
+    if (error.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message: "Email or phone number already exists",
+      });
+    }
 
-  if (error.name === "ValidationError") {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    if (error.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
   }
-}
 }
 
 /**
@@ -129,11 +131,14 @@ export const signin = async (req: Request, res: Response) => {
       {
         expiresIn: "7d"
       })
-    res.status(201).json({ msg: "LoggedIn", userExist:{
-        email:userExist.email,
-        username:userExist.username,
-        role:userExist.role,
-        phoneNumber:userExist.phoneNumber}, token })
+    res.status(201).json({
+      msg: "LoggedIn", userExist: {
+        email: userExist.email,
+        username: userExist.username,
+        role: userExist.role,
+        phoneNumber: userExist.phoneNumber
+      }, token
+    })
   }
   catch (error: any) {
     console.error("Signin Error:", error);
@@ -283,19 +288,10 @@ export const verifyEmail = async (req: Request, res: Response) => {
 
     await user.save();
 
-    // return res.status(200).json({
-    //   success: true,
-    //   message: "Email verified successfully",
-    // });
-
-     return res.redirect(`${process.env.CLIENT_URL}/verify-success`);
+    return res.redirect(`${process.env.CLIENT_URL}/verify-success`);
   } catch (error) {
     console.error(error);
 
-    // return res.status(500).json({
-    //   success: false,
-    //   message: "Internal Server Error",
-    // });
     return res.redirect(`${process.env.CLIENT_URL}/verify-failed`);
   }
 };
