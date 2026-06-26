@@ -12,26 +12,8 @@ import { sendVerificationEmail } from "../utilities/sendEmailVerification";
      * @description: This API is used to create a new user account
      * @route /api/auth/signup
 */
-export const signup =async(req:Request,res:Response)=>{
-try{
-    const details= req.body;
-    const validUser= userValidation.safeParse(details)
-    if(validUser.success){
-
-const existingUser = await UserModel.findOne({
-  $or: [
-    { email: details.email },
-    { phoneNumber: details.phoneNumber }
-  ]
-});
-
-if (existingUser) {
-  if (existingUser.email === details.email) {
-    return res.status(409).json({
-      success: false,
-      message: "Email already exists"
-    });
-  }
+export const signup = async (req: Request, res: Response) => {
+  try {
 
     const details = req.body
     const validUser = userValidation.safeParse(details)
