@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         enum: ["Farmer", "Customer", "Admin"],
-        default:"Customer"
+        default: "Customer"
     },
 
     phoneNumber: {
@@ -61,6 +61,16 @@ const userSchema = new mongoose.Schema({
 
     verificationTokenExpires: {
         type: Date,
+    },
+    
+    resetPasswordToken: {
+        type: String,
+        default: null,
+    },
+
+    resetPasswordExpires: {
+        type: Date,
+        default: null,
     },
 
 }, { timestamps: true });
