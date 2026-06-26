@@ -6,8 +6,8 @@ import Login from './pages/Login';
 import Terms from './pages/Terms';
 import VerifyEmail from './pages/verifyEmail';
 import PageNotFound from './pages/PageNotFound';
-// import VerifySuccess from './pages/VerifySuccess';
-// import VerifyFailed from './pages/VerifyFailed';
+import VerifySuccess from './pages/VerifySuccess';
+import VerifyFailed from './pages/VerifyFailed';
 
 function App() {
 
@@ -20,8 +20,8 @@ function App() {
         <Route path='/terms' element={<Terms />} />
         <Route path='/verifyEmail' element={<VerifyEmail />} />
         <Route path='*' element={<PageNotFound />} />
-        {/* <Route path="/verify-success" element={<VerifySuccess />} />
-        <Route path="/verify-failed" element={<VerifyFailed />} /> */}
+       <Route path="/verify-success" element={<VerifySuccess />} />
+        <Route path="/verify-failed" element={<VerifyFailed />} /> 
       </Routes >
 
     </BrowserRouter>

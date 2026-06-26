@@ -59,35 +59,37 @@ export const signup = async (req: Request, res: Response) => {
         verificationToken
       );
 
-
-
       const token = jwt.sign(
         { UserId: User._id },
         process.env.JWT_SECRET!,
         {
           expiresIn: "7d",
         });
-        console.log("token:",token)
-      res.status(201).json({ msg: "Registered", token })
-    }
+      res.status(201).json({ msg: "registered", User:{
+        email:User.email,
+        username:User.username,
+        role:User.role,
+        phoneNumber:User.phoneNumber
+      }, token })
+  }
   } catch (error: any) {
 
-    console.error("Signup Error:", error);
+  console.error("Signup Error:", error);
 
-    if (error.code === 11000) {
-      return res.status(409).json({
-        success: false,
-        message: "Email or phone number already exists",
-      });
-    }
-
-    if (error.name === "ValidationError") {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
+  if (error.code === 11000) {
+    return res.status(409).json({
+      success: false,
+      message: "Email or phone number already exists",
+    });
   }
+
+  if (error.name === "ValidationError") {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
 }
 
 /**
@@ -127,7 +129,11 @@ export const signin = async (req: Request, res: Response) => {
       {
         expiresIn: "7d"
       })
-    res.status(201).json({ msg: "LoggedIn", token })
+    res.status(201).json({ msg: "LoggedIn", userExist:{
+        email:userExist.email,
+        username:userExist.username,
+        role:userExist.role,
+        phoneNumber:userExist.phoneNumber}, token })
   }
   catch (error: any) {
     console.error("Signin Error:", error);
@@ -277,16 +283,19 @@ export const verifyEmail = async (req: Request, res: Response) => {
 
     await user.save();
 
-    return res.status(200).json({
-      success: true,
-      message: "Email verified successfully",
-    });
+    // return res.status(200).json({
+    //   success: true,
+    //   message: "Email verified successfully",
+    // });
+
+     return res.redirect(`${process.env.CLIENT_URL}/verify-success`);
   } catch (error) {
     console.error(error);
 
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
+    // return res.status(500).json({
+    //   success: false,
+    //   message: "Internal Server Error",
+    // });
+    return res.redirect(`${process.env.CLIENT_URL}/verify-failed`);
   }
 };
