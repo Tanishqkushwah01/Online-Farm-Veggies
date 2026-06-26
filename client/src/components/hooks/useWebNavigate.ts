@@ -6,7 +6,7 @@ const useWebNavigate = () => {
   const gotoRegister = () => navigate("/register");
   const gotoLogin = () => navigate("/login");
   const gotoTerms = () => navigate("/terms");
-  const gotoVerifyEmail = () => navigate("/veryifyEmail");
+  const gotoVerifyEmail = () => navigate("/verifyEmail");
 
   return {
     gotoRegister,

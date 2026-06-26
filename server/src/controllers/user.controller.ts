@@ -12,28 +12,11 @@ import { sendVerificationEmail } from "../utilities/sendEmailVerification";
      * @description: This API is used to create a new user account
      * @route /api/auth/signup
 */
-export const signup =async(req:Request,res:Response)=>{
-try{
-    const details= req.body;
-    const validUser= userValidation.safeParse(details)
-    if(validUser.success){
+export const signup = async (req: Request, res: Response) => {
+  try {
 
-const existingUser = await UserModel.findOne({
-  $or: [
-    { email: details.email },
-    { phoneNumber: details.phoneNumber }
-  ]
-});
-
-if (existingUser) {
-  if (existingUser.email === details.email) {
-    return res.status(409).json({
-      success: false,
-      message: "Email already exists"
-    });
-  }
-
-    const details = req.body
+    const details = req.body;
+    console.log("data =",details)
     const validUser = userValidation.safeParse(details)
     // console.log(validUser)
     if (validUser.success) {
@@ -62,13 +45,14 @@ if (existingUser) {
       }
       const hashedPass = await bcrypt.hash(details.password, 10)
       const verificationToken = crypto.randomBytes(32).toString("hex");
+      console.log(hashedPass,verificationToken)
       const User = await UserModel.create({
         ...details,
         password: hashedPass,
         verificationToken,
         isVerified: false,
         verificationTokenExpires: new Date(Date.now() + 3 * 60 * 1000), // 3 minutes
-      })
+      });
       console.log("User email:", User.email)
       await sendVerificationEmail(
         User.email,
@@ -83,6 +67,7 @@ if (existingUser) {
         {
           expiresIn: "7d",
         });
+        console.log("token:",token)
       res.status(201).json({ msg: "Registered", token })
     }
   } catch (error: any) {

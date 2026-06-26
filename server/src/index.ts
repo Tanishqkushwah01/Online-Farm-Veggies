@@ -1,7 +1,6 @@
 import express from "express";
 // import { url } from "node:inspector";
 import dotenv from "dotenv";
-import cors from "cors";
 
 dotenv.config()
 const app=express();
@@ -11,7 +10,7 @@ app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cors({
-    origin: "http:localhost:5173",
+    origin: "http://localhost:5173",
     credentials:true
 }))
 

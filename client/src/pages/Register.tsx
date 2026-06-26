@@ -57,6 +57,7 @@ const Register = () => {
     const data = {password,email,username,phoneNumber,role}
     // console.log("data:",data)
     const res = await userRegister(data);
+    console.log(res.data);
     gotoVerifyEmail();
     localStorage.setItem("token", res.data.token);
 
