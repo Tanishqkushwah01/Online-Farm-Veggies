@@ -5,6 +5,7 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { sendVerificationEmail } from "../utilities/sendEmailVerification";
+import { sendResetPasswordEmail } from "../utilities/resetpasswordemail";
 
 
 /**
@@ -16,7 +17,7 @@ export const signup = async (req: Request, res: Response) => {
   try {
 
     const details = req.body;
-    console.log("data =",details)
+    console.log("data =", details)
     const validUser = userValidation.safeParse(details)
     // console.log(validUser)
     if (validUser.success) {
@@ -45,7 +46,7 @@ export const signup = async (req: Request, res: Response) => {
       }
       const hashedPass = await bcrypt.hash(details.password, 10)
       const verificationToken = crypto.randomBytes(32).toString("hex");
-      console.log(hashedPass,verificationToken)
+      console.log(hashedPass, verificationToken)
       const User = await UserModel.create({
         ...details,
         password: hashedPass,
@@ -60,36 +61,38 @@ export const signup = async (req: Request, res: Response) => {
       );
 
       const token = jwt.sign(
-        { UserId: User._id },
+        { id: User._id },
         process.env.JWT_SECRET!,
         {
           expiresIn: "7d",
         });
-      res.status(201).json({ msg: "registered", User:{
-        email:User.email,
-        username:User.username,
-        role:User.role,
-        phoneNumber:User.phoneNumber
-      }, token })
-  }
+      res.status(201).json({
+        msg: "registered", User: {
+          email: User.email,
+          username: User.username,
+          role: User.role,
+          phoneNumber: User.phoneNumber
+        }, token
+      })
+    }
   } catch (error: any) {
 
-  console.error("Signup Error:", error);
+    console.error("Signup Error:", error);
 
-  if (error.code === 11000) {
-    return res.status(409).json({
-      success: false,
-      message: "Email or phone number already exists",
-    });
-  }
+    if (error.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message: "Email or phone number already exists",
+      });
+    }
 
-  if (error.name === "ValidationError") {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    if (error.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
   }
-}
 }
 
 /**
@@ -129,11 +132,14 @@ export const signin = async (req: Request, res: Response) => {
       {
         expiresIn: "7d"
       })
-    res.status(201).json({ msg: "LoggedIn", userExist:{
-        email:userExist.email,
-        username:userExist.username,
-        role:userExist.role,
-        phoneNumber:userExist.phoneNumber}, token })
+    res.status(201).json({
+      msg: "LoggedIn", userExist: {
+        email: userExist.email,
+        username: userExist.username,
+        role: userExist.role,
+        phoneNumber: userExist.phoneNumber
+      }, token
+    })
   }
   catch (error: any) {
     console.error("Signin Error:", error);
@@ -276,7 +282,6 @@ export const verifyEmail = async (req: Request, res: Response) => {
         message: "Invalid or expired verification token",
       });
     }
-
     user.isVerified = true;
     user.verificationToken = undefined;
     user.verificationTokenExpires = undefined;
@@ -288,7 +293,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
     //   message: "Email verified successfully",
     // });
 
-     return res.redirect(`${process.env.CLIENT_URL}/verify-success`);
+    return res.redirect(`${process.env.CLIENT_URL}/verify-success`);
   } catch (error) {
     console.error(error);
 
@@ -297,5 +302,172 @@ export const verifyEmail = async (req: Request, res: Response) => {
     //   message: "Internal Server Error",
     // });
     return res.redirect(`${process.env.CLIENT_URL}/verify-failed`);
+  }
+};
+
+
+
+/**
+ * Update User API
+ * @description: This API is used to update User's Profile
+ * @route /api/profile/updateProfile/:id
+ *  */
+export const updateUser = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const userId = req.user._id;
+
+    const updates = req.body;
+
+    console.log("Logged in user:", req.user);
+    console.log("User ID:", req.user?._id);
+    console.log("Updates:", req.body);
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      updates,
+      {
+        returnDocument: "after",
+        runValidators: true,
+      }
+    ).select("-password -verificationToken");
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: updatedUser,
+    });
+
+  } catch (error) {
+  console.error("Update Error:", error);
+
+  return res.status(500).json({
+    success: false,
+    message: "Internal Server Error",
+  });
+}
+};
+
+/**
+ * Forget password API
+ * @description: This API is used if when user forget it's password
+ * @route /api/auth/forget-password
+ */
+export const forgotPassword = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { email } = req.body;
+
+    // Check if email is provided
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+
+    // Find user
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    // Save token and expiry
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = new Date(
+      Date.now() + 15 * 60 * 1000 // 10 minutes
+    );
+
+    await user.save();
+
+    // Send email
+    await sendResetPasswordEmail(
+      user.email,
+      resetToken
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Password reset email sent successfully",
+    });
+
+  } catch (error) {
+    console.error("Forgot Password Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+/**
+ * Reset Password API
+ * @description: This API is used to reset the password
+ * @route /api/auth/reset-password/token
+ */
+
+export const resetPassword = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!password) {
+      return res.status(400).json({
+        success: false,
+        message: "Password is required",
+      });
+    }
+
+    // Find user with valid token
+    const user = await UserModel.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: {
+        $gt: new Date(),
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired reset token",
+      });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    user.password = hashedPassword;
+
+    // Remove token
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+
+    await user.save();
+
+   return res.redirect(`${process.env.CLIENT_URL}/resetpassword-success`);
+  } catch (error) {
+
+    console.error("Reset Password Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
   }
 };
