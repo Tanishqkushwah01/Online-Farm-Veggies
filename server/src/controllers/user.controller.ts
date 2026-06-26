@@ -95,7 +95,6 @@ export const signup = async (req: Request, res: Response) => {
      * @description: This API is used to login a user.
      * @route /api/auth/signup
 */
-
 export const signin = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body
@@ -249,13 +248,11 @@ export const resendVerificationEmail = async (
   }
 };
 
-
 /**
      * Email Verification API
      * @description: This API is used to verify user's email.
      * @route /api/auth/verify-email/:token
 */
-
 export const verifyEmail = async (req: Request, res: Response) => {
   try {
     const { token } = req.params;

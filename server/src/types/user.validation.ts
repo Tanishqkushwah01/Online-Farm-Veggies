@@ -19,7 +19,7 @@ phoneNumber:z
 .string()
  .regex(/^[6-9][0-9]{9}$/, "Phone number must contain 10 digits"),
 
-role: z.enum(["User", "Admin", "Farmer"]),
+role: z.enum(["Customer", "Admin", "Farmer"]),
 })
 
 

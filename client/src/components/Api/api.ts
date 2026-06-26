@@ -33,3 +33,8 @@ export const userRegister = async (data: RegisterRequest) => {
   console.log("user",data);
   return api.post("/auth/signup", data);
 };
+
+
+export const gmailResend = async(email:string)=>{
+  await api.post("/auth/resend-email",email);
+}

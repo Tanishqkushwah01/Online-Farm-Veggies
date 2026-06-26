@@ -1,16 +1,15 @@
 import express from "express";
-// import { url } from "node:inspector";
+import cors from "cors";
 import dotenv from "dotenv";
 
 dotenv.config()
-const app=express();
-import cors from "cors";
+const app=express()
 app.use(cors())
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL,
     credentials:true
 }))
 
@@ -18,7 +17,10 @@ app.use(cors({
 import userRouter from "./routes/user.router"
 import connectToDB from "./utilities/database";
 connectToDB();
-app.use("/api/auth",userRouter)
+
+
+app.use("/api/auth",userRouter);
+
 console.log(process.env.PORT)
 app.listen(process.env.PORT,()=>{
 console.log("server running at 3000");
