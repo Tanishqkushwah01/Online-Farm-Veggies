@@ -7,32 +7,32 @@ import { userRegister } from "../components/Api/api";
 
 const Register = () => {
   const [role, setRole] = useState<"Customer" | "Farmer">("Customer");
-  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [terms, setTerms] = useState(false);
 
   const [errors, setErrors] = useState<{
-    fullName?: string;
+    username?: string;
     email?: string;
-    phone?: string;
+    phoneNumber?: string;
     password?: string;
     confirmPassword?: string;
     terms?: string;
   }>({});
 
-  const { gotoLogin, gotoTerms } = useWebNavigate();
+  const { gotoLogin, gotoTerms,gotoVerifyEmail } = useWebNavigate();
 
   async function handleRegister(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const result = registerSchema.safeParse({
       role,
-      fullName,
+      username,
       email,
-      phone,
+      phoneNumber,
       password,
       confirmPassword,
       terms,
@@ -42,9 +42,9 @@ const Register = () => {
       const fieldErrors = result.error.flatten().fieldErrors;
 
       setErrors({
-        fullName: fieldErrors.fullName?.[0],
+        username: fieldErrors.username?.[0],
         email: fieldErrors.email?.[0],
-        phone: fieldErrors.phone?.[0],
+        phoneNumber: fieldErrors.phoneNumber?.[0],
         password: fieldErrors.password?.[0],
         confirmPassword: fieldErrors.confirmPassword?.[0],
         terms: fieldErrors.terms?.[0],
@@ -54,12 +54,15 @@ const Register = () => {
     }
 
     setErrors({});
-    const res = await userRegister(result.data);
+    const data = {password,email,username,phoneNumber,role}
+    // console.log("data:",data)
+    const res = await userRegister(data);
+    gotoVerifyEmail();
     localStorage.setItem("token", res.data.token);
 
-    setFullName("");
+    setUsername("");
     setEmail("");
-    setPhone("");
+    setPhoneNumber("");
     setPassword("");
     setConfirmPassword("");
     setTerms(false);
@@ -120,14 +123,14 @@ const Register = () => {
               />
               <input
                 type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 placeholder="Full Name"
                 className="w-full h-11 rounded-xl border border-gray-300 pl-12 pr-4 outline-none focus:border-blue-500"
               />
             </div>
             <p className="text-red-500 text-xs mt-0.5 h-4">
-              {errors.fullName || ""}
+              {errors.username || ""}
             </p>
           </div>
 
@@ -158,14 +161,14 @@ const Register = () => {
               />
               <input
                 type="text"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="Phone Number"
                 className="w-full h-11 rounded-xl border border-gray-300 pl-12 pr-4 outline-none focus:border-blue-500"
               />
             </div>
             <p className="text-red-500 text-xs mt-0.5 h-4">
-              {errors.phone || ""}
+              {errors.phoneNumber || ""}
             </p>
           </div>
 

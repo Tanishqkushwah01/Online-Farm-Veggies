@@ -4,7 +4,7 @@ export const registerSchema = z
   .object({
     role: z.enum(["Customer", "Farmer"]),
 
-    fullName: z
+    username: z
       .string()
       .trim()
       .min(1, "Full name is required")
@@ -16,7 +16,7 @@ export const registerSchema = z
       .min(1, "Email is required")
       .email("Enter a valid email address"),
 
-    phone: z
+    phoneNumber: z
       .string()
       .trim()
       .min(1, "Phone number is required")

@@ -11,9 +11,8 @@ import jwt from "jsonwebtoken";
 */
 export const signup =async(req:Request,res:Response)=>{
 try{
-    const details= req.body
+    const details= req.body;
     const validUser= userValidation.safeParse(details)
-// console.log(validUser)
     if(validUser.success){
 
 const existingUser = await UserModel.findOne({
