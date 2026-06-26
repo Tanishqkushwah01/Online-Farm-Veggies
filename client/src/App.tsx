@@ -8,6 +8,9 @@ import VerifyEmail from './pages/verifyEmail';
 import PageNotFound from './pages/PageNotFound';
 import VerifySuccess from './pages/VerifySuccess';
 import VerifyFailed from './pages/VerifyFailed';
+import AdminDashboard from './pages/AdminDashboard';
+import CustomerDashboard from './pages/CustomerDashboard';
+import FarmerDashboard from './pages/FarmerDashboard';
 
 function App() {
 
@@ -20,8 +23,11 @@ function App() {
         <Route path='/terms' element={<Terms />} />
         <Route path='/verifyEmail' element={<VerifyEmail />} />
         <Route path='*' element={<PageNotFound />} />
-       <Route path="/verify-success" element={<VerifySuccess />} />
-        <Route path="/verify-failed" element={<VerifyFailed />} /> 
+        <Route path="/verify-success" element={<VerifyFailed />} />
+        <Route path="/verify-success" element={<VerifySuccess />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/customer-dashboard" element={<CustomerDashboard />} />
+        <Route path="/farmer-dashboard" element={<FarmerDashboard />} />
       </Routes >
 
     </BrowserRouter>
