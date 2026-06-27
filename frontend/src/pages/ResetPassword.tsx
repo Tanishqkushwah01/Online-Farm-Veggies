@@ -2,12 +2,14 @@ import { useState } from "react";
 import { useNavigate} from "react-router-dom";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import useWebNavigate from "../components/hooks/useWebNavigate"
 const ResetPassword = () => {
     
 
     const { token } = useParams();
 
     const navigate = useNavigate();
+    const {gotoLogin}= useWebNavigate();
 
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -30,8 +32,13 @@ const ResetPassword = () => {
                     password,
                 }
             );
-
-            alert(res.data.message);
+console.log("res.success")
+if(res.data.success){
+ gotoLogin();
+}
+            // alert(res.data.message);
+           
+            
 
             navigate("/login");
         } catch (error: any) {

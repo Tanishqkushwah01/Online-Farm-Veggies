@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { sendVerificationEmail } from "../utilities/sendEmailVerification";
 import { sendResetPasswordEmail } from "../utilities/resetpasswordemail";
+import { sendVerificationMailToUser } from "../utilities/sendEmail";
 
 
 /**
@@ -55,10 +56,12 @@ export const signup = async (req: Request, res: Response) => {
         verificationTokenExpires: new Date(Date.now() + 30* 60 * 1000), // 30 minutes
       });
       console.log("User email:", User.email)
-      await sendVerificationEmail(
-        User.email,
-        verificationToken
-      );
+      // Send verification email
+   const result=  await sendVerificationMailToUser(User.email);
+  //  console.log(result)
+if(!result){
+  return res.status(301).json({msg:"Verification of mail not .........."})
+}
 
       const token = jwt.sign(
         { id: User._id },
@@ -156,51 +159,51 @@ export const signin = async (req: Request, res: Response) => {
      * @description: This API is used by client to send their email to the backend.
      * @route /api/auth/send-email
 */
-export const sendVerification = async (
-  req: Request,
-  res: Response
-) => {
-  try {
-    const { email } = req.body;
-    console.log("Request body--->",req.body);
-    console.log("Email:", req.body.email);
-    const user = await UserModel.findOne({ email });
-    console.log(user)
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
+// export const sendVerification = async (
+//   req: Request,
+//   res: Response
+// ) => {
+//   try {
+//     const { email } = req.body;
+//     console.log("Request body--->",req.body);
+//     console.log("Email:", req.body.email);
+//     const user = await UserModel.findOne({ email });
+//     console.log(user)
+//     if (!user) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "User not found",
+//       });
+//     }
 
-    if (user.isVerified) {
-      return res.status(400).json({
-        success: false,
-        message: "Email is already verified",
-      });
-    }
-    if (!user.verificationToken) {
-      return res.status(400).json({
-        success: false,
-        message: "Verification token not found",
-      });
-    }
-    await sendVerificationEmail(
-      user.email,
-      user.verificationToken
-    );
+//     if (user.isVerified) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Email is already verified",
+//       });
+//     }
+//     if (!user.verificationToken) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Verification token not found",
+//       });
+//     }
+//     await sendVerificationEmail(
+//       user.email,
+//       user.verificationToken
+//     );
 
-    return res.status(200).json({
-      success: true,
-      message: "Verification email sent successfully",
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
-  }
-};
+//     return res.status(200).json({
+//       success: true,
+//       message: "Verification email sent successfully",
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal Server Error",
+//     });
+//   }
+// };
 
 /**
      * Resend Email API
@@ -304,8 +307,6 @@ export const verifyEmail = async (req: Request, res: Response) => {
     return res.redirect(`${process.env.CLIENT_URL}/verify-failed`);
   }
 };
-
-
 
 /**
  * Update User API
@@ -417,7 +418,6 @@ export const forgotPassword = async (
  * @description: This API is used to reset the password
  * @route /api/auth/reset-password/token
  */
-
 export const resetPassword = async (
   req: Request,
   res: Response
@@ -459,8 +459,9 @@ export const resetPassword = async (
     user.resetPasswordExpires = undefined;
 
     await user.save();
+// console.log("Result:------------->")
+    return res.status(200).json({success:true})
 
-    return res.redirect(`${process.env.CLIENT_URL}/resetpassword-success`);
   } catch (error) {
 
     console.error("Reset Password Error:", error);
