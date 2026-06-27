@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate} from "react-router-dom";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-const ResetPasswordPage = () => {
+const ResetPassword = () => {
     
 
     const { token } = useParams();
@@ -86,4 +86,4 @@ const ResetPasswordPage = () => {
     );
 };
 
-export default ResetPasswordPage;
+export default ResetPassword;

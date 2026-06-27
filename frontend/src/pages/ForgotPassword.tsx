@@ -1,14 +1,36 @@
 import { useState } from "react";
 import axios from "axios";
+import { Mail } from "lucide-react";
+import { forgotPasswordSchema } from "../components/Validation/Forgot.schema";
 
-const ForgotPasswordPage = () => {
+const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [errors, setErrors] = useState<{
+    email?: string;
+  }>({});
 
   const handleForgotPassword = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
+
+    const result = forgotPasswordSchema.safeParse({
+      email,
+    });
+
+    if (!result.success) {
+      const fieldErrors = result.error.flatten().fieldErrors;
+
+      setErrors({
+        email: fieldErrors.email?.[0],
+      });
+
+      return;
+    }
+
+    setErrors({});
 
     try {
       setLoading(true);
@@ -16,11 +38,12 @@ const ForgotPasswordPage = () => {
       const response = await axios.post(
         "http://localhost:3000/api/auth/forgot-password",
         {
-          email,
+          email: result.data.email,
         }
       );
 
       alert(response.data.message);
+
       setEmail("");
     } catch (error: any) {
       alert(error.response?.data?.message || "Something went wrong");
@@ -30,39 +53,52 @@ const ForgotPasswordPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#EEF3EC] px-4">
       <div className="w-full max-w-md bg-white shadow-lg rounded-xl p-8">
         <h1 className="text-3xl font-bold text-center text-green-600">
           Forgot Password
         </h1>
 
         <p className="text-gray-500 text-center mt-2">
-          Enter your registered email to receive a password reset link.
+          Enter your registered email to receive a password
+          <br />
+          reset link.
         </p>
 
         <form
+          noValidate
           onSubmit={handleForgotPassword}
-          className="mt-8 space-y-5"
+          className="mt-8 space-y-4"
         >
           <div>
             <label className="block font-medium mb-2">
               Email Address
             </label>
 
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+            <div className="relative">
+              <Mail
+                size={19}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+              />
+
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="w-full h-11 rounded-xl border border-gray-300 pl-12 pr-4 outline-none focus:border-blue-500"
+              />
+            </div>
+
+            <p className="text-red-500 text-sm mt-1 h-5">
+              {errors.email || ""}
+            </p>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-60"
+            className="w-full h-14 bg-green-600 text-white rounded-xl font-semibold text-lg hover:bg-green-700 transition-all cursor-pointer disabled:opacity-60"
           >
             {loading ? "Sending..." : "Send Reset Link"}
           </button>
@@ -72,4 +108,4 @@ const ForgotPasswordPage = () => {
   );
 };
 
-export default ForgotPasswordPage;
+export default ForgotPassword;

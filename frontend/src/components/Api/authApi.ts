@@ -36,5 +36,7 @@ export const userRegister = async (data: RegisterRequest) => {
 
 
 export const gmailResend = async(email:string)=>{
+console.log("email =",email)
+
   await api.post("/resend-email",{email});
 }

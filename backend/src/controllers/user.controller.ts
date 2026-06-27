@@ -213,9 +213,10 @@ export const resendVerificationEmail = async (
 ) => {
   try {
     const { email } = req.body;
+    console.log(email);
 
     const user = await UserModel.findOne({ email });
-
+    console.log("user::", user)
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -232,6 +233,7 @@ export const resendVerificationEmail = async (
 
     // Generate new token
     const verificationToken = crypto.randomBytes(32).toString("hex");
+    console.log("hi verify",verificationToken)
 
     user.verificationToken = verificationToken;
     user.verificationTokenExpires = new Date(
@@ -244,6 +246,8 @@ export const resendVerificationEmail = async (
       user.email,
       verificationToken
     );
+    console.log("user::", user)
+
 
     return res.status(200).json({
       success: true,
@@ -337,13 +341,13 @@ export const updateUser = async (
     });
 
   } catch (error) {
-  console.error("Update Error:", error);
+    console.error("Update Error:", error);
 
-  return res.status(500).json({
-    success: false,
-    message: "Internal Server Error",
-  });
-}
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
 };
 
 /**
@@ -456,7 +460,7 @@ export const resetPassword = async (
 
     await user.save();
 
-   return res.redirect(`${process.env.CLIENT_URL}/resetpassword-success`);
+    return res.redirect(`${process.env.CLIENT_URL}/resetpassword-success`);
   } catch (error) {
 
     console.error("Reset Password Error:", error);
