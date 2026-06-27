@@ -19,7 +19,7 @@ export const signup = async (req: Request, res: Response) => {
     const details = req.body;
     console.log("data =", details)
     const validUser = userValidation.safeParse(details)
-    // console.log(validUser)
+    console.log(validUser)
     if (validUser.success) {
 
       const existingUser = await UserModel.findOne({
@@ -46,13 +46,13 @@ export const signup = async (req: Request, res: Response) => {
       }
       const hashedPass = await bcrypt.hash(details.password, 10)
       const verificationToken = crypto.randomBytes(32).toString("hex");
-      console.log(hashedPass, verificationToken)
+      // console.log(hashedPass, verificationToken)
       const User = await UserModel.create({
         ...details,
         password: hashedPass,
         verificationToken,
         isVerified: false,
-        verificationTokenExpires: new Date(Date.now() + 3 * 60 * 1000), // 3 minutes
+        verificationTokenExpires: new Date(Date.now() + 30* 60 * 1000), // 30 minutes
       });
       console.log("User email:", User.email)
       await sendVerificationEmail(
@@ -162,7 +162,7 @@ export const sendVerification = async (
 ) => {
   try {
     const { email } = req.body;
-    console.log(req.body);
+    console.log("Request body--->",req.body);
     console.log("Email:", req.body.email);
     const user = await UserModel.findOne({ email });
     console.log(user)
