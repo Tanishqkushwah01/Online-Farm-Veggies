@@ -7,6 +7,7 @@ import crypto from "crypto";
 import { sendVerificationEmail } from "../utilities/sendEmailVerification";
 import { sendResetPasswordEmail } from "../utilities/resetpasswordemail";
 import { sendVerificationMailToUser } from "../utilities/sendEmail";
+import resetPassValidation from "../types/reset.password.validation";
 
 
 /**
@@ -53,15 +54,15 @@ export const signup = async (req: Request, res: Response) => {
         password: hashedPass,
         verificationToken,
         isVerified: false,
-        verificationTokenExpires: new Date(Date.now() + 30* 60 * 1000), // 30 minutes
+        verificationTokenExpires: new Date(Date.now() + 30 * 60 * 1000), // 30 minutes
       });
       console.log("User email:", User.email)
       // Send verification email
-   const result=  await sendVerificationMailToUser(User.email);
-  //  console.log(result)
-if(!result){
-  return res.status(301).json({msg:"Verification of mail not .........."})
-}
+      const result = await sendVerificationMailToUser(User.email);
+      //  console.log(result)
+      if (!result) {
+        return res.status(301).json({ msg: "Verification of mail not .........." })
+      }
 
       const token = jwt.sign(
         { id: User._id },
@@ -77,6 +78,7 @@ if(!result){
           phoneNumber: User.phoneNumber
         }, token
       })
+      console.log("TOKEN--------->Registration", token)
     }
   } catch (error: any) {
 
@@ -106,6 +108,7 @@ if(!result){
 export const signin = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body
+    console.log("EMail---->",email)
     const userExist = await UserModel.findOne({ email })
 
     if (!userExist) {
@@ -135,12 +138,23 @@ export const signin = async (req: Request, res: Response) => {
       {
         expiresIn: "7d"
       })
+      console.log( "Details of loggedIn user",{
+        email: userExist.email,
+        username: userExist.username,
+        role: userExist.role,
+        phoneNumber: userExist.phoneNumber,
+        shopName: userExist.shopName,
+        profilePicture: userExist.profilePicture,
+        Address:userExist.Address})
     res.status(201).json({
       msg: "LoggedIn", userExist: {
         email: userExist.email,
         username: userExist.username,
         role: userExist.role,
-        phoneNumber: userExist.phoneNumber
+        phoneNumber: userExist.phoneNumber,
+        shopName: userExist.shopName,
+        profilePicture: userExist.profilePicture,
+        Address:userExist.Address
       }, token
     })
   }
@@ -236,7 +250,7 @@ export const resendVerificationEmail = async (
 
     // Generate new token
     const verificationToken = crypto.randomBytes(32).toString("hex");
-    console.log("hi verify",verificationToken)
+    console.log("hi verify", verificationToken)
 
     user.verificationToken = verificationToken;
     user.verificationTokenExpires = new Date(
@@ -335,10 +349,12 @@ export const updateUser = async (
       }
     ).select("-password -verificationToken");
 
+    console.log("Updated User------>", updatedUser)
     return res.status(200).json({
       success: true,
       message: "Profile updated successfully",
       data: updatedUser,
+
     });
 
   } catch (error) {
@@ -425,8 +441,10 @@ export const resetPassword = async (
   try {
 
     const { token } = req.params;
-    const { password } = req.body;
 
+    const { password } = req.body;
+    const ValidPassword = resetPassValidation.safeParse(password)
+    if(ValidPassword){
     if (!password) {
       return res.status(400).json({
         success: false,
@@ -451,7 +469,6 @@ export const resetPassword = async (
 
     // Hash new password
     const hashedPassword = await bcrypt.hash(password, 10);
-
     user.password = hashedPassword;
 
     // Remove token
@@ -459,9 +476,9 @@ export const resetPassword = async (
     user.resetPasswordExpires = undefined;
 
     await user.save();
-// console.log("Result:------------->")
-    return res.status(200).json({success:true})
-
+    // console.log("Result:------------->")
+    return res.status(200).json({ success: true })
+  }
   } catch (error) {
 
     console.error("Reset Password Error:", error);
@@ -472,3 +489,29 @@ export const resetPassword = async (
     });
   }
 };
+
+/**
+ * Delete API : 
+ * @description: This API is used to delete the user's profile.
+ * @route: api/auth/profile/:id
+ */
+
+export const deleteUser = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const userId = req.user._id;
+    console.log("UserID at Delete API======", userId)
+
+    const deletedUser = await UserModel.findByIdAndDelete(userId);
+
+    if (!deletedUser) {
+      console.log("User not deleted==>")
+    }
+    res.status(201).json({ success: true })
+  } catch (err) {
+    console.log("Error in deletion:", err)
+  }
+}
+

@@ -40,14 +40,18 @@ const userSchema = new mongoose.Schema({
 
     Address: {
         type: String,
+        default: ""
+    },
+    profilePicture: {
 
+        type: String,
+        default: ""
     },
 
-    mainCrops: {
-        type: [String],
-    },
+   
     shopName: {
         type: String,
+        default:""
     },
 
     isVerified: {
@@ -62,7 +66,7 @@ const userSchema = new mongoose.Schema({
     verificationTokenExpires: {
         type: Date,
     },
-    
+
     resetPasswordToken: {
         type: String,
         default: null,
