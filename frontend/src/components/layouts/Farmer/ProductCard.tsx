@@ -1,89 +1,63 @@
-import { Edit, Trash2, Package, Tag, FileText } from "lucide-react";
+import React from "react";
 
-export type Product = {
-  _id: string;
-  productName: string;
-  category: string;
+interface ProductCardProps {
+  image: string;
+  name: string;
   price: number;
-  quantity: number;
-  unit: string;
-  stockStatus: "In Stock" | "Out of Stock";
-  description: string;
-  imageUrl?: string;
-};
+  farm: string;
+  rating: number;
+  reviews: number;
+  onAdd?: () => void;
+}
 
-type ProductCardProps = {
-  product: Product;
-  onEdit: (product: Product) => void;
-  onDelete: (id: string) => void;
-};
-
-const ProductCard = ({ product, onEdit, onDelete }: ProductCardProps) => {
+const ProductCard: React.FC<ProductCardProps> = ({
+  image,
+  name,
+  price,
+  farm,
+  rating,
+  reviews,
+  onAdd,
+}) => {
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md">
-      <div className="relative h-44 w-full overflow-hidden rounded-xl bg-gray-100">
+    <div className="w-72 overflow-hidden rounded-2xl bg-[#f1f1f1] shadow-md border border-gray-200 transition-all duration-300 hover:shadow-2xl">
+      
+      {/* Product Image */}
+      <div className="h-56 w-full overflow-hidden">
         <img
-          src={product.imageUrl || "https://via.placeholder.com/400x250?text=No+Image"}
-          alt={product.productName}
-          className="h-full w-full object-cover"
+          src={image}
+          alt={name}
+          className="h-full w-full object-cover object-center"
         />
-
-        <span
-          className={`absolute right-3 top-3 rounded-lg px-3 py-1 text-sm font-semibold text-white ${
-            product.stockStatus === "In Stock"
-              ? "bg-green-600"
-              : "bg-red-500"
-          }`}
-        >
-          {product.stockStatus}
-        </span>
       </div>
 
-      <div className="mt-4 flex items-start justify-between gap-3">
-        <div>
-          <h3 className="text-xl font-bold text-slate-800">
-            {product.productName}
-          </h3>
-          <p className="mt-1 font-semibold text-green-600">
-            {product.category}
-          </p>
+      {/* Content */}
+      <div className="p-5">
+        <h2 className="text-2xl font-semibold text-gray-900">
+          {name}
+        </h2>
+
+        <p className="mt-2 text-xl font-bold text-gray-900">
+          ₹{price}
+          <span className="text-base font-medium text-gray-500"> / kg</span>
+        </p>
+
+        <p className="mt-2 text-sm text-gray-500">
+          {farm}
+        </p>
+
+        <div className="mt-3 flex items-center gap-2">
+          <span className="text-lg text-yellow-500">★</span>
+          <span className="text-sm font-medium text-gray-700">
+            {rating} ({reviews})
+          </span>
         </div>
 
-        <p className="font-bold text-green-600">
-          ₹{product.price} / {product.unit}
-        </p>
-      </div>
-
-      <div className="mt-4 space-y-2 text-sm text-slate-600">
-        <p className="flex items-center gap-2">
-          <Package size={16} />
-          Quantity: {product.quantity} {product.unit}
-        </p>
-
-        <p className="flex items-center gap-2">
-          <Tag size={16} />
-          Unit: {product.unit}
-        </p>
-
-        <p className="flex items-start gap-2">
-          <FileText size={16} className="mt-0.5" />
-          {product.description}
-        </p>
-      </div>
-
-      <div className="mt-5 flex justify-end gap-3">
         <button
-          onClick={() => onEdit(product)}
-          className="rounded-xl border border-gray-200 p-3 text-slate-700 transition hover:bg-gray-100"
+          onClick={onAdd}
+          className="mt-6 w-full rounded-xl border border-green-300 py-3 text-lg font-semibold text-green-700 transition-all duration-300 hover:bg-green-50 active:scale-95"
         >
-          <Edit size={18} />
-        </button>
-
-        <button
-          onClick={() => onDelete(product._id)}
-          className="rounded-xl border border-gray-200 p-3 text-red-500 transition hover:bg-red-50"
-        >
-          <Trash2 size={18} />
+          Add
         </button>
       </div>
     </div>

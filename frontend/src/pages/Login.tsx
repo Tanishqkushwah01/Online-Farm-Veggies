@@ -1,6 +1,6 @@
 import { useState } from "react";
 import farmer from "../assets/images/farmer.png";
-import { User, Lock } from "lucide-react";
+import { User, Lock, Eye, EyeOff } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import useWebNavigate from "../components/hooks/useWebNavigate";
 import { loginSchema } from "../components/Validation/login.schema";
@@ -10,6 +10,8 @@ const Login = () => {
     // const [role, setRole] = useState<"Customer" | "Farmer">("Customer");
     const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const {gotoForgotPassword} = useWebNavigate();
 
     const [errors, setErrors] = useState<{
         identifier?: string;
@@ -19,45 +21,45 @@ const Login = () => {
     const { gotoRegister } = useWebNavigate();
 
     async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
-  e.preventDefault();
+        e.preventDefault();
 
-  const result = loginSchema.safeParse({
-    identifier,
-    password,
-  });
+        const result = loginSchema.safeParse({
+            identifier,
+            password,
+        });
 
-  if (!result.success) {
-    const fieldErrors = result.error.flatten().fieldErrors;
+        if (!result.success) {
+            const fieldErrors = result.error.flatten().fieldErrors;
 
-    setErrors({
-      identifier: fieldErrors.identifier?.[0],
-      password: fieldErrors.password?.[0],
-    });
+            setErrors({
+                identifier: fieldErrors.identifier?.[0],
+                password: fieldErrors.password?.[0],
+            });
 
-    return;
-  }
+            return;
+        }
 
-  setErrors({});
+        setErrors({});
 
-  const isEmail = result.data.identifier.includes("@");
+        const isEmail = result.data.identifier.includes("@");
 
-  const data = isEmail
-    ? {
-        email: result.data.identifier,
-        password: result.data.password,
-      }
-    : {
-        phoneNumber: result.data.identifier,
-        password: result.data.password,
-      };
+        const data = isEmail
+            ? {
+                email: result.data.identifier,
+                password: result.data.password,
+            }
+            : {
+                phoneNumber: result.data.identifier,
+                password: result.data.password,
+            };
 
-  const res = await userLogin(data);
+        const res = await userLogin(data);
 
-  localStorage.setItem("token", res.data.token);
+        localStorage.setItem("token", res.data.token);
 
-  setIdentifier("");
-  setPassword("");
-}
+        setIdentifier("");
+        setPassword("");
+    }
 
     return (
         <div className="min-h-screen w-full flex">
@@ -81,35 +83,11 @@ const Login = () => {
                     </h3>
                 </div>
 
-                {/* Customer / Farmer buttons */}
-                {/* <div className="flex w-75 h-12 border border-gray-300 rounded-lg overflow-hidden mb-8">
-                    <button
-                        type="button"
-                        onClick={() => setRole("Customer")}
-                        className={`flex-1 font-semibold transition-all ${role === "Customer"
-                            ? "bg-green-600 text-white"
-                            : "bg-white cursor-pointer text-black"
-                            }`}
-                    >
-                        Customer
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={() => setRole("Farmer")}
-                        className={`flex-1 font-semibold transition-all ${role === "Farmer"
-                            ? "bg-green-600 text-white"
-                            : "bg-white cursor-pointer text-black"
-                            }`}
-                    >
-                        Farmer
-                    </button>
-                </div> */}
 
                 <form onSubmit={handleLogin} className="space-y-4 w-96 mt-10">
                     {/* Email / Phone */}
                     <div>
-                       
+
                         <div className="relative">
                             <User
                                 size={19}
@@ -131,19 +109,31 @@ const Login = () => {
 
                     {/* Password */}
                     <div>
-                       
+
                         <div className="relative">
+                            {/* Lock Icon */}
                             <Lock
                                 size={19}
                                 className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
                             />
+
+                            {/* Input */}
                             <input
-                                type="email"
+                                type={showPassword ? "text" : "password"}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="Password"
-                                className="w-full h-11 rounded-xl border border-gray-300 pl-12 pr-4 outline-none focus:border-blue-500"
+                                className="w-full h-11 rounded-xl border border-gray-300 pl-12 pr-12 outline-none focus:border-blue-500"
                             />
+
+                            {/* Eye Icon */}
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute cursor-pointer right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                            >
+                                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            </button>
                         </div>
 
                         <p className="text-red-500 text-sm mt-1 h-5">
@@ -152,9 +142,13 @@ const Login = () => {
                     </div>
 
                     <div className="text-right">
-                        <h1 className="inline-block text-gray-600 cursor-pointer hover:text-green-400">
+                        <button
+                            type="button"
+                            onClick={gotoForgotPassword}
+                            className="text-gray-600 cursor-pointer hover:text-green-500 font-medium transition-colors duration-200"
+                        >
                             Forgot Password?
-                        </h1>
+                        </button>
                     </div>
 
                     <button

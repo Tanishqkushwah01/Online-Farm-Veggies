@@ -6,7 +6,6 @@ const VerifyEmail = () => {
   async function handleResend() {
 
     const info = JSON.parse(localStorage.getItem("userInfo")!);
-
     await gmailResend(info.email);
 
   }

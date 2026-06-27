@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Potato from "../assets/images/patato.png";
-import { User, Mail, Phone, Lock } from "lucide-react";
+import { User, Mail, Phone, Lock, EyeOff, Eye } from "lucide-react";
 import useWebNavigate from "../components/hooks/useWebNavigate";
 import { registerSchema } from "../components/Validation/register.schema";
 import { userRegister } from "../components/Api/authApi";
@@ -13,6 +13,8 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [terms, setTerms] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const [errors, setErrors] = useState<{
     username?: string;
@@ -23,7 +25,7 @@ const Register = () => {
     terms?: string;
   }>({});
 
-  const { gotoLogin, gotoTerms,gotoVerifyEmail } = useWebNavigate();
+  const { gotoLogin, gotoTerms, gotoVerifyEmail } = useWebNavigate();
 
   async function handleRegister(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -54,12 +56,12 @@ const Register = () => {
     }
 
     setErrors({});
-    const data = {password,email,username,phoneNumber,role}
+    const data = { password, email, username, phoneNumber, role }
     const res = await userRegister(data);
     gotoVerifyEmail();
     const userInfo = JSON.stringify(res.data.User);
     console.log(userInfo)
-    localStorage.setItem("userInfo",userInfo);
+    localStorage.setItem("userInfo", userInfo);
     localStorage.setItem("token", res.data.token);
 
     setUsername("");
@@ -176,17 +178,29 @@ const Register = () => {
 
           <div>
             <div className="relative">
+              {/* Lock Icon */}
               <Lock
                 size={19}
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
               />
+
+              {/* Input */}
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
-                className="w-full h-11 rounded-xl border border-gray-300 pl-12 pr-4 outline-none focus:border-blue-500"
+                className="w-full h-11 rounded-xl border border-gray-300 pl-12 pr-12 outline-none focus:border-blue-500"
               />
+
+              {/* Eye Icon */}
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 cursor-pointer top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
             <p className="text-red-500 text-xs mt-0.5 h-4">
               {errors.password || ""}
@@ -195,17 +209,29 @@ const Register = () => {
 
           <div>
             <div className="relative">
+              {/* Lock Icon */}
               <Lock
                 size={19}
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
               />
+
+              {/* Input */}
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm Password"
-                className="w-full h-11 rounded-xl border border-gray-300 pl-12 pr-4 outline-none focus:border-blue-500"
+                placeholder="Password"
+                className="w-full h-11 rounded-xl border border-gray-300 pl-12 pr-12 outline-none focus:border-blue-500"
               />
+
+              {/* Eye Icon */}
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute cursor-pointer right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
             <p className="text-red-500 text-xs mt-0.5 h-4">
               {errors.confirmPassword || ""}
@@ -240,7 +266,7 @@ const Register = () => {
           </div>
 
           <button
-        
+
             type="submit"
             className="w-full h-12 bg-green-600 text-white rounded-xl font-semibold text-lg hover:bg-green-700 transition-all cursor-pointer"
           >

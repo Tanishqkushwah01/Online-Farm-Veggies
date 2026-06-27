@@ -4,11 +4,11 @@ export const sendVerificationEmail = async (
   token: string
 ) => {
   const verificationUrl = `${process.env.SERVER_URL}/api/auth/verify-email/${token}`;
-
+ console.log(verificationUrl)
   await transporter.sendMail({
     from: process.env.EMAIL,
     to: email,
-      subject: "🌱 Verify Your Email - Online Farm Veggies",
+    subject: "🌱 Verify Your Email - Online Farm Veggies",
     html: `
 <!DOCTYPE html>
 <html lang="en">

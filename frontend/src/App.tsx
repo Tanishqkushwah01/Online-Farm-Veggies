@@ -1,38 +1,44 @@
-import './App.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import Register from './pages/Register';
-import Login from './pages/Login';
-import Terms from './pages/Terms';
-import VerifyEmail from './pages/verifyEmail';
-import PageNotFound from './pages/PageNotFound';
-import VerifySuccess from './pages/VerifySuccess';
-import VerifyFailed from './pages/VerifyFailed';
-import AdminDashboard from './pages/AdminDashboard';
-import CustomerDashboard from './pages/CustomerDashboard';
-import FarmerDashboard from './pages/FarmerDashboard';
+import { Routes, Route } from "react-router-dom";
+import "./App.css";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import CustomerDashboard from "./pages/CustomerDashboard";
+import FarmerDashboard from "./pages/FarmerDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import ProtectedRoute from "./components/Api/ProtectedRoute";
+import VerifyEmail from "./pages/verifyEmail";
+import VerifySuccess from "./pages/VerifySuccess";
+import VerifyFailed from "./pages/VerifyFailed";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import Home from "./pages/Home";
+import ForgotGuard from "./components/ForgotGuard";
 
-function App() {
-
+const App = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/register' element={<Register />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/terms' element={<Terms />} />
-        <Route path='/verifyEmail' element={<VerifyEmail />} />
-        <Route path='*' element={<PageNotFound />} />
-        <Route path="/verify-success" element={<VerifyFailed />} />
-        <Route path="/verify-success" element={<VerifySuccess />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        <Route path="/customer-dashboard" element={<CustomerDashboard />} />
-        <Route path="/farmer-dashboard" element={<FarmerDashboard />} />
-      </Routes >
+    <Routes>
+      {/* Public routes */}
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
+      <Route path="/verify-success" element={<VerifySuccess />} />
+      <Route path="/verify-failed" element={<VerifyFailed />} />
+      
+      <Route element={<ForgotGuard />}>
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+      </Route>
 
-    </BrowserRouter>
-  )
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-}
+      {/* Protected routes */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/customer" element={<CustomerDashboard />} />
+        <Route path="/farmer" element={<FarmerDashboard />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+      </Route>
+    </Routes>
+  );
+};
 
-export default App
+export default App;
