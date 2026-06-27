@@ -240,6 +240,7 @@ const Register = () => {
           </div>
 
           <button
+        
             type="submit"
             className="w-full h-12 bg-green-600 text-white rounded-xl font-semibold text-lg hover:bg-green-700 transition-all cursor-pointer"
           >
