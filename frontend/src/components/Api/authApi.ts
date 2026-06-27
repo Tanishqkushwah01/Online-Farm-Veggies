@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:3000/api"
+    baseURL: import.meta.env.VITE_AUTH_URL
 })
 
 type LoginRequest =
@@ -16,7 +16,7 @@ type LoginRequest =
 
 export const userLogin = async (data: LoginRequest) => {
   console.log(data)
-  return await api.post("/auth/signin", data);
+  return await api.post("/signin", data);
 };
 
 
@@ -31,10 +31,10 @@ type RegisterRequest = {
 
 export const userRegister = async (data: RegisterRequest) => {
   console.log("user",data);
-  return api.post("/auth/signup", data);
+  return api.post("/signup", data);
 };
 
 
 export const gmailResend = async(email:string)=>{
-  await api.post("/auth/resend-email",{email});
+  await api.post("/resend-email",{email});
 }

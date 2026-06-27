@@ -3,7 +3,7 @@ import Potato from "../assets/images/patato.png";
 import { User, Mail, Phone, Lock } from "lucide-react";
 import useWebNavigate from "../components/hooks/useWebNavigate";
 import { registerSchema } from "../components/Validation/register.schema";
-import { userRegister } from "../components/Api/api";
+import { userRegister } from "../components/Api/authApi";
 
 const Register = () => {
   const [role, setRole] = useState<"Customer" | "Farmer">("Customer");
@@ -55,7 +55,6 @@ const Register = () => {
 
     setErrors({});
     const data = {password,email,username,phoneNumber,role}
-    // console.log("data:",data)
     const res = await userRegister(data);
     gotoVerifyEmail();
     const userInfo = JSON.stringify(res.data.User);

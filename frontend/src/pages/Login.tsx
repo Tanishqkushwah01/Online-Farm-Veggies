@@ -4,7 +4,7 @@ import { User, Lock } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import useWebNavigate from "../components/hooks/useWebNavigate";
 import { loginSchema } from "../components/Validation/login.schema";
-import { userLogin } from "../components/Api/api";
+import { userLogin } from "../components/Api/authApi";
 
 const Login = () => {
     // const [role, setRole] = useState<"Customer" | "Farmer">("Customer");

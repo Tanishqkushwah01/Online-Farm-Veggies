@@ -1,5 +1,5 @@
 import { Mail } from "lucide-react";
-import { gmailResend } from "../components/Api/api";
+import { gmailResend } from "../components/Api/authApi";
 
 const VerifyEmail = () => {
 

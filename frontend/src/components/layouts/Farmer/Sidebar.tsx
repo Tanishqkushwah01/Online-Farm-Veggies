@@ -53,7 +53,7 @@ const Sidebar = () => {
 
               ${
                 active === item.name
-                  ? "bg-[#22C55E] text-white"
+                  ? "bg-green-600 text-white"
                   // : "text-gray-700 hover:bg-green-100"
                    : "text-gray-700 hover:bg-gray-300"
               }
