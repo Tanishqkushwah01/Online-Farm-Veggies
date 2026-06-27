@@ -7,13 +7,26 @@ const useWebNavigate = () => {
 
   const gotoLogin = () => navigate("/login");
 
-  const gotoTerms = () => navigate("/terms");
 
-  const gotoVerifyEmail = () => navigate("/verify-email");
+  const gotoVerifySuccess = () => navigate("/verify-success");
+  const gotoVerifyFailed = () => navigate("/verify-failed");
+  const gotoFarmer = () => navigate("/farmer");
+  const gotoAdmin = () => navigate("/admin");
+  const gotoCustomer = () => navigate("/customer");
 
   const gotoForgotPassword = () =>
     navigate("/forgot-password", {
       state: { fromLogin: true },
+    });
+
+  const gotoTerms = () =>
+    navigate("/terms", {
+      state: { fromRegister: true },
+    });
+
+  const gotoVerifyEmail = () =>
+    navigate("/verify-email", {
+      state: { fromRegister: true },
     });
 
   const gotoResetPassword = (token: string) =>
@@ -26,6 +39,11 @@ const useWebNavigate = () => {
     gotoVerifyEmail,
     gotoForgotPassword,
     gotoResetPassword,
+    gotoVerifySuccess,
+    gotoVerifyFailed,
+    gotoFarmer,
+    gotoAdmin,
+    gotoCustomer
   };
 };
 

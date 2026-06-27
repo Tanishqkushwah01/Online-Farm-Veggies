@@ -117,21 +117,23 @@ please verify your email address.
 <td align="center">
 
 <a
-href="${verificationUrl}"
-style="
-display:inline-block;
-background:#16a34a;
-color:#ffffff;
-padding:18px 42px;
-font-size:18px;
-font-weight:bold;
-text-decoration:none;
-border-radius:10px;
-box-shadow:0 6px 20px rgba(34,197,94,.3);
-">
-✅ Verify My Email
+  href="${verificationUrl}"
+  target="_self"
+  rel="noopener"
+  style="
+    display:inline-block;
+    background:#16a34a;
+    color:#ffffff;
+    padding:18px 42px;
+    font-size:18px;
+    font-weight:bold;
+    text-decoration:none;
+    border-radius:10px;
+    box-shadow:0 6px 20px rgba(34,197,94,.3);
+  "
+>
+  ✅ Verify My Email
 </a>
-
 </td>
 </tr>
 </table>

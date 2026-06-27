@@ -284,10 +284,11 @@ export const verifyEmail = async (req: Request, res: Response) => {
     console.log(user)
 
     if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid or expired verification token",
-      });
+      // return res.status(400).json({
+      //   success: false,
+      //   message: "Invalid or expired verification token",
+      // });
+      return res.redirect(`${process.env.CLIENT_URL}/verify-failed`);
     }
     user.isVerified = true;
     user.verificationToken = undefined;
