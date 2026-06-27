@@ -470,5 +470,5 @@ export const resetPassword = async (
       success: false,
       message: "Internal Server Error",
     });
-  }
+    }
 };

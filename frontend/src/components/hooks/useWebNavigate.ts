@@ -9,7 +9,7 @@ const useWebNavigate = () => {
 
   const gotoTerms = () => navigate("/terms");
 
-  const gotoVerifyEmail = () => navigate("/verifyEmail");
+  const gotoVerifyEmail = () => navigate("/verify-email");
 
   const gotoForgotPassword = () =>
     navigate("/forgot-password", {
