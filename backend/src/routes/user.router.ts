@@ -13,6 +13,6 @@ router.post("/forgot-password",userController.forgotPassword);
 router.put("/reset-password/:token", userController.resetPassword);
 
 //Profile Routes
-router.put("/profile/update",isAuthenticated,userController.updateUser)
-router.delete("/profile/delete",isAuthenticated,userController.deleteUser)
+router.put("/profile",isAuthenticated,userController.updateUser)
+router.delete("/profile",isAuthenticated,userController.deleteUser)
 export default router
