@@ -1,21 +1,21 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_AUTH_URL
+  baseURL: import.meta.env.VITE_AUTH_URL
 })
 
 type LoginRequest =
   | {
-      email: string;
-      password: string;
-    }
+    email: string;
+    password: string;
+  }
   | {
-      phoneNumber: string;
-      password: string;
-    };
+    phoneNumber: string;
+    password: string;
+  };
 
 export const userLogin = async (data: LoginRequest) => {
-  console.log(data)
+  // console.log(data)
   return await api.post("/signin", data);
 };
 
@@ -30,15 +30,35 @@ type RegisterRequest = {
 };
 
 export const userRegister = async (data: RegisterRequest) => {
-  console.log("user",data);
+  // console.log("user",data);
   return api.post("/signup", data);
 };
 
-export const gmailSend = async(email:string)=>{
-console.log("email =",email)
-  await api.post("/send-email",{email});
+export const gmailSend = async (email: string) => {
+  // console.log("email =",email)
+  await api.post("/send-email", { email });
 }
-export const gmailResend = async(email:string)=>{
-console.log("email =",email)
-  await api.post("/resend-email",{email});
+
+
+export const gmailResend = async (email: string) => {
+  // console.log("email =",email)
+  await api.post("/resend-email", { email });
 }
+
+export const forgotPassword = async (email: string) => {
+  // console.log("email =", email)
+  return await api.post("/forgot-password", { email });
+}
+
+export const resetPassword = async ({token,password}:{password: string,token:string}) => {
+  // console.log("email =", email)
+  return await api.put(`/reset-password/${token}`, { password });
+}
+
+
+//  const response = await axios.put(
+//         `http://localhost:3000/api/auth/reset-password/${token}`,
+//         {
+//           password,
+//         }
+//       );

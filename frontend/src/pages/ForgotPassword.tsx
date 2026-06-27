@@ -1,7 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
 import { Mail } from "lucide-react";
 import { forgotPasswordSchema } from "../components/Validation/Forgot.schema";
+import { forgotPassword } from "../components/Api/authApi";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -34,19 +34,20 @@ const ForgotPassword = () => {
 
     try {
       setLoading(true);
+      const email = result.data.email;
+      const response = await forgotPassword(email);
+      console.log(response.data)
+      if (response.data.success) {
+        window.open("https://mail.google.com/mail/u/0/#spam", "_blank");
+        window.open("/page");
+        window.close();
+      }
 
-      const response = await axios.post(
-        "http://localhost:3000/api/auth/forgot-password",
-        {
-          email: result.data.email,
-        }
-      );
-
-      alert(response.data.message);
+      // alert(response.data.message);
 
       setEmail("");
     } catch (error: any) {
-      alert(error.response?.data?.message || "Something went wrong");
+      console.log(error.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }

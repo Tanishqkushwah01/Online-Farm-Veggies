@@ -12,7 +12,10 @@ import VerifyFailed from "./pages/VerifyFailed";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Home from "./pages/Home";
-import ForgotGuard from "./components/ForgotGuard";
+import ForgotGuard from "./components/Guards/ForgotGuard";
+import TermsGuard from "./components/Guards/TermsGuard";
+import Terms from "./pages/Terms";
+import VerifyEmailGuard from "./components/Guards/VerifyEmailGuard";
 
 const App = () => {
   return (
@@ -21,12 +24,21 @@ const App = () => {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/verify-email" element={<VerifyEmail />} />
+
+      {/* in dono ko guard karna hai thik hai  */}
       <Route path="/verify-success" element={<VerifySuccess />} />
       <Route path="/verify-failed" element={<VerifyFailed />} />
-      
+
       <Route element={<ForgotGuard />}>
         <Route path="/forgot-password" element={<ForgotPassword />} />
+      </Route>
+
+      <Route element={<TermsGuard />}>
+        <Route path="/terms" element={<Terms />} />
+      </Route>
+
+      <Route element={<VerifyEmailGuard />}>
+        <Route path="/verify-email" element={<VerifyEmail />} />
       </Route>
 
       <Route path="/reset-password/:token" element={<ResetPassword />} />

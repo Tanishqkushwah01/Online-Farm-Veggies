@@ -138,14 +138,7 @@ export const signin = async (req: Request, res: Response) => {
       {
         expiresIn: "7d"
       })
-      console.log( "Details of loggedIn user",{
-        email: userExist.email,
-        username: userExist.username,
-        role: userExist.role,
-        phoneNumber: userExist.phoneNumber,
-        shopName: userExist.shopName,
-        profilePicture: userExist.profilePicture,
-        Address:userExist.Address})
+      
     res.status(201).json({
       msg: "LoggedIn", userExist: {
         email: userExist.email,
@@ -298,10 +291,11 @@ export const verifyEmail = async (req: Request, res: Response) => {
     console.log(user)
 
     if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid or expired verification token",
-      });
+      // return res.status(400).json({
+      //   success: false,
+      //   message: "Invalid or expired verification token",
+      // });
+      return res.redirect(`${process.env.CLIENT_URL}/verify-failed`);
     }
     user.isVerified = true;
     user.verificationToken = undefined;

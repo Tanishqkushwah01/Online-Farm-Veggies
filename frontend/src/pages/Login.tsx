@@ -54,6 +54,7 @@ const Login = () => {
             };
 
         const res = await userLogin(data);
+        console.log(res.data);
 
         localStorage.setItem("token", res.data.token);
 

@@ -3,14 +3,20 @@ import { gmailResend } from "../components/Api/authApi";
 
 const VerifyEmail = () => {
 
+
   async function handleResend() {
 
     const info = JSON.parse(localStorage.getItem("userInfo")!);
     await gmailResend(info.email);
 
   }
+
+
+
   const openEmail = () => {
-    window.open("https://mail.google.com", "_blank");
+    window.open("https://mail.google.com/mail/u/0/#spam", "_blank");
+    window.open("/page");
+    window.close();
   };
 
   return (
