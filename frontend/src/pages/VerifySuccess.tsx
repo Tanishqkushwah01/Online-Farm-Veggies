@@ -53,12 +53,12 @@ const VerifySuccess = () => {
           Your email has been verified successfully. Now you can login.
         </p>
 
-        <Link
+        {/* <Link
           to="/login"
           className="block w-full mt-6 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition"
         >
           Go to Login
-        </Link>
+        </Link> */}
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ const useWebNavigate = () => {
 
   const gotoLogin = () => navigate("/login");
 
+ const goBack = () => navigate(-1);
 
   const gotoVerifySuccess = () => navigate("/verify-success");
   const gotoVerifyFailed = () => navigate("/verify-failed");
@@ -35,6 +36,7 @@ const useWebNavigate = () => {
   return {
     gotoRegister,
     gotoLogin,
+    goBack,
     gotoTerms,
     gotoVerifyEmail,
     gotoForgotPassword,

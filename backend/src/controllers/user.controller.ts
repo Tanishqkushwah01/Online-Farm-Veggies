@@ -10,6 +10,7 @@ import { sendVerificationMailToUser } from "../utilities/sendEmail";
 import resetPassValidation from "../types/reset.password.validation";
 import { FarmerModel } from "../models/farmer.model";
 import { sendChangePasswordMail } from "../utilities/sendChangePassMail";
+import blacklistModel from "../models/blacklist.model";
 
 
 
@@ -705,12 +706,14 @@ export const changePassword= async(
         "Password changed successfully",
     });
 
-}catch(err){
-      console.log(err);
+}catch(error){
+      console.log(error);
 
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
     });
+
+
 }
 }

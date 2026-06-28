@@ -1,11 +1,32 @@
 import { Bell, Search } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AddProductModal from "./CreateCard";
+import ProfileCard from "./ProfileCard";
 
 const Header = ({ username }: { username: string }) => {
   const [open, setOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(e.target as Node)
+      ) {
+        setProfileOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <header className="h-24 bg-[#f1f1f1] flex items-center justify-between px-8 border-b border-gray-200">
+    <header className="relative h-24 bg-[#f1f1f1] flex items-center justify-between px-8 border-b border-gray-200">
       {/* Left */}
       <div>
         <h1 className="text-3xl font-bold text-slate-900">
@@ -29,13 +50,15 @@ const Header = ({ username }: { username: string }) => {
           <input
             type="text"
             placeholder="Search here..."
-            className="w-112.5 h-12 rounded-2xl border border-slate-300 bg-white pl-14 pr-5 text-base outline-none transition-all focus:border-green-500"
+            className="w-[450px] h-12 rounded-2xl border border-slate-300 bg-white pl-14 pr-5 text-base outline-none transition-all focus:border-green-500"
           />
         </div>
 
-        {/* Create Button */}
-        <button onClick={() => setOpen(true)}
-          className="h-12 px-7 rounded-2xl border border-slate-300 bg-white text-slate-700 font-medium transition hover:bg-gray-300 cursor-pointer">
+        {/* Create */}
+        <button
+          onClick={() => setOpen(true)}
+          className="h-12 px-7 rounded-2xl border border-slate-300 bg-white text-slate-700 font-medium transition hover:bg-gray-300 cursor-pointer"
+        >
           Create
         </button>
 
@@ -45,7 +68,26 @@ const Header = ({ username }: { username: string }) => {
         </button>
 
         {/* Profile */}
-        <div className="h-11 w-11 rounded-full bg-slate-300 cursor-pointer"></div>
+        <div ref={profileRef} className="relative">
+          <button
+            onClick={() => setProfileOpen(!profileOpen)}
+            className="h-11 w-11 rounded-full bg-slate-300 hover:ring-2 hover:ring-green-500 transition cursor-pointer overflow-hidden"
+          >
+            {/* Uncomment when image is available */}
+
+            {/* <img
+              src={userInfo.image}
+              alt=""
+              className="h-full w-full object-cover"
+            /> */}
+          </button>
+
+          {profileOpen && (
+            <ProfileCard
+              onClose={() => setProfileOpen(false)}
+            />
+          )}
+        </div>
       </div>
 
       <AddProductModal
