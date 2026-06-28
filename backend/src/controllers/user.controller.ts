@@ -1,13 +1,16 @@
-import { Request, Response } from "express"
-import UserModel from "../models/user.model"
+import { Request, Response } from "express";
+import UserModel from "../models/user.model";
 import userValidation from "../types/user.validation"
-import bcrypt from "bcrypt"
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { sendVerificationEmail } from "../utilities/sendEmailVerification";
 import { sendResetPasswordEmail } from "../utilities/resetpasswordemail";
 import { sendVerificationMailToUser } from "../utilities/sendEmail";
 import resetPassValidation from "../types/reset.password.validation";
+import { FarmerModel } from "../models/farmer.model";
+import { sendChangePasswordMail } from "../utilities/sendChangePassMail";
+
 
 
 /**
@@ -56,16 +59,21 @@ export const signup = async (req: Request, res: Response) => {
         isVerified: false,
         verificationTokenExpires: new Date(Date.now() + 30 * 60 * 1000), // 30 minutes
       });
+
+      //If Farmer, creates Farmer Profile.
+      if(User.role==="Farmer"){
+        await FarmerModel.create({userId:User._id})
+      }
       console.log("User email:", User.email)
       // Send verification email
       const result = await sendVerificationMailToUser(User.email);
-      //  console.log(result)
+     
       if (!result) {
         return res.status(301).json({ msg: "Verification of mail not .........." })
       }
 
       const token = jwt.sign(
-        { id: User._id },
+        { UserId: User._id },
         process.env.JWT_SECRET!,
         {
           expiresIn: "7d",
@@ -145,10 +153,8 @@ export const signin = async (req: Request, res: Response) => {
         username: userExist.username,
         role: userExist.role,
         phoneNumber: userExist.phoneNumber,
-        shopName: userExist.shopName,
         profilePicture: userExist.profilePicture,
-        Address:userExist.Address
-      }, token
+         }, token
     })
   }
   catch (error: any) {
@@ -166,51 +172,6 @@ export const signin = async (req: Request, res: Response) => {
      * @description: This API is used by client to send their email to the backend.
      * @route /api/auth/send-email
 */
-// export const sendVerification = async (
-//   req: Request,
-//   res: Response
-// ) => {
-//   try {
-//     const { email } = req.body;
-//     console.log("Request body--->",req.body);
-//     console.log("Email:", req.body.email);
-//     const user = await UserModel.findOne({ email });
-//     console.log(user)
-//     if (!user) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "User not found",
-//       });
-//     }
-
-//     if (user.isVerified) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Email is already verified",
-//       });
-//     }
-//     if (!user.verificationToken) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Verification token not found",
-//       });
-//     }
-//     await sendVerificationEmail(
-//       user.email,
-//       user.verificationToken
-//     );
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "Verification email sent successfully",
-//     });
-//   } catch (error) {
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//     });
-//   }
-// };
 
 /**
      * Resend Email API
@@ -329,7 +290,10 @@ export const updateUser = async (
     const userId = req.user._id;
 
     const updates = req.body;
-
+ // If user uploaded an image
+    if (req.file) {
+      updates.profilePicture = (req.file as any).path;
+    }                   
     console.log("Logged in user:", req.user);
     console.log("User ID:", req.user?._id);
     console.log("Updates:", req.body);
@@ -435,7 +399,6 @@ export const resetPassword = async (
   try {
 
     const { token } = req.params;
-
     const { password } = req.body;
     const ValidPassword = resetPassValidation.safeParse(password)
     if(ValidPassword){
@@ -509,3 +472,245 @@ export const deleteUser = async (
   }
 }
 
+
+
+// export const changePasswordSendEmail= async(
+//   req:Request,
+//   res:Response
+// )=>{
+//  try { 
+//     const { email } = req.body;
+
+//     // Check if email is provided
+//     if (!email) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Email is required",
+//       });
+//     }
+
+//     // Find user
+//     const user = await UserModel.findOne({ email });
+
+//     if (!user) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "User not found",
+//       });
+//     }
+
+//     // Generate reset token
+//     const resetToken = crypto.randomBytes(32).toString("hex");
+
+//     // Save token and expiry
+//     user.resetPasswordToken = resetToken;
+//     user.resetPasswordExpires = new Date(
+//       Date.now() + 15 * 60 * 1000 // 10 minutes
+//     );
+
+//     await user.save();
+
+//     // Send email
+//     await changePasswordEmail(
+//       user.email,
+//       resetToken
+//     );
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Password reset email sent successfully",
+//     });
+
+//   } catch (error) {
+//     console.error("Forgot Password Error:", error);
+
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal Server Error",
+//     });
+//   }
+
+// }
+
+
+
+// export const ChangePassword=async(
+//   req:Request,
+//   res:Response
+// )=>{
+//  try {
+
+//     const { token } = req.params;
+//     const { password } = req.body;
+//     const ValidPassword = resetPassValidation.safeParse(password)
+//     if(ValidPassword){
+//     if (!password) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Password is required",
+//       });
+//     }
+
+//     // Find user with valid token
+//     const user = await UserModel.findOne({
+//       resetPasswordToken: token,
+//       resetPasswordExpires: {
+//         $gt: new Date(),
+//       },
+//     });
+
+//     if (!user) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid or expired reset token",
+//       });
+//     }
+
+//     // Hash new password
+//     const hashedPassword = await bcrypt.hash(password, 10);
+//     user.password = hashedPassword;
+
+//     // Remove token
+//     user.resetPasswordToken = undefined;
+//     user.resetPasswordExpires = undefined;
+
+//     await user.save();
+//     // console.log("Result:------------->")
+//     return res.status(200).json({ success: true })
+//   }
+//   } catch (error) {
+
+//     console.error("Reset Password Error:", error);
+
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal Server Error",
+//     });
+//   }
+// }
+
+
+
+export const requestChangePassword = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const userId = req.user._id;
+
+    const { email, currentPassword } = req.body;
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Check email
+    if (user.email !== email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email does not match",
+      });
+    }
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
+
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Current password is incorrect",
+      });
+    }
+
+    // Generate Token
+    const resetToken = crypto
+      .randomBytes(32)
+      .toString("hex");
+
+    user.resetPasswordToken = resetToken;
+
+    user.resetPasswordExpires = new Date(
+      Date.now() + 15 * 60 * 1000
+    );
+
+    await user.save();
+
+    // Send Mail
+    await sendChangePasswordMail(
+      user.email,
+      resetToken
+    );
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Password change link sent successfully",
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+
+
+export const changePassword= async(
+  req:Request,
+  res:Response
+)=>{
+ try {
+
+    const { token } = req.params;
+
+    const { newPassword } = req.body;
+
+    const user = await UserModel.findOne({
+
+      resetPasswordToken: token,
+
+      resetPasswordExpires: {
+        $gt: new Date(),
+      },
+    });
+    if(!user){
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired link",
+    })
+  }
+  const hashedPassword= await bcrypt.hash(newPassword,10)
+
+  user.password = hashedPassword;
+
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpires = undefined;
+
+  await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Password changed successfully",
+    });
+
+}catch(err){
+      console.log(err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+}
+}

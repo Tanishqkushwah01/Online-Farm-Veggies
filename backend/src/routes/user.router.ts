@@ -1,7 +1,7 @@
 import express from "express";
 import * as userController from "../controllers/user.controller";
 import { isAuthenticated } from "../middleware/auth.middleware";
-
+import upload from "../middleware/upload.middleware";
 const router=express.Router()
 
 router.post("/signup",userController.signup);
@@ -11,8 +11,10 @@ router.post("/resend-email",userController.resendVerificationEmail)
 router.get("/verify-email/:token",userController.verifyEmail)
 router.post("/forgot-password",userController.forgotPassword);
 router.put("/reset-password/:token", userController.resetPassword);
-
+router.post("/change-password/request",isAuthenticated,userController.requestChangePassword);
+router.put("/change-password/:token",userController.changePassword);
 //Profile Routes
-router.put("/profile",isAuthenticated,userController.updateUser)
+router.put("/profile",isAuthenticated,upload.single("profilePicture"),userController.updateUser);
 router.delete("/profile",isAuthenticated,userController.deleteUser)
+
 export default router

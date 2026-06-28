@@ -38,20 +38,10 @@ const userSchema = new mongoose.Schema({
         match: [/^[6-9]\d{9}$/, "Please enter a valid 10-digit Indian phone number"],
     },
 
-    Address: {
-        type: String,
-        default: ""
-    },
     profilePicture: {
 
         type: String,
         default: ""
-    },
-
-   
-    shopName: {
-        type: String,
-        default:""
     },
 
     isVerified: {
