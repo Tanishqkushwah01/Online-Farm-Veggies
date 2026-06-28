@@ -10,7 +10,7 @@ router.post("/resend-email", userController.resendVerificationEmail);
 router.get("/verify-email/:token", userController.verifyEmail);
 router.post("/forgot-password", userController.forgotPassword);
 router.put("/reset-password/:token", userController.resetPassword);
-router.post("/change-password/request",authMiddleware,userController.requestChangePassword);
+router.post("/change-password",authMiddleware,userController.requestChangePassword);
 router.put("/change-password/:token",userController.changePassword);
 //Profile Routes
 router.put("/profile",authMiddleware,upload.single("profilePicture"),userController.updateUser);
