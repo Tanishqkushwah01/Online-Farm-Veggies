@@ -16,7 +16,6 @@ import { useState } from "react";
 import UpdateCard from "./UpdateCard";
 import useWebNavigate from "../../hooks/useWebNavigate";
 import { logoutUser } from "../../Api/authApi";
-import ChangePassword from "../../../pages/ChangePassword";
 
 type ProfileType = {
   name: string;
@@ -28,9 +27,12 @@ type ProfileType = {
   photo: string;
 };
 
-const Settings = () => {
+type SettingsProps = {
+  setActivePage: React.Dispatch<React.SetStateAction<string>>;
+};
+
+const Settings = ({ setActivePage }: SettingsProps) => {
   const { gotoLogin, gotoRegister } = useWebNavigate();
-  const [openChangePassword, setOpenChangePassword] = useState(false);
   const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
 
   const [openUpdate, setOpenUpdate] = useState(false);
@@ -179,18 +181,15 @@ const Settings = () => {
                 </div>
 
                 <button
-                  // onClick={gotoForgotPassword}
-                  onClick={() => setOpenChangePassword(true)}
+                  onClick={() => setActivePage("changePassword")}
                   className="rounded-lg cursor-pointer bg-green-600 px-5 py-2 font-semibold text-white hover:bg-green-700"
                 >
-                  Change 
+                  Change
                 </button>
               </div>
             </div>
           </div>
-          {openChangePassword && (
-            <ChangePassword  />
-          )}
+
 
           {/* LEFT DANGER ZONE */}
           <div className="h-full rounded-3xl border border-red-200 bg-white p-6 shadow-lg lg:col-start-1 lg:row-start-2">
