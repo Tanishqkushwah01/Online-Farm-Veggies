@@ -8,6 +8,7 @@ import { sendVerificationEmail } from "../utilities/sendEmailVerification";
 import { sendResetPasswordEmail } from "../utilities/resetpasswordemail";
 import { sendVerificationMailToUser } from "../utilities/sendEmail";
 import resetPassValidation from "../types/reset.password.validation";
+import blacklistModel from "../models/blacklist.model";
 
 
 /**
@@ -65,7 +66,7 @@ export const signup = async (req: Request, res: Response) => {
       }
 
       const token = jwt.sign(
-        { id: User._id },
+        { UserId: User._id },
         process.env.JWT_SECRET!,
         {
           expiresIn: "7d",
@@ -108,7 +109,7 @@ export const signup = async (req: Request, res: Response) => {
 export const signin = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body
-    console.log("EMail---->",email)
+    console.log("EMail---->", email)
     const userExist = await UserModel.findOne({ email })
 
     if (!userExist) {
@@ -138,7 +139,7 @@ export const signin = async (req: Request, res: Response) => {
       {
         expiresIn: "7d"
       })
-      
+
     res.status(201).json({
       msg: "LoggedIn", userExist: {
         email: userExist.email,
@@ -147,7 +148,7 @@ export const signin = async (req: Request, res: Response) => {
         phoneNumber: userExist.phoneNumber,
         shopName: userExist.shopName,
         profilePicture: userExist.profilePicture,
-        Address:userExist.Address
+        Address: userExist.Address
       }, token
     })
   }
@@ -438,41 +439,41 @@ export const resetPassword = async (
 
     const { password } = req.body;
     const ValidPassword = resetPassValidation.safeParse(password)
-    if(ValidPassword){
-    if (!password) {
-      return res.status(400).json({
-        success: false,
-        message: "Password is required",
+    if (ValidPassword) {
+      if (!password) {
+        return res.status(400).json({
+          success: false,
+          message: "Password is required",
+        });
+      }
+
+      // Find user with valid token
+      const user = await UserModel.findOne({
+        resetPasswordToken: token,
+        resetPasswordExpires: {
+          $gt: new Date(),
+        },
       });
+
+      if (!user) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid or expired reset token",
+        });
+      }
+
+      // Hash new password
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
+
+      // Remove token
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+
+      await user.save();
+      // console.log("Result:------------->")
+      return res.status(200).json({ success: true })
     }
-
-    // Find user with valid token
-    const user = await UserModel.findOne({
-      resetPasswordToken: token,
-      resetPasswordExpires: {
-        $gt: new Date(),
-      },
-    });
-
-    if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid or expired reset token",
-      });
-    }
-
-    // Hash new password
-    const hashedPassword = await bcrypt.hash(password, 10);
-    user.password = hashedPassword;
-
-    // Remove token
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
-
-    await user.save();
-    // console.log("Result:------------->")
-    return res.status(200).json({ success: true })
-  }
   } catch (error) {
 
     console.error("Reset Password Error:", error);
@@ -509,3 +510,31 @@ export const deleteUser = async (
   }
 }
 
+export const logout = async (req: Request, res: Response) => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        success: false,
+        message: "Authentication token is missing",
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    await blacklistModel.create({ token });
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (err) {
+    console.log("Logout Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};

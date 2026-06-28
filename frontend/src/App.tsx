@@ -16,6 +16,7 @@ import ForgotGuard from "./components/Guards/ForgotGuard";
 import TermsGuard from "./components/Guards/TermsGuard";
 import Terms from "./pages/Terms";
 import VerifyEmailGuard from "./components/Guards/VerifyEmailGuard";
+import PageNotFound from "./pages/PageNotFound";
 
 const App = () => {
   return (
@@ -42,6 +43,7 @@ const App = () => {
       </Route>
 
       <Route path="/reset-password/:token" element={<ResetPassword />} />
+      <Route path="*" element={<PageNotFound />} />
 
       {/* Protected routes */}
       <Route element={<ProtectedRoute />}>

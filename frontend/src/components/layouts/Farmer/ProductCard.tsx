@@ -20,7 +20,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onAdd,
 }) => {
   return (
-    <div className="w-72 overflow-hidden rounded-2xl bg-[#f1f1f1] shadow-md border border-gray-200 transition-all duration-300 hover:shadow-2xl">
+    <div className="min-w-72 max-w-90 overflow-hidden rounded-2xl bg-[#f1f1f1] shadow-md border border-gray-200 transition-all duration-300 hover:shadow-2xl">
       
       {/* Product Image */}
       <div className="h-56 w-full overflow-hidden">

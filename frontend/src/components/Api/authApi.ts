@@ -50,15 +50,26 @@ export const forgotPassword = async (email: string) => {
   return await api.post("/forgot-password", { email });
 }
 
-export const resetPassword = async ({token,password}:{password: string,token:string}) => {
+export const resetPassword = async ({ token, password }: { password: string, token: string }) => {
   // console.log("email =", email)
   return await api.put(`/reset-password/${token}`, { password });
 }
 
 
-//  const response = await axios.put(
-//         `http://localhost:3000/api/auth/reset-password/${token}`,
-//         {
-//           password,
-//         }
-//       );
+export const logoutUser = async () => {
+
+  const token = localStorage.getItem("token");
+
+  return await api.delete("/logout", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const changePassword = (data: {
+  email: string;
+  password: string;
+}) => {
+  return api.post("/change-password", data);
+};

@@ -6,7 +6,12 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-const Sidebar = () => {
+
+type SidebarProps = {
+  setActivePage: React.Dispatch<React.SetStateAction<string>>;
+};
+
+const Sidebar = ({setActivePage}:SidebarProps) => {
   const [open, setOpen] = useState(true);
   const [active, setActive] = useState("Dashboard");
 
@@ -88,7 +93,7 @@ const Sidebar = () => {
           <Settings size={22} />
 
           {open && (
-            <span className="font-medium whitespace-nowrap">
+            <span onClick={() => setActivePage("settings")} className="font-medium whitespace-nowrap">
               Settings
             </span>
           )}
