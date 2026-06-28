@@ -169,12 +169,6 @@ export const signin = async (req: Request, res: Response) => {
 }
 
 /**
-     * Email-Sending API
-     * @description: This API is used by client to send their email to the backend.
-     * @route /api/auth/send-email
-*/
-
-/**
      * Resend Email API
      * @description: This API is used by client to resend their email to the backend.
      * @route /api/auth/resend-email
@@ -289,6 +283,7 @@ export const updateUser = async (
 ) => {
   try {
     const userId = req.user._id;
+    console.log("User Id we get",req.user._id)
 
     const updates = req.body;
  // If user uploaded an image
@@ -460,6 +455,7 @@ export const deleteUser = async (
 ) => {
   try {
     const userId = req.user._id;
+    console.log("UserId exists or not ------->",userId);
     console.log("UserID at Delete API======", userId)
 
     const deletedUser = await UserModel.findByIdAndDelete(userId);
