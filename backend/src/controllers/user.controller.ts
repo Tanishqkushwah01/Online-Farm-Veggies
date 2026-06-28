@@ -524,6 +524,7 @@ export const logout = async (req: Request, res: Response) => {
     const token = authHeader.split(" ")[1];
 
     await blacklistModel.create({ token });
+    console.log("hi there")
 
     return res.status(200).json({
       success: true,
