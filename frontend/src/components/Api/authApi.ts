@@ -67,9 +67,13 @@ export const logoutUser = async () => {
   });
 };
 
-export const changePassword = (data: {
-  email: string;
-  password: string;
-}) => {
-  return api.post("/change-password", data);
+
+
+
+
+export const changePassword = (data: LoginRequest) => {
+  return api.put("/change-password", data);
 };
+
+
+

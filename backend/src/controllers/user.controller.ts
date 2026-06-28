@@ -474,124 +474,6 @@ export const deleteUser = async (
 }
 
 
-
-// export const changePasswordSendEmail= async(
-//   req:Request,
-//   res:Response
-// )=>{
-//  try { 
-//     const { email } = req.body;
-
-//     // Check if email is provided
-//     if (!email) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Email is required",
-//       });
-//     }
-
-//     // Find user
-//     const user = await UserModel.findOne({ email });
-
-//     if (!user) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "User not found",
-//       });
-//     }
-
-//     // Generate reset token
-//     const resetToken = crypto.randomBytes(32).toString("hex");
-
-//     // Save token and expiry
-//     user.resetPasswordToken = resetToken;
-//     user.resetPasswordExpires = new Date(
-//       Date.now() + 15 * 60 * 1000 // 10 minutes
-//     );
-
-//     await user.save();
-
-//     // Send email
-//     await changePasswordEmail(
-//       user.email,
-//       resetToken
-//     );
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "Password reset email sent successfully",
-//     });
-
-//   } catch (error) {
-//     console.error("Forgot Password Error:", error);
-
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//     });
-//   }
-
-// }
-
-
-
-// export const ChangePassword=async(
-//   req:Request,
-//   res:Response
-// )=>{
-//  try {
-
-//     const { token } = req.params;
-//     const { password } = req.body;
-//     const ValidPassword = resetPassValidation.safeParse(password)
-//     if(ValidPassword){
-//     if (!password) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Password is required",
-//       });
-//     }
-
-//     // Find user with valid token
-//     const user = await UserModel.findOne({
-//       resetPasswordToken: token,
-//       resetPasswordExpires: {
-//         $gt: new Date(),
-//       },
-//     });
-
-//     if (!user) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Invalid or expired reset token",
-//       });
-//     }
-
-//     // Hash new password
-//     const hashedPassword = await bcrypt.hash(password, 10);
-//     user.password = hashedPassword;
-
-//     // Remove token
-//     user.resetPasswordToken = undefined;
-//     user.resetPasswordExpires = undefined;
-
-//     await user.save();
-//     // console.log("Result:------------->")
-//     return res.status(200).json({ success: true })
-//   }
-//   } catch (error) {
-
-//     console.error("Reset Password Error:", error);
-
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//     });
-//   }
-// }
-
-
-
 export const requestChangePassword = async (
   req: Request,
   res: Response
@@ -717,3 +599,35 @@ export const changePassword= async(
 
 }
 }
+
+
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        success: false,
+        message: "Authentication token is missing",
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    await blacklistModel.create({ token });
+    console.log("hi there")
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (err) {
+    console.log("Logout Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
