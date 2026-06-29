@@ -3,7 +3,7 @@ import {z} from "zod";
 const userValidation = z.object({
     username:z.string()
     .min(3)
-    .max(15),
+    .max(30),
     
     email: z
     .email(),

@@ -4,7 +4,7 @@ import * as farmerController from "../controllers/farmer.controller"
 
 const farmerRoute= express.Router();
 
-farmerRoute.put("/complete-profile",authMiddleware,farmerController.farmerCompleteProfile)
+
 
 
 

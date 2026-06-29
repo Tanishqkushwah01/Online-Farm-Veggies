@@ -22,7 +22,7 @@ connectToDB();
 // Auth Routes
 app.use("/api/auth",userRouter);
 // Farmer Routes
-app.use("/api/farmer",farmerRoute)
+app.use("/api",farmerRoute)
 console.log(process.env.PORT)
 app.listen(process.env.PORT,()=>{
 console.log("server running at 3000");

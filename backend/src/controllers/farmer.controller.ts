@@ -32,7 +32,6 @@ export const farmerCompleteProfile = async (
       });
       return;
     }
-
     const farmer = await FarmerModel.findOneAndUpdate(
       { userId },              // Filter
       { $set:{ 

@@ -63,7 +63,7 @@ export const signup = async (req: Request, res: Response) => {
 
       //If Farmer, creates Farmer Profile.
       if (User.role === "Farmer") {
-        await FarmerModel.create({ userId: User._id })
+       await FarmerModel.create({ userId: User._id,isProfileCompleted:false })
       }
       console.log("User email:", User.email)
       // Send verification email
@@ -84,7 +84,7 @@ export const signup = async (req: Request, res: Response) => {
           email: User.email,
           username: User.username,
           role: User.role,
-          phoneNumber: User.phoneNumber
+          phoneNumber: User.phoneNumber,
         }, token
       })
       console.log("TOKEN--------->Registration", token)
@@ -147,7 +147,15 @@ export const signin = async (req: Request, res: Response) => {
       {
         expiresIn: "7d"
       })
+let isProfileCompleted = null;
 
+if (userExist.role === "Farmer") {
+  const farmer = await FarmerModel.findOne({
+    userId: userExist._id,
+  });
+
+  isProfileCompleted = farmer?.isProfileCompleted ?? false;
+}
     res.status(201).json({
       msg: "LoggedIn", userExist: {
         email: userExist.email,
@@ -272,50 +280,122 @@ export const verifyEmail = async (req: Request, res: Response) => {
  * @description: This API is used to update User's Profile
  * @route /api/profile/updateProfile/:id
  *  */
+
 export const updateUser = async (
   req: Request,
   res: Response
 ) => {
   try {
     const userId = req.user._id;
-    console.log("User Id we get", req.user._id)
 
-    const updates = req.body;
-    // If user uploaded an image
-    if (req.file) {
-      updates.profilePicture = (req.file as any).path;
+    // User Fields
+    const {
+      username,
+      phoneNumber,
+      address,
+      // Farmer Fields
+      farmName,
+      shopName,
+      farmAddress,
+      mainCrops,
+    
+    } = req.body;
+
+    // Image uploaded through multer
+    const profilePicture = req.file?.path;
+
+    // ----------------------------
+    // Update User
+    // ----------------------------
+
+    const userUpdates: any = {};
+
+    if (username) userUpdates.username = username;
+    if (phoneNumber) userUpdates.phoneNumber = phoneNumber;
+    if (address) userUpdates.address = address;
+
+    if (profilePicture) {
+      userUpdates.profilePicture = profilePicture;
     }
-    console.log("Logged in user:", req.user);
-    console.log("User ID:", req.user?._id);
-    console.log("Updates:", req.body);
 
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
-      updates,
       {
-        returnDocument: "after",
+        $set: userUpdates,
+      },
+      {
+        new: true,
         runValidators: true,
       }
-    ).select("-password -verificationToken");
+    ).select("-password -verificationToken -resetPasswordToken");
 
-    console.log("Updated User------>", updatedUser)
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // ----------------------------
+    // Update Farmer
+    // ----------------------------
+
+    const farmerUpdates: any = {};
+
+    if (farmName) farmerUpdates.farmName = farmName;
+
+    if (shopName) farmerUpdates.shopName = shopName;
+
+    if (farmAddress) farmerUpdates.farmAddress = farmAddress;
+
+    if (mainCrops) farmerUpdates.mainCrops = mainCrops;
+
+    // if (experience) farmerUpdates.experience = experience;
+
+    // If profile picture is stored in Farmer collection also
+    if (profilePicture) {
+      farmerUpdates.profilePicture = profilePicture;
+    }
+
+    // Check if all required fields are completed
+    const isProfileCompleted =
+      farmName &&
+      shopName &&
+      farmAddress &&
+      mainCrops &&
+      mainCrops.length > 0;
+
+    farmerUpdates.isProfileCompleted = Boolean(isProfileCompleted);
+
+    const updatedFarmer = await FarmerModel.findOneAndUpdate(
+      {
+        userId,
+      },
+      {
+        $set: farmerUpdates,
+      },
+      { 
+        new: true,
+        runValidators: true,
+      }
+    );
+ 
     return res.status(200).json({
       success: true,
-      message: "Profile updated successfully",
-      data: updatedUser,
-
+      message: "Profile updated successfully.",
+      user: updatedUser,
+      farmer: updatedFarmer,
     });
-
-  } catch (error) {
-    console.error("Update Error:", error);
+  } catch (error: any) {
+    console.error("Update Profile Error:", error);
 
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
+      error: error.message,
     });
   }
 };
-
 /**
  * Forget password API
  * @description: This API is used if when user forget it's password
@@ -399,7 +479,6 @@ export const resetPassword = async (
           message: "Password is required",
         });
       }
-
       // Find user with valid token
       const user = await UserModel.findOne({
         resetPasswordToken: token,
@@ -407,30 +486,24 @@ export const resetPassword = async (
           $gt: new Date(),
         },
       });
-
       if (!user) {
         return res.status(400).json({
           success: false,
           message: "Invalid or expired reset token",
         });
       }
-
       // Hash new password
       const hashedPassword = await bcrypt.hash(password, 10);
       user.password = hashedPassword;
-
       // Remove token
       user.resetPasswordToken = undefined;
       user.resetPasswordExpires = undefined;
-
       await user.save();
       // console.log("Result:------------->")
       return res.status(200).json({ success: true })
     }
   } catch (error) {
-
     console.error("Reset Password Error:", error);
-
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -467,7 +540,11 @@ export const deleteUser = async (
   }
 }
 
-
+/**
+ * Change Password API : 
+ * @description: This API used to change the password of requested user.
+ * @route: api/auth/change-password
+ */
 export const requestChangePassword = async (
   req: Request,
   res: Response
@@ -475,17 +552,6 @@ export const requestChangePassword = async (
   try {
     const userId = req.user._id;
 
-    // const { email, password } = req.body;
-    // console.log("data ==", email, password, userId);
-
-    // const user = await UserModel.findById(userId);
-
-    // if (!user) {
-    //   return res.status(404).json({
-    //     success: false,
-    //     message: "User not found",
-    //   });
-    // }
     const { email, phoneNumber, password } = req.body;
     console.log("3 things to know ===", email, phoneNumber, password)
     let user;
@@ -505,14 +571,6 @@ export const requestChangePassword = async (
         message: "User not found",
       });
     }
-
-    // Check email
-    // if (user.email !== email) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "Email does not match",
-    //   });
-    // }
 
     // Verify current password
     const isMatch = await bcrypt.compare(
@@ -561,52 +619,11 @@ export const requestChangePassword = async (
   }
 };
 
-
-
-// export const changePassword = async (
-//   req: Request,
-//   res: Response
-// ) => {
-//   try {
-
-//     const { token } = req.params;
-
-//     const { newPassword } = req.body;
-
-//     const user = await UserModel.findOne({
-
-//       resetPasswordToken: token,
-
-//       resetPasswordExpires: {
-//         $gt: new Date(),
-//       },
-//     });
-//     if (!user) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Invalid or expired link",
-//       })
-//     }
-//     const hashedPassword = await bcrypt.hash(newPassword, 10)
-
-//     user.password = hashedPassword;
-
-//     user.resetPasswordToken = undefined;
-//     user.resetPasswordExpires = undefined;
-
-//     await user.save();
-
-
-//     return res.redirect(`${process.env.CLIENT_URL}/verify-success`);
-
-
-//   } catch (error) {
-//     console.log(error);
-//     return res.redirect(`${process.env.CLIENT_URL}/verify-failed`);
-//   }
-// }
-
-
+/**
+ * Logout API : 
+ * @description: This API Logs Out the user and blacklists the token of user which created at the time of signup or signin.
+ * @route: api/auth/logout
+ */
 
 export const logout = async (req: Request, res: Response) => {
   try {
@@ -638,8 +655,16 @@ export const logout = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Verifying Delete API : 
+ * @description: This API checks the password of requested user and if pass matches then the user is deleted.
+ * @route: api/auth/verify-delete-password
 
-export const verifyDeletePassword = async (req: Request, res: Response) => {
+ */
+export const verifyDeletePassword = async (
+  req: Request,
+  res: Response
+) => {
 
   try {
     const { password } = req.body;
