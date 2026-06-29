@@ -1,18 +1,27 @@
 import { LogOut, Mail, Phone, User, Shield } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { logoutUser } from "../../Api/authApi";
+import useWebNavigate from "../../hooks/useWebNavigate";
 
 type ProfileCardProps = {
   onClose?: () => void;
 };
 
 const ProfileCard = ({ onClose }: ProfileCardProps) => {
-  const navigate = useNavigate();
+  const{gotoLogin}=useWebNavigate();
 
   const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
 
-  function handleLogout() {
-    localStorage.clear();
-    navigate("/login");
+  async function handleLogout() {
+    try {
+      const res = await logoutUser();
+
+      if (res.data.success) {
+        localStorage.clear();
+        gotoLogin();
+      }
+    } catch (error: any) {
+      console.log("Logout Error:", error.response?.data || error.message);
+    }
   }
 
   return (

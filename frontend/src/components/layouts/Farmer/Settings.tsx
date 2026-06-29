@@ -66,17 +66,7 @@ const Settings = ({ setActivePage }: SettingsProps) => {
     }
   }
 
-  function handleDeleteAccount() {
-    const confirmDelete = confirm(
-      "Are you sure you want to permanently delete your account?"
-    );
-
-    if (!confirmDelete) return;
-
-    localStorage.clear();
-    alert("Account deleted permanently");
-    gotoRegister();
-  }
+ 
 
   return (
     <div className="min-h-screen rounded-md bg-[#EEF3EC] px-6 py-8">
@@ -233,7 +223,8 @@ const Settings = ({ setActivePage }: SettingsProps) => {
                 </button>
 
                 <button
-                  onClick={handleDeleteAccount}
+                  // onClick={handleDeleteAccount}
+                  onClick={() => setActivePage("DeleteAccount")}
                   className="flex h-12 cursor-pointer w-full items-center justify-center gap-2 rounded-xl bg-red-600 font-semibold text-white hover:bg-red-700"
                 >
                   <Trash2 size={18} />

@@ -9,7 +9,7 @@ import { sendResetPasswordEmail } from "../utilities/resetpasswordemail";
 import { sendVerificationMailToUser } from "../utilities/sendEmail";
 import resetPassValidation from "../types/reset.password.validation";
 import { FarmerModel } from "../models/farmer.model";
-import { sendChangePasswordMail } from "../utilities/sendChangePassMail";
+import { sendChangePasswordEmail } from "../utilities/sendChangePassMail";
 import blacklistModel from "../models/blacklist.model";
 
 
@@ -62,13 +62,13 @@ export const signup = async (req: Request, res: Response) => {
       });
 
       //If Farmer, creates Farmer Profile.
-      if(User.role==="Farmer"){
-        await FarmerModel.create({userId:User._id})
+      if (User.role === "Farmer") {
+        await FarmerModel.create({ userId: User._id })
       }
       console.log("User email:", User.email)
       // Send verification email
       const result = await sendVerificationMailToUser(User.email);
-     
+
       if (!result) {
         return res.status(301).json({ msg: "Verification of mail not .........." })
       }
@@ -116,8 +116,8 @@ export const signup = async (req: Request, res: Response) => {
 */
 export const signin = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body
-    console.log("EMail---->",email)
+    const { email, password } = req.body;
+    console.log("EMail---->", email)
     const userExist = await UserModel.findOne({ email })
 
     if (!userExist) {
@@ -147,7 +147,7 @@ export const signin = async (req: Request, res: Response) => {
       {
         expiresIn: "7d"
       })
-      
+
     res.status(201).json({
       msg: "LoggedIn", userExist: {
         email: userExist.email,
@@ -155,7 +155,7 @@ export const signin = async (req: Request, res: Response) => {
         role: userExist.role,
         phoneNumber: userExist.phoneNumber,
         profilePicture: userExist.profilePicture,
-         }, token
+      }, token
     })
   }
   catch (error: any) {
@@ -259,11 +259,6 @@ export const verifyEmail = async (req: Request, res: Response) => {
 
     await user.save();
 
-    // return res.status(200).json({
-    //   success: true,
-    //   message: "Email verified successfully",
-    // });
-
     return res.redirect(`${process.env.CLIENT_URL}/verify-success`);
   } catch (error) {
     console.error(error);
@@ -283,13 +278,13 @@ export const updateUser = async (
 ) => {
   try {
     const userId = req.user._id;
-    console.log("User Id we get",req.user._id)
+    console.log("User Id we get", req.user._id)
 
     const updates = req.body;
- // If user uploaded an image
+    // If user uploaded an image
     if (req.file) {
       updates.profilePicture = (req.file as any).path;
-    }                   
+    }
     console.log("Logged in user:", req.user);
     console.log("User ID:", req.user?._id);
     console.log("Updates:", req.body);
@@ -397,41 +392,41 @@ export const resetPassword = async (
     const { token } = req.params;
     const { password } = req.body;
     const ValidPassword = resetPassValidation.safeParse(password)
-    if(ValidPassword){
-    if (!password) {
-      return res.status(400).json({
-        success: false,
-        message: "Password is required",
+    if (ValidPassword) {
+      if (!password) {
+        return res.status(400).json({
+          success: false,
+          message: "Password is required",
+        });
+      }
+
+      // Find user with valid token
+      const user = await UserModel.findOne({
+        resetPasswordToken: token,
+        resetPasswordExpires: {
+          $gt: new Date(),
+        },
       });
+
+      if (!user) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid or expired reset token",
+        });
+      }
+
+      // Hash new password
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
+
+      // Remove token
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+
+      await user.save();
+      // console.log("Result:------------->")
+      return res.status(200).json({ success: true })
     }
-
-    // Find user with valid token
-    const user = await UserModel.findOne({
-      resetPasswordToken: token,
-      resetPasswordExpires: {
-        $gt: new Date(),
-      },
-    });
-
-    if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid or expired reset token",
-      });
-    }
-
-    // Hash new password
-    const hashedPassword = await bcrypt.hash(password, 10);
-    user.password = hashedPassword;
-
-    // Remove token
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
-
-    await user.save();
-    // console.log("Result:------------->")
-    return res.status(200).json({ success: true })
-  }
   } catch (error) {
 
     console.error("Reset Password Error:", error);
@@ -455,17 +450,20 @@ export const deleteUser = async (
 ) => {
   try {
     const userId = req.user._id;
-    console.log("UserId exists or not ------->",userId);
-    console.log("UserID at Delete API======", userId)
 
     const deletedUser = await UserModel.findByIdAndDelete(userId);
 
     if (!deletedUser) {
       console.log("User not deleted==>")
+      return res.status(201).json({ success: false, msg: "User not deleted" });
     }
     res.status(201).json({ success: true })
   } catch (err) {
     console.log("Error in deletion:", err)
+     return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
   }
 }
 
@@ -477,28 +475,48 @@ export const requestChangePassword = async (
   try {
     const userId = req.user._id;
 
-    const { email, currentPassword } = req.body;
+    // const { email, password } = req.body;
+    // console.log("data ==", email, password, userId);
 
-    const user = await UserModel.findById(userId);
+    // const user = await UserModel.findById(userId);
+
+    // if (!user) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     message: "User not found",
+    //   });
+    // }
+    const { email, phoneNumber, password } = req.body;
+    console.log("3 things to know ===", email, phoneNumber, password)
+    let user;
+
+    if (email) {
+      user = await UserModel.findOne({ _id: userId, email });
+    } else if (phoneNumber) {
+      user = await UserModel.findOne({ _id: userId, phoneNumber });
+    } else {
+      return res.status(400).json({
+        message: "Email or Phone Number is required",
+      });
+    }
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
+      return res.status(400).json({
         message: "User not found",
       });
     }
 
     // Check email
-    if (user.email !== email) {
-      return res.status(400).json({
-        success: false,
-        message: "Email does not match",
-      });
-    }
+    // if (user.email !== email) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Email does not match",
+    //   });
+    // }
 
     // Verify current password
     const isMatch = await bcrypt.compare(
-      currentPassword,
+      password,
       user.password
     );
 
@@ -523,7 +541,7 @@ export const requestChangePassword = async (
     await user.save();
 
     // Send Mail
-    await sendChangePasswordMail(
+    await sendChangePasswordEmail(
       user.email,
       resetToken
     );
@@ -545,56 +563,48 @@ export const requestChangePassword = async (
 
 
 
-export const changePassword= async(
-  req:Request,
-  res:Response
-)=>{
- try {
+// export const changePassword = async (
+//   req: Request,
+//   res: Response
+// ) => {
+//   try {
 
-    const { token } = req.params;
+//     const { token } = req.params;
 
-    const { newPassword } = req.body;
+//     const { newPassword } = req.body;
 
-    const user = await UserModel.findOne({
+//     const user = await UserModel.findOne({
 
-      resetPasswordToken: token,
+//       resetPasswordToken: token,
 
-      resetPasswordExpires: {
-        $gt: new Date(),
-      },
-    });
-    if(!user){
-      return res.status(400).json({
-        success: false,
-        message: "Invalid or expired link",
-    })
-  }
-  const hashedPassword= await bcrypt.hash(newPassword,10)
+//       resetPasswordExpires: {
+//         $gt: new Date(),
+//       },
+//     });
+//     if (!user) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid or expired link",
+//       })
+//     }
+//     const hashedPassword = await bcrypt.hash(newPassword, 10)
 
-  user.password = hashedPassword;
+//     user.password = hashedPassword;
 
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpires = undefined;
+//     user.resetPasswordToken = undefined;
+//     user.resetPasswordExpires = undefined;
 
-  await user.save();
-
-    return res.status(200).json({
-      success: true,
-      message:
-        "Password changed successfully",
-    });
-
-}catch(error){
-      console.log(error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
+//     await user.save();
 
 
-}
-}
+//     return res.redirect(`${process.env.CLIENT_URL}/verify-success`);
+
+
+//   } catch (error) {
+//     console.log(error);
+//     return res.redirect(`${process.env.CLIENT_URL}/verify-failed`);
+//   }
+// }
 
 
 
@@ -618,7 +628,45 @@ export const logout = async (req: Request, res: Response) => {
       success: true,
       message: "Logged out successfully",
     });
-  } catch (err) {
+  } catch (err: any) {
+    console.log("Logout Error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+
+export const verifyDeletePassword = async (req: Request, res: Response) => {
+
+  try {
+    const { password } = req.body;
+    const userId = req.user.id;
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Incorrect password",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Password verified",
+    });
+  } catch (err: any) {
     console.log("Logout Error:", err);
 
     return res.status(500).json({

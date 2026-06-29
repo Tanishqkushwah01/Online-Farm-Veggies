@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {  Lock, EyeOff, Eye, User } from "lucide-react";
+import { Lock, EyeOff, Eye, User } from "lucide-react";
 import { changePasswordSchema } from "../../Validation/ChangePassword.schema";
 import { changePassword } from "../../Api/authApi";
 
@@ -51,16 +51,15 @@ const ChangePassword = ({ setActivePage }: ChangePasswordProps) => {
           phoneNumber: result.data.identifier,
           password: result.data.password,
         };
-
+      console.log(data)
       const response = await changePassword(data);
 
-      console.log(response.data);
+      console.log("res data change password ==", response.data);
 
       if (response.data.success) {
         window.open("https://mail.google.com/mail/u/0/#spam", "_blank");
-        setTimeout(() => {
           window.location.href = "/page";
-        }, 1000);
+        localStorage.clear();
         window.close();
       } else {
         alert("email nhi gyi");
@@ -68,6 +67,7 @@ const ChangePassword = ({ setActivePage }: ChangePasswordProps) => {
       setIdentifier("");
       setPassword("");
     } catch (error: any) {
+      console.log("hi there")
       console.log(
         error.response?.data?.message || "Something went wrong"
       );

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { CgPassword } from "react-icons/cg";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_AUTH_URL
@@ -71,9 +72,31 @@ export const logoutUser = async () => {
 
 
 
-export const changePassword = (data: LoginRequest) => {
-  return api.put("/change-password", data);
+export const changePassword = async (data: LoginRequest) => {
+  return await api.post("/change-password", data, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
 };
 
 
+export const verifyDeletePassword = async (password: string) => {
+  return await api.post("/verify-delete-password", { password },
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
+};
 
+export const deleteAccount =async () => {
+  return await api.delete("/profile",
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
+};
