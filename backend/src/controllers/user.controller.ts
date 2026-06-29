@@ -11,9 +11,6 @@ import resetPassValidation from "../types/reset.password.validation";
 import { FarmerModel } from "../models/farmer.model";
 import { sendChangePasswordEmail } from "../utilities/sendChangePassMail";
 import blacklistModel from "../models/blacklist.model";
-
-
-
 /**
      * Register API
      * @description: This API is used to create a new user account
@@ -63,9 +60,19 @@ export const signup = async (req: Request, res: Response) => {
 
       //If Farmer, creates Farmer Profile.
       if (User.role === "Farmer") {
-       await FarmerModel.create({ userId: User._id,isProfileCompleted:false })
+       const res= await FarmerModel.create({ userId: User._id, isProfileCompleted: false })
       }
       console.log("User email:", User.email)
+
+      let isProfileCompleted: boolean | null = null;
+
+if (User.role === "Farmer") {
+  const farmer = await FarmerModel.findOne({
+    userId: User._id,
+  });
+
+  isProfileCompleted = farmer?.isProfileCompleted ?? false;
+}
       // Send verification email
       const result = await sendVerificationMailToUser(User.email);
 
@@ -79,14 +86,17 @@ export const signup = async (req: Request, res: Response) => {
         {
           expiresIn: "7d",
         });
-      res.status(201).json({
-        msg: "registered", User: {
-          email: User.email,
-          username: User.username,
-          role: User.role,
-          phoneNumber: User.phoneNumber,
-        }, token
-      })
+     return res.status(201).json({
+  msg: "registered",
+  User: {
+    email: User.email,
+    username: User.username,
+    role: User.role,
+    phoneNumber: User.phoneNumber,
+  },
+  isProfileCompleted,
+  token,
+});
       console.log("TOKEN--------->Registration", token)
     }
   } catch (error: any) {
@@ -147,15 +157,7 @@ export const signin = async (req: Request, res: Response) => {
       {
         expiresIn: "7d"
       })
-let isProfileCompleted = null;
 
-if (userExist.role === "Farmer") {
-  const farmer = await FarmerModel.findOne({
-    userId: userExist._id,
-  });
-
-  isProfileCompleted = farmer?.isProfileCompleted ?? false;
-}
     res.status(201).json({
       msg: "LoggedIn", userExist: {
         email: userExist.email,
@@ -280,7 +282,6 @@ export const verifyEmail = async (req: Request, res: Response) => {
  * @description: This API is used to update User's Profile
  * @route /api/profile/updateProfile/:id
  *  */
-
 export const updateUser = async (
   req: Request,
   res: Response
@@ -292,13 +293,13 @@ export const updateUser = async (
     const {
       username,
       phoneNumber,
-      address,
+
       // Farmer Fields
       farmName,
       shopName,
       farmAddress,
       mainCrops,
-    
+
     } = req.body;
 
     // Image uploaded through multer
@@ -312,7 +313,7 @@ export const updateUser = async (
 
     if (username) userUpdates.username = username;
     if (phoneNumber) userUpdates.phoneNumber = phoneNumber;
-    if (address) userUpdates.address = address;
+
 
     if (profilePicture) {
       userUpdates.profilePicture = profilePicture;
@@ -374,12 +375,12 @@ export const updateUser = async (
       {
         $set: farmerUpdates,
       },
-      { 
+      {
         new: true,
         runValidators: true,
       }
     );
- 
+
     return res.status(200).json({
       success: true,
       message: "Profile updated successfully.",
@@ -396,6 +397,7 @@ export const updateUser = async (
     });
   }
 };
+
 /**
  * Forget password API
  * @description: This API is used if when user forget it's password
@@ -533,7 +535,7 @@ export const deleteUser = async (
     res.status(201).json({ success: true })
   } catch (err) {
     console.log("Error in deletion:", err)
-     return res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Internal Server Error",
     });

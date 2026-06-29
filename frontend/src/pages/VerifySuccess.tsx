@@ -15,7 +15,7 @@ const VerifySuccess = () => {
         gotoCustomer();
       } else if (info.role === "Admin") {
         gotoAdmin();
-      } else if (info.role === "Farmer") {
+      } else if (info.role === "Farmer" ) {
         gotoFarmer();
       }
     }, 1500);
