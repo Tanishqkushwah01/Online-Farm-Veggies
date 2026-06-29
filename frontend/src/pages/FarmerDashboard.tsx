@@ -1,19 +1,24 @@
 import Header from "../components/layouts/Farmer/Header";
-import ProductCard from "../components/layouts/Farmer/ProductCard";
 import Sidebar from "../components/layouts/Farmer/Sidebar";
-import Potato from "../assets/images/patato.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Settings from "../components/layouts/Farmer/Settings";
 import ChangePassword from "../components/layouts/Farmer/ChangePassword";
 import DeleteAccount from "../components/layouts/Farmer/DeleteParmanentCard";
 
 const FarmerDashboard = () => {
+
+  useEffect(()=>{
+    const info =  JSON.parse(localStorage.getItem("userInfo")!);
+    if(!info.isProfileCompleted){
+      setActivePage("settings")
+    }
+  },[])
   const [activePage, setActivePage] = useState("dashboard");
   if (activePage === "changePassword") {
     return <ChangePassword setActivePage={setActivePage} />;
   }
-  if(activePage === "DeleteAccount"){
-    return <DeleteAccount/>
+  if (activePage === "DeleteAccount") {
+    return <DeleteAccount />
   }
   return (
     <div className="h-screen w-screen overflow-hidden border-10 border-white">

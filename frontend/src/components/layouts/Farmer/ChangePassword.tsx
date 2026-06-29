@@ -2,12 +2,14 @@ import { useState } from "react";
 import { Lock, EyeOff, Eye, User } from "lucide-react";
 import { changePasswordSchema } from "../../Validation/ChangePassword.schema";
 import { changePassword } from "../../Api/authApi";
+// import useWebNavigate from "../../hooks/useWebNavigate";
 
 type ChangePasswordProps = {
   setActivePage: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const ChangePassword = ({ setActivePage }: ChangePasswordProps) => {
+  // const {gotoFarmer}=useWebNavigate();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -82,7 +84,6 @@ const ChangePassword = ({ setActivePage }: ChangePasswordProps) => {
 
       {/* Go Back Button */}
       <button
-        // onClick={goBack}
         onClick={() => setActivePage("settings")}
         className="absolute top-10 left-10 px-5 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition cursor-pointer"
       >

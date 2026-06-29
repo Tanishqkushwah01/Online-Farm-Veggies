@@ -60,7 +60,7 @@ export const signup = async (req: Request, res: Response) => {
 
       //If Farmer, creates Farmer Profile.
       if (User.role === "Farmer") {
-       const res= await FarmerModel.create({ userId: User._id, isProfileCompleted: false })
+        await FarmerModel.create({ userId: User._id, isProfileCompleted: false })
       }
       console.log("User email:", User.email)
 
@@ -157,7 +157,15 @@ export const signin = async (req: Request, res: Response) => {
       {
         expiresIn: "7d"
       })
+    let isProfileCompleted = null;
 
+    if (userExist.role === "Farmer") {
+      const farmer = await FarmerModel.findOne({
+        userId: userExist._id,
+      });
+
+      isProfileCompleted = farmer?.isProfileCompleted ?? false;
+    }
     res.status(201).json({
       msg: "LoggedIn", userExist: {
         email: userExist.email,
@@ -293,7 +301,6 @@ export const updateUser = async (
     const {
       username,
       phoneNumber,
-
       // Farmer Fields
       farmName,
       shopName,
@@ -304,6 +311,20 @@ export const updateUser = async (
 
     // Image uploaded through multer
     const profilePicture = req.file?.path;
+
+    console.log("username:", username);
+    console.log("phoneNumber:", phoneNumber);
+    // console.log("address:", address);
+
+    console.log("farmName:", farmName);
+    // console.log("shopName:", shopName);
+    console.log("farmAddress:", farmAddress);
+    console.log("mainCrops:", mainCrops);
+
+    console.log("profilePicture:", profilePicture);
+
+    console.log("req.body:", req.body);
+    console.log("req.file:", req.file);
 
     // ----------------------------
     // Update User
@@ -702,3 +723,5 @@ export const verifyDeletePassword = async (
     });
   }
 };
+
+

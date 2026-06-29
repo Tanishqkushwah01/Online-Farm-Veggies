@@ -7,13 +7,19 @@ const useWebNavigate = () => {
 
   const gotoLogin = () => navigate("/login");
 
- const goBack = () => navigate(-1);
+  const goBack = () => navigate(-1);
 
   const gotoVerifySuccess = () => navigate("/verify-success");
   const gotoVerifyFailed = () => navigate("/verify-failed");
-  const gotoFarmer = () => navigate("/farmer");
   const gotoAdmin = () => navigate("/admin");
   const gotoCustomer = () => navigate("/customer");
+
+  // const gotoFarmer = (activePage = "dashboard") => {
+  //   navigate("/farmer", {
+  //     state: { activePage },
+  //   });
+  // };
+  const gotoFarmer =()=> navigate("/farmer");
 
   const gotoForgotPassword = () =>
     navigate("/forgot-password", {

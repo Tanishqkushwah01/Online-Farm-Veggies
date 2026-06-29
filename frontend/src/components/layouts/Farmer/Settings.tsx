@@ -12,19 +12,31 @@ import {
   Trash2,
   User,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import UpdateCard from "./UpdateCard";
 import useWebNavigate from "../../hooks/useWebNavigate";
 import { logoutUser } from "../../Api/authApi";
 
+// type ProfileType = {
+//   name: string;
+//   email: string;
+//   phone: string;
+//   shopName: string;
+//   bio: string;
+//   crops: string;
+//   photo: string;
+// };
 type ProfileType = {
-  name: string;
+  username: string;
   email: string;
-  phone: string;
-  shopName: string;
+  phoneNumber: string;
+  // shopName: string;
+  farmName: string;
+  // address: string;
+  farmAddress: string;
   bio: string;
   crops: string;
-  photo: string;
+  profilePicture: string;
 };
 
 type SettingsProps = {
@@ -32,8 +44,9 @@ type SettingsProps = {
 };
 
 const Settings = ({ setActivePage }: SettingsProps) => {
-  const { gotoLogin, gotoRegister } = useWebNavigate();
-  const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+  const { gotoLogin } = useWebNavigate();
+  const userInfo = JSON.parse(localStorage.getItem("userInfo")!);
+  console.log("userInfo:",userInfo);
 
   const [openUpdate, setOpenUpdate] = useState(false);
   const [orderUpdates, setOrderUpdates] = useState(true);
@@ -41,17 +54,39 @@ const Settings = ({ setActivePage }: SettingsProps) => {
   const [promotions, setPromotions] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
+  // const [profile, setProfile] = useState<ProfileType>({
+  //   name: userInfo.username || userInfo.name || "Tanishq Kushwah",
+  //   email: userInfo.email || "tanishq@gmail.com",
+  //   phone: userInfo.phoneNumber || "",
+  //   shopName: userInfo.shopName || "Fresh Farm Store",
+  //   bio:
+  //     userInfo.bio ||
+  //     "I provide fresh and organic vegetables directly from my farm.",
+  //   crops: userInfo.crops || "Potato, Tomato, Onion, Wheat",
+  //   photo: userInfo.image || "",
+  // });
+
   const [profile, setProfile] = useState<ProfileType>({
-    name: userInfo.username || userInfo.name || "Tanishq Kushwah",
-    email: userInfo.email || "tanishq@gmail.com",
-    phone: userInfo.phoneNumber || "",
-    shopName: userInfo.shopName || "Fresh Farm Store",
-    bio:
-      userInfo.bio ||
-      "I provide fresh and organic vegetables directly from my farm.",
-    crops: userInfo.crops || "Potato, Tomato, Onion, Wheat",
-    photo: userInfo.image || "",
-  });
+  username : userInfo.username ||"tansihq kushwah",
+  email: userInfo.email ||"tanishq@gmail.com",
+  phoneNumber: userInfo.phoneNumber || "",
+  // shopName: userInfo.shopName || "Fresh Farm Store",
+  farmName: userInfo.farmName || "",
+  // address: userInfo.address || "",
+  farmAddress: userInfo.farmAddress || "",
+  bio:
+    userInfo.bio ||
+    "I provide fresh and organic vegetables directly from my farm.",
+  crops: userInfo.mainCrops || userInfo.crops || "Potato, Tomato, Onion, Wheat",
+  profilePicture: userInfo.profilePicture || userInfo.image || "",
+});
+
+   useEffect(()=>{
+      const info =  JSON.parse(localStorage.getItem("userInfo")!);
+      if(!info.isProfileCompleted){
+        setOpenUpdate(true);
+      }
+    },[])
 
   async function handleLogout() {
     try {
@@ -83,24 +118,24 @@ const Settings = ({ setActivePage }: SettingsProps) => {
           <div className="h-full rounded-3xl bg-white p-6 shadow-lg lg:col-start-1 lg:row-start-1">
             <div className="flex h-full flex-col items-center justify-start pt-10">
               <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-green-600 text-4xl font-bold text-white">
-                {profile.photo ? (
+                {profile.profilePicture ? (
                   <img
-                    src={profile.photo}
+                    src={profile.profilePicture}
                     alt="Profile"
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  profile.name.charAt(0).toUpperCase()
+                  profile.username.charAt(0).toUpperCase()
                 )}
               </div>
 
               <h2 className="mt-4 text-center text-2xl font-bold text-slate-900">
-                {profile.name}
+                {profile.username}
               </h2>
 
-              <p className="mt-1 text-center font-semibold text-green-700">
+              {/* <p className="mt-1 text-center font-semibold text-green-700">
                 {profile.shopName}
-              </p>
+              </p> */}
 
               <p className="mt-2 text-center text-sm text-slate-500">
                 {profile.email}
@@ -128,12 +163,12 @@ const Settings = ({ setActivePage }: SettingsProps) => {
               </div>
 
               <h2 className="text-3xl font-bold text-slate-900">
-                {profile.name}
+                {profile.username}
               </h2>
 
-              <p className="mt-2 text-xl font-semibold text-green-700">
+              {/* <p className="mt-2 text-xl font-semibold text-green-700">
                 {profile.shopName}
-              </p>
+              </p> */}
 
               <div className="mt-4 flex items-center gap-2 text-slate-500">
                 <Mail size={18} />
@@ -142,7 +177,7 @@ const Settings = ({ setActivePage }: SettingsProps) => {
 
               <div className="mt-2 flex items-center gap-2 text-slate-500">
                 <Phone size={18} />
-                <span>{profile.phone || "No phone number"}</span>
+                <span>{profile.phoneNumber || "No phone number"}</span>
               </div>
 
               <div className="mt-6">

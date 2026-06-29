@@ -100,3 +100,12 @@ export const deleteAccount =async () => {
     }
   );
 };
+
+export const updateUserProfile = async (data: FormData) => {
+  return await api.put("/profile", data, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};

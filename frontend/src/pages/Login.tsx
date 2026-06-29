@@ -11,14 +11,13 @@ const Login = () => {
     const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const { gotoForgotPassword,gotoCustomer,gotoAdmin,gotoFarmer } = useWebNavigate();
+    const { gotoForgotPassword,gotoCustomer,gotoAdmin,gotoFarmer ,gotoRegister} = useWebNavigate();
 
     const [errors, setErrors] = useState<{
         identifier?: string;
         password?: string;
     }>({});
 
-    const { gotoRegister } = useWebNavigate();
 
     async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
