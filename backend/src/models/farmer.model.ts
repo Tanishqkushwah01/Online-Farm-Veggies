@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 const farmerSchema= new mongoose.Schema({
     
-    userId:{
+    _id:{
         type: mongoose.Schema.Types.ObjectId,
         ref:"User",
         required:true,
@@ -15,12 +15,21 @@ const farmerSchema= new mongoose.Schema({
         default:""
     },
 
+     City:{
+        type:String,
+        default:""
+    },
+
     review:{
         type:Number,
         default:0
     },
     mainCrops:{
         type:[String],
+        default:""
+    },
+    bio:{
+        type:String,
         default:""
     },
 

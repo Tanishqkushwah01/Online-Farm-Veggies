@@ -60,7 +60,8 @@ export const signup = async (req: Request, res: Response) => {
 
       //If Farmer, creates Farmer Profile.
       if (User.role === "Farmer") {
-        await FarmerModel.create({ userId: User._id, isProfileCompleted: false })
+        // await FarmerModel.create({ userId: User._id, isProfileCompleted: false })
+       await FarmerModel.create({ _id: User._id, isProfileCompleted: false })
       }
       console.log("User email:", User.email)
 
@@ -346,8 +347,8 @@ export const updateUser = async (
         $set: userUpdates,
       },
       {
-        new: true,
-        runValidators: true,
+        returnDocument:'after',
+        runValidators: true
       }
     ).select("-password -verificationToken -resetPasswordToken");
 
@@ -397,8 +398,8 @@ export const updateUser = async (
         $set: farmerUpdates,
       },
       {
-        new: true,
-        runValidators: true,
+        returnDocument:'after',
+        runValidators: true
       }
     );
 
