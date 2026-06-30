@@ -9,7 +9,8 @@ type ProfileCardProps = {
 const ProfileCard = ({ onClose }: ProfileCardProps) => {
   const{gotoLogin}=useWebNavigate();
 
-  const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+  const userInfo = JSON.parse(localStorage.getItem("userInfo")!);
+  console.log(userInfo,"userIndo")
 
   async function handleLogout() {
     try {
@@ -28,9 +29,9 @@ const ProfileCard = ({ onClose }: ProfileCardProps) => {
     <div className="absolute right-6 top-20 w-80 bg-white rounded-2xl shadow-2xl border border-gray-200 p-5 z-50">
       <div className="flex flex-col items-center">
         <div className="h-24 w-24 rounded-full bg-[#D7E3F2] flex items-center justify-center overflow-hidden">
-          {userInfo.image ? (
+          {userInfo.profilePicture ? (
             <img
-              src={userInfo.image}
+              src={userInfo.profilePicture}
               alt="Profile"
               className="h-full w-full object-cover"
             />
@@ -82,7 +83,7 @@ const ProfileCard = ({ onClose }: ProfileCardProps) => {
       {onClose && (
         <button
           onClick={onClose}
-          className="mt-3 w-full h-10 border border-gray-300 rounded-xl text-gray-700 font-semibold hover:bg-gray-100 transition"
+          className="mt-3 cursor-pointer w-full h-10 border border-gray-300 rounded-xl text-gray-700 font-semibold hover:bg-gray-100 transition"
         >
           Close
         </button>

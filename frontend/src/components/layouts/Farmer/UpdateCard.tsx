@@ -15,7 +15,7 @@ type ProfileType = {
   farmAddress: string;
   bio: string;
   city: string;
-  email:string;
+  email: string;
 };
 
 type CityOption = {
@@ -177,23 +177,47 @@ const UpdateCard = ({ profile, setProfile, onClose }: UpdateCardProps) => {
 
       const response = await updateUserProfile(data);
 
+      // if (response.data.success) {
+      //   setProfile({
+      //     ...formData,
+      //     username: result.data.username,
+      //     phoneNumber: result.data.phoneNumber,
+      //     city: result.data.city,
+      //     farmName: result.data.farmName,
+      //     crops: result.data.crops,
+      //     farmAddress: result.data.farmAddress,
+      //     bio: result.data.bio || "",
+      //     profilePicture: removeImage
+      //       ? ""
+      //       : response.data.user.profilePicture || formData.profilePicture,
+      //   });
+
+      //   onClose();
+      // }
+      console.log("res====s",response.data)
       if (response.data.success) {
+        const userInfo = response.data.userInfo;
+
+        localStorage.setItem("userInfo", JSON.stringify(userInfo));
+
         setProfile({
-          ...formData,
-          username: result.data.username,
-          phoneNumber: result.data.phoneNumber,
-          city: result.data.city,
-          farmName: result.data.farmName,
-          crops: result.data.crops,
-          farmAddress: result.data.farmAddress,
-          bio: result.data.bio || "",
-          profilePicture: removeImage
-            ? ""
-            : response.data.user.profilePicture || formData.profilePicture,
+          username: userInfo.username,
+          email: userInfo.email,
+          phoneNumber: String(userInfo.phoneNumber),
+          city: userInfo.city,
+          farmName: userInfo.farmName,
+          crops: Array.isArray(userInfo.mainCrops)
+            ? userInfo.mainCrops.join(", ")
+            : userInfo.mainCrops,
+          farmAddress: userInfo.farmAddress ,
+          bio: userInfo.bio || "",
+          profilePicture: userInfo.profilePicture || "",
         });
 
         onClose();
       }
+
+
     } catch (error: any) {
       console.log(error.response?.data?.message || "Something went wrong");
     } finally {

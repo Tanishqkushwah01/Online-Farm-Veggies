@@ -1,4 +1,4 @@
-import { Bell, Search } from "lucide-react";
+import { Bell, Search, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import AddProductModal from "./CreateCard";
 import ProfileCard from "./ProfileCard";
@@ -6,6 +6,7 @@ import ProfileCard from "./ProfileCard";
 const Header = ({ username }: { username: string }) => {
   const [open, setOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const userInfo = JSON.parse(localStorage.getItem("userInfo")!);
 
   const profileRef = useRef<HTMLDivElement>(null);
 
@@ -50,7 +51,7 @@ const Header = ({ username }: { username: string }) => {
           <input
             type="text"
             placeholder="Search here..."
-            className="w-[450px] h-12 rounded-2xl border border-slate-300 bg-white pl-14 pr-5 text-base outline-none transition-all focus:border-green-500"
+            className="w-112.5 h-12 rounded-2xl border border-slate-300 bg-white pl-14 pr-5 text-base outline-none transition-all focus:border-green-500"
           />
         </div>
 
@@ -68,18 +69,55 @@ const Header = ({ username }: { username: string }) => {
         </button>
 
         {/* Profile */}
+        {/* <div ref={profileRef} className="relative">
+          <button
+            onClick={() => setProfileOpen(!profileOpen)}
+            className="h-11 w-11 rounded-full bg-slate-300 hover:ring-2 hover:ring-green-500 transition cursor-pointer overflow-hidden"
+          >
+             Uncomment when image is available 
+
+             <img
+              src={userInfo.profilePicture}
+              alt=""
+              className="h-full w-full object-cover"
+            /> 
+
+            <div className="h-24 w-24 rounded-full bg-[#D7E3F2] flex items-center justify-center overflow-hidden">
+              {userInfo.profilePicture ? (
+                <img
+                  src={userInfo.profilePicture}
+                  alt="Profile"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <User size={12} className="text-gray-600" />
+              )}
+            </div>
+
+          </button>
+
+          {profileOpen && (
+            <ProfileCard
+              onClose={() => setProfileOpen(false)}
+            />
+          )}
+        </div> */}
         <div ref={profileRef} className="relative">
           <button
             onClick={() => setProfileOpen(!profileOpen)}
             className="h-11 w-11 rounded-full bg-slate-300 hover:ring-2 hover:ring-green-500 transition cursor-pointer overflow-hidden"
           >
-            {/* Uncomment when image is available */}
-
-            {/* <img
-              src={userInfo.image}
-              alt=""
-              className="h-full w-full object-cover"
-            /> */}
+            {userInfo.profilePicture ? (
+              <img
+                src={userInfo.profilePicture}
+                alt="Profile"
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="h-full w-full bg-[#D7E3F2] flex items-center justify-center">
+                <User size={22} className="text-gray-600" />
+              </div>
+            )}
           </button>
 
           {profileOpen && (

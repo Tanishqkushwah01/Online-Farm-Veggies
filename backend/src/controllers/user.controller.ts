@@ -291,65 +291,39 @@ export const verifyEmail = async (req: Request, res: Response) => {
  * @description: This API is used to update User's Profile
  * @route /api/profile/updateProfile/:id
  *  */
-// export const updateUser = async (
-//   req: Request,
-//   res: Response
-// ) => {
+
+// export const updateUser = async (req: Request, res: Response) => {
 //   try {
 //     const userId = req.user._id;
 
-//     // User Fields
 //     const {
 //       username,
 //       phoneNumber,
-//       // Farmer Fields
 //       farmName,
-//       shopName,
+//       // shopName,
 //       farmAddress,
 //       mainCrops,
-
 //     } = req.body;
 
-//     // Image uploaded through multer
 //     const profilePicture = req.file?.path;
-
-//     console.log("username:", username);
-//     console.log("phoneNumber:", phoneNumber);
-//     // console.log("address:", address);
-
-//     console.log("farmName:", farmName);
-//     // console.log("shopName:", shopName);
-//     console.log("farmAddress:", farmAddress);
-//     console.log("mainCrops:", mainCrops);
-
-//     console.log("profilePicture:", profilePicture);
-
-//     console.log("req.body:", req.body);
-//     console.log("req.file:", req.file);
+// // ye karna padega jaruri hai
+//     // if (req.body.removeProfilePicture === "true") {
+//     //   userUpdates.profilePicture = "";
+//     // }
 
 //     // ----------------------------
 //     // Update User
 //     // ----------------------------
-
 //     const userUpdates: any = {};
 
-//     if (username) userUpdates.username = username;
-//     if (phoneNumber) userUpdates.phoneNumber = phoneNumber;
-
-
-//     if (profilePicture) {
-//       userUpdates.profilePicture = profilePicture;
-//     }
+//     if (username !== undefined) userUpdates.username = username;
+//     if (phoneNumber !== undefined) userUpdates.phoneNumber = phoneNumber;
+//     if (profilePicture) userUpdates.profilePicture = profilePicture;
 
 //     const updatedUser = await UserModel.findByIdAndUpdate(
 //       userId,
-//       {
-//         $set: userUpdates,
-//       },
-//       {
-//         new: true,
-//         runValidators: true,
-//       }
+//       { $set: userUpdates },
+//       { new: true, runValidators: true }
 //     ).select("-password -verificationToken -resetPasswordToken");
 
 //     if (!updatedUser) {
@@ -362,46 +336,36 @@ export const verifyEmail = async (req: Request, res: Response) => {
 //     // ----------------------------
 //     // Update Farmer
 //     // ----------------------------
-
 //     const farmerUpdates: any = {};
 
-//     if (farmName) farmerUpdates.farmName = farmName;
+//     if (farmName !== undefined) farmerUpdates.farmName = farmName;
+//     // if (shopName !== undefined) farmerUpdates.shopName = shopName;
+//     if (farmAddress !== undefined) farmerUpdates.farmAddress = farmAddress;
+//     if (mainCrops !== undefined) farmerUpdates.mainCrops = mainCrops;
+//     if (profilePicture) farmerUpdates.profilePicture = profilePicture;
 
-//     if (shopName) farmerUpdates.shopName = shopName;
+//     let updatedFarmer = await FarmerModel.findOneAndUpdate(
+//       { userId },
+//       { $set: farmerUpdates },
+//       { new: true, runValidators: true }
+//     );
 
-//     if (farmAddress) farmerUpdates.farmAddress = farmAddress;
-
-//     if (mainCrops) farmerUpdates.mainCrops = mainCrops;
-
-//     // if (experience) farmerUpdates.experience = experience;
-
-//     // If profile picture is stored in Farmer collection also
-//     if (profilePicture) {
-//       farmerUpdates.profilePicture = profilePicture;
+//     if (!updatedFarmer) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Farmer profile not found",
+//       });
 //     }
 
-//     // Check if all required fields are completed
-//     const isProfileCompleted =
-//       farmName &&
-//       shopName &&
-//       farmAddress &&
-//       mainCrops &&
-//       mainCrops.length > 0;
-
-//     farmerUpdates.isProfileCompleted = Boolean(isProfileCompleted);
-
-//     const updatedFarmer = await FarmerModel.findOneAndUpdate(
-//       {
-//         userId,
-//       },
-//       {
-//         $set: farmerUpdates,
-//       },
-//       {
-//         new: true,
-//         runValidators: true,
-//       }
+//     updatedFarmer.isProfileCompleted = Boolean(
+//       updatedFarmer.farmName &&
+//       // updatedFarmer.shopName &&
+//       updatedFarmer.farmAddress &&
+//       updatedFarmer.mainCrops &&
+//       updatedFarmer.mainCrops.length > 0
 //     );
+
+//     await updatedFarmer.save();
 
 //     return res.status(200).json({
 //       success: true,
@@ -427,26 +391,27 @@ export const updateUser = async (req: Request, res: Response) => {
     const {
       username,
       phoneNumber,
+      city,
       farmName,
-      // shopName,
       farmAddress,
       mainCrops,
+      bio,
+      farmerDescription,
+      removeProfilePicture,
     } = req.body;
 
     const profilePicture = req.file?.path;
-// ye karna padega jaruri hai
-    // if (req.body.removeProfilePicture === "true") {
-    //   userUpdates.profilePicture = "";
-    // }
 
-    // ----------------------------
-    // Update User
-    // ----------------------------
     const userUpdates: any = {};
 
     if (username !== undefined) userUpdates.username = username;
     if (phoneNumber !== undefined) userUpdates.phoneNumber = phoneNumber;
-    if (profilePicture) userUpdates.profilePicture = profilePicture;
+
+    if (removeProfilePicture === "true") {
+      userUpdates.profilePicture = "";
+    } else if (profilePicture) {
+      userUpdates.profilePicture = profilePicture;
+    }
 
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
@@ -461,45 +426,65 @@ export const updateUser = async (req: Request, res: Response) => {
       });
     }
 
-    // ----------------------------
-    // Update Farmer
-    // ----------------------------
     const farmerUpdates: any = {};
 
     if (farmName !== undefined) farmerUpdates.farmName = farmName;
-    // if (shopName !== undefined) farmerUpdates.shopName = shopName;
     if (farmAddress !== undefined) farmerUpdates.farmAddress = farmAddress;
-    if (mainCrops !== undefined) farmerUpdates.mainCrops = mainCrops;
-    if (profilePicture) farmerUpdates.profilePicture = profilePicture;
-
-    let updatedFarmer = await FarmerModel.findOneAndUpdate(
-      { userId },
-      { $set: farmerUpdates },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedFarmer) {
-      return res.status(404).json({
-        success: false,
-        message: "Farmer profile not found",
-      });
+    if (city !== undefined) farmerUpdates.city = city;
+    if (bio !== undefined) farmerUpdates.bio = bio;
+    if (farmerDescription !== undefined) {
+      farmerUpdates.farmerDescription = farmerDescription;
     }
 
+    if (mainCrops !== undefined) {
+      farmerUpdates.mainCrops = Array.isArray(mainCrops)
+        ? mainCrops
+        : mainCrops
+            .split(",")
+            .map((crop: string) => crop.trim())
+            .filter(Boolean);
+    }
+
+    let updatedFarmer = await FarmerModel.findOneAndUpdate(
+      { _id: userId },
+      { $set: farmerUpdates },
+      { new: true, runValidators: true, upsert: true }
+    );
+
     updatedFarmer.isProfileCompleted = Boolean(
-      updatedFarmer.farmName &&
-      // updatedFarmer.shopName &&
-      updatedFarmer.farmAddress &&
-      updatedFarmer.mainCrops &&
-      updatedFarmer.mainCrops.length > 0
+      updatedUser.username &&
+        updatedUser.phoneNumber &&
+        updatedFarmer.city &&
+        updatedFarmer.farmName &&
+        updatedFarmer.farmAddress &&
+        updatedFarmer.mainCrops &&
+        updatedFarmer.mainCrops.length > 0
     );
 
     await updatedFarmer.save();
 
+    const userInfo = {
+      _id: updatedUser._id,
+      username: updatedUser.username,
+      email: updatedUser.email,
+      phoneNumber: updatedUser.phoneNumber,
+      profilePicture: updatedUser.profilePicture,
+      role: updatedUser.role,
+
+      city: updatedFarmer.city,
+      farmAddress: updatedFarmer.farmAddress,
+      farmName: updatedFarmer.farmName,
+      // farmerDescription: updatedFarmer.farmerDescription,
+      bio: updatedFarmer.bio,
+      isProfileCompleted: updatedFarmer.isProfileCompleted,
+      mainCrops: updatedFarmer.mainCrops,
+      review: updatedFarmer.review,
+    };
+
     return res.status(200).json({
       success: true,
       message: "Profile updated successfully.",
-      user: updatedUser,
-      farmer: updatedFarmer,
+      userInfo,
     });
   } catch (error: any) {
     console.error("Update Profile Error:", error);
@@ -511,6 +496,8 @@ export const updateUser = async (req: Request, res: Response) => {
     });
   }
 };
+
+
 /**
  * Forget password API
  * @description: This API is used if when user forget it's password

@@ -15,7 +15,7 @@ const farmerSchema= new mongoose.Schema({
         default:""
     },
 
-     City:{
+     city:{
         type:String,
         default:""
     },
@@ -38,10 +38,10 @@ const farmerSchema= new mongoose.Schema({
         default:""
     },
 
-    farmerDescription:{
-        type:String,
-        default:""
-    },
+    // farmerDescription:{
+    //     type:String,
+    //     default:""
+    // },
     isProfileCompleted:{
         type:Boolean,
         default:"false"

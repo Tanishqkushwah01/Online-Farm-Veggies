@@ -55,7 +55,10 @@ const Settings = ({ setActivePage }: SettingsProps) => {
     bio:
       userInfo.bio ||
       "I provide fresh and organic vegetables directly from my farm.",
-    crops: userInfo.mainCrops || userInfo.crops || "Potato, Tomato, Onion, Wheat",
+    // crops: userInfo.mainCrops || userInfo.crops || "Potato, Tomato, Onion, Wheat",
+    crops: Array.isArray(userInfo.mainCrops)
+      ? userInfo.mainCrops.join(", ")
+      : userInfo.mainCrops || userInfo.crops || "Potato, Tomato, Onion, Wheat",
     profilePicture: userInfo.profilePicture || userInfo.image || "",
     city: userInfo.city || "",
   });
@@ -290,11 +293,10 @@ const Settings = ({ setActivePage }: SettingsProps) => {
               <div className="grid grid-cols-2 gap-4">
                 <button
                   onClick={() => setTheme("light")}
-                  className={`flex h-16 cursor-pointer items-center justify-center gap-2 rounded-xl border font-semibold ${
-                    theme === "light"
+                  className={`flex h-16 cursor-pointer items-center justify-center gap-2 rounded-xl border font-semibold ${theme === "light"
                       ? "border-green-600 bg-green-50 text-green-700"
                       : "border-slate-300 bg-white text-slate-700"
-                  }`}
+                    }`}
                 >
                   <Sun size={20} />
                   Light
@@ -302,11 +304,10 @@ const Settings = ({ setActivePage }: SettingsProps) => {
 
                 <button
                   onClick={() => setTheme("dark")}
-                  className={`flex h-16 cursor-pointer items-center justify-center gap-2 rounded-xl border font-semibold ${
-                    theme === "dark"
+                  className={`flex h-16 cursor-pointer items-center justify-center gap-2 rounded-xl border font-semibold ${theme === "dark"
                       ? "border-green-600 bg-green-50 text-green-700"
                       : "border-slate-300 bg-white text-slate-700"
-                  }`}
+                    }`}
                 >
                   <Moon size={20} />
                   Dark
@@ -345,14 +346,12 @@ const ToggleRow = ({ title, description, checked, onChange }: ToggleRowProps) =>
 
       <button
         onClick={onChange}
-        className={`relative h-7 w-14 cursor-pointer rounded-full transition ${
-          checked ? "bg-green-600" : "bg-slate-300"
-        }`}
+        className={`relative h-7 w-14 cursor-pointer rounded-full transition ${checked ? "bg-green-600" : "bg-slate-300"
+          }`}
       >
         <span
-          className={`absolute top-1 h-5 w-5 rounded-full bg-white transition ${
-            checked ? "left-8" : "left-1"
-          }`}
+          className={`absolute top-1 h-5 w-5 rounded-full bg-white transition ${checked ? "left-8" : "left-1"
+            }`}
         />
       </button>
     </div>
