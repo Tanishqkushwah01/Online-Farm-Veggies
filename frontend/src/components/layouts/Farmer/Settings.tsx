@@ -4,6 +4,7 @@ import {
   Lock,
   LogOut,
   Mail,
+  MapPin,
   Moon,
   Phone,
   Shield,
@@ -17,26 +18,16 @@ import UpdateCard from "./UpdateCard";
 import useWebNavigate from "../../hooks/useWebNavigate";
 import { logoutUser } from "../../Api/authApi";
 
-// type ProfileType = {
-//   name: string;
-//   email: string;
-//   phone: string;
-//   shopName: string;
-//   bio: string;
-//   crops: string;
-//   photo: string;
-// };
 type ProfileType = {
   username: string;
   email: string;
   phoneNumber: string;
-  // shopName: string;
   farmName: string;
-  // address: string;
   farmAddress: string;
   bio: string;
   crops: string;
   profilePicture: string;
+  city: string;
 };
 
 type SettingsProps = {
@@ -45,8 +36,8 @@ type SettingsProps = {
 
 const Settings = ({ setActivePage }: SettingsProps) => {
   const { gotoLogin } = useWebNavigate();
-  const userInfo = JSON.parse(localStorage.getItem("userInfo")!);
-  console.log("userInfo:",userInfo);
+
+  const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
 
   const [openUpdate, setOpenUpdate] = useState(false);
   const [orderUpdates, setOrderUpdates] = useState(true);
@@ -54,39 +45,28 @@ const Settings = ({ setActivePage }: SettingsProps) => {
   const [promotions, setPromotions] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
-  // const [profile, setProfile] = useState<ProfileType>({
-  //   name: userInfo.username || userInfo.name || "Tanishq Kushwah",
-  //   email: userInfo.email || "tanishq@gmail.com",
-  //   phone: userInfo.phoneNumber || "",
-  //   shopName: userInfo.shopName || "Fresh Farm Store",
-  //   bio:
-  //     userInfo.bio ||
-  //     "I provide fresh and organic vegetables directly from my farm.",
-  //   crops: userInfo.crops || "Potato, Tomato, Onion, Wheat",
-  //   photo: userInfo.image || "",
-  // });
-
   const [profile, setProfile] = useState<ProfileType>({
-  username : userInfo.username ||"tansihq kushwah",
-  email: userInfo.email ||"tanishq@gmail.com",
-  phoneNumber: userInfo.phoneNumber || "",
-  // shopName: userInfo.shopName || "Fresh Farm Store",
-  farmName: userInfo.farmName || "",
-  // address: userInfo.address || "",
-  farmAddress: userInfo.farmAddress || "",
-  bio:
-    userInfo.bio ||
-    "I provide fresh and organic vegetables directly from my farm.",
-  crops: userInfo.mainCrops || userInfo.crops || "Potato, Tomato, Onion, Wheat",
-  profilePicture: userInfo.profilePicture || userInfo.image || "",
-});
+    username: userInfo.username || "Tanishq Kushwah",
+    email: userInfo.email || "tanishq@gmail.com",
+    // phoneNumber: userInfo.phoneNumber || "",
+    phoneNumber: String(userInfo.phoneNumber || ""),
+    farmName: userInfo.farmName || "",
+    farmAddress: userInfo.farmAddress || "",
+    bio:
+      userInfo.bio ||
+      "I provide fresh and organic vegetables directly from my farm.",
+    crops: userInfo.mainCrops || userInfo.crops || "Potato, Tomato, Onion, Wheat",
+    profilePicture: userInfo.profilePicture || userInfo.image || "",
+    city: userInfo.city || "",
+  });
 
-   useEffect(()=>{
-      const info =  JSON.parse(localStorage.getItem("userInfo")!);
-      if(!info.isProfileCompleted){
-        setOpenUpdate(true);
-      }
-    },[])
+  useEffect(() => {
+    const info = JSON.parse(localStorage.getItem("userInfo") || "{}");
+
+    if (info.isProfileCompleted === false) {
+      setOpenUpdate(true);
+    }
+  }, []);
 
   async function handleLogout() {
     try {
@@ -101,8 +81,6 @@ const Settings = ({ setActivePage }: SettingsProps) => {
     }
   }
 
- 
-
   return (
     <div className="min-h-screen rounded-md bg-[#EEF3EC] px-6 py-8">
       <div className="mx-auto max-w-6xl">
@@ -114,7 +92,6 @@ const Settings = ({ setActivePage }: SettingsProps) => {
         </div>
 
         <div className="grid grid-cols-1 gap-7 lg:grid-cols-[300px_1fr] lg:grid-rows-[auto_auto]">
-          {/* LEFT PROFILE CARD */}
           <div className="h-full rounded-3xl bg-white p-6 shadow-lg lg:col-start-1 lg:row-start-1">
             <div className="flex h-full flex-col items-center justify-start pt-10">
               <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-green-600 text-4xl font-bold text-white">
@@ -133,17 +110,17 @@ const Settings = ({ setActivePage }: SettingsProps) => {
                 {profile.username}
               </h2>
 
-              {/* <p className="mt-1 text-center font-semibold text-green-700">
-                {profile.shopName}
-              </p> */}
-
               <p className="mt-2 text-center text-sm text-slate-500">
                 {profile.email}
+              </p>
+
+              <p className="mt-2 flex items-center gap-1 text-center text-sm text-slate-500">
+                <MapPin size={15} />
+                {profile.city || "No city added"}
               </p>
             </div>
           </div>
 
-          {/* RIGHT TOP GROUP */}
           <div className="space-y-6 lg:col-start-2 lg:row-start-1">
             <div className="rounded-3xl bg-white p-6 shadow-lg">
               <div className="mb-6 flex items-center justify-between">
@@ -156,7 +133,7 @@ const Settings = ({ setActivePage }: SettingsProps) => {
 
                 <button
                   onClick={() => setOpenUpdate(true)}
-                  className="flex h-11 cursor-pointer w-11 items-center justify-center rounded-xl bg-green-600 text-white hover:bg-green-700"
+                  className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl bg-green-600 text-white hover:bg-green-700"
                 >
                   <SquarePen size={21} />
                 </button>
@@ -165,10 +142,6 @@ const Settings = ({ setActivePage }: SettingsProps) => {
               <h2 className="text-3xl font-bold text-slate-900">
                 {profile.username}
               </h2>
-
-              {/* <p className="mt-2 text-xl font-semibold text-green-700">
-                {profile.shopName}
-              </p> */}
 
               <div className="mt-4 flex items-center gap-2 text-slate-500">
                 <Mail size={18} />
@@ -180,9 +153,16 @@ const Settings = ({ setActivePage }: SettingsProps) => {
                 <span>{profile.phoneNumber || "No phone number"}</span>
               </div>
 
+              <div className="mt-2 flex items-center gap-2 text-slate-500">
+                <MapPin size={18} />
+                <span>{profile.city || "No city added"}</span>
+              </div>
+
               <div className="mt-6">
                 <h3 className="font-bold text-slate-900">Bio</h3>
-                <p className="mt-2 text-slate-600">{profile.bio}</p>
+                <p className="mt-2 text-slate-600">
+                  {profile.bio || "No bio added"}
+                </p>
               </div>
 
               <div className="mt-5">
@@ -207,7 +187,7 @@ const Settings = ({ setActivePage }: SettingsProps) => {
 
                 <button
                   onClick={() => setActivePage("changePassword")}
-                  className="rounded-lg cursor-pointer bg-green-600 px-5 py-2 font-semibold text-white hover:bg-green-700"
+                  className="cursor-pointer rounded-lg bg-green-600 px-5 py-2 font-semibold text-white hover:bg-green-700"
                 >
                   Change
                 </button>
@@ -215,8 +195,6 @@ const Settings = ({ setActivePage }: SettingsProps) => {
             </div>
           </div>
 
-
-          {/* LEFT DANGER ZONE */}
           <div className="h-full rounded-3xl border border-red-200 bg-white p-6 shadow-lg lg:col-start-1 lg:row-start-2">
             <div className="flex h-full flex-col">
               <div className="mb-4 flex items-center gap-3">
@@ -258,9 +236,8 @@ const Settings = ({ setActivePage }: SettingsProps) => {
                 </button>
 
                 <button
-                  // onClick={handleDeleteAccount}
                   onClick={() => setActivePage("DeleteAccount")}
-                  className="flex h-12 cursor-pointer w-full items-center justify-center gap-2 rounded-xl bg-red-600 font-semibold text-white hover:bg-red-700"
+                  className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-red-600 font-semibold text-white hover:bg-red-700"
                 >
                   <Trash2 size={18} />
                   ID Delete Permanent
@@ -269,7 +246,6 @@ const Settings = ({ setActivePage }: SettingsProps) => {
             </div>
           </div>
 
-          {/* RIGHT BOTTOM GROUP */}
           <div className="space-y-6 lg:col-start-2 lg:row-start-2">
             <div className="rounded-3xl bg-white p-6 shadow-lg">
               <div className="mb-5 flex items-center gap-3">
@@ -314,10 +290,11 @@ const Settings = ({ setActivePage }: SettingsProps) => {
               <div className="grid grid-cols-2 gap-4">
                 <button
                   onClick={() => setTheme("light")}
-                  className={`flex cursor-pointer h-16 items-center justify-center gap-2 rounded-xl border font-semibold ${theme === "light"
-                    ? "border-green-600 bg-green-50 text-green-700"
-                    : "border-slate-300 bg-white text-slate-700"
-                    }`}
+                  className={`flex h-16 cursor-pointer items-center justify-center gap-2 rounded-xl border font-semibold ${
+                    theme === "light"
+                      ? "border-green-600 bg-green-50 text-green-700"
+                      : "border-slate-300 bg-white text-slate-700"
+                  }`}
                 >
                   <Sun size={20} />
                   Light
@@ -325,10 +302,11 @@ const Settings = ({ setActivePage }: SettingsProps) => {
 
                 <button
                   onClick={() => setTheme("dark")}
-                  className={`flex h-16 cursor-pointer items-center justify-center gap-2 rounded-xl border font-semibold ${theme === "dark"
-                    ? "border-green-600 bg-green-50 text-green-700"
-                    : "border-slate-300 bg-white text-slate-700"
-                    }`}
+                  className={`flex h-16 cursor-pointer items-center justify-center gap-2 rounded-xl border font-semibold ${
+                    theme === "dark"
+                      ? "border-green-600 bg-green-50 text-green-700"
+                      : "border-slate-300 bg-white text-slate-700"
+                  }`}
                 >
                   <Moon size={20} />
                   Dark
@@ -367,12 +345,14 @@ const ToggleRow = ({ title, description, checked, onChange }: ToggleRowProps) =>
 
       <button
         onClick={onChange}
-        className={`relative h-7 w-14 rounded-full cursor-pointer transition ${checked ? "bg-green-600" : "bg-slate-300"
-          }`}
+        className={`relative h-7 w-14 cursor-pointer rounded-full transition ${
+          checked ? "bg-green-600" : "bg-slate-300"
+        }`}
       >
         <span
-          className={`absolute top-1 h-5 w-5 rounded-full bg-white transition ${checked ? "left-8" : "left-1"
-            }`}
+          className={`absolute top-1 h-5 w-5 rounded-full bg-white transition ${
+            checked ? "left-8" : "left-1"
+          }`}
         />
       </button>
     </div>

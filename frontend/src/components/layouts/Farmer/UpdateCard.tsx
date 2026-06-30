@@ -1,19 +1,35 @@
-import { useState } from "react";
-import { X, Camera } from "lucide-react";
+import { useMemo, useState } from "react";
+import { X, Camera, Trash2 } from "lucide-react";
+import Select from "react-select";
+import { City } from "country-state-city";
 import ImageCropModal from "./ImageCropModal";
 import { updateUserProfile } from "../../Api/authApi";
+import { updateProfileSchema } from "../../Validation/Update.schema";
 
 type ProfileType = {
+  profilePicture: string;
   username: string;
-  email: string;
   phoneNumber: string;
-  // shopName: string;
   farmName: string;
-  // address: string;
+  crops: string;
   farmAddress: string;
   bio: string;
-  crops: string;
-  profilePicture: string;
+  city: string;
+  email:string;
+};
+
+type CityOption = {
+  value: string;
+  label: string;
+};
+
+type ErrorsType = {
+  username?: string;
+  phoneNumber?: string;
+  city?: string;
+  farmName?: string;
+  crops?: string;
+  farmAddress?: string;
 };
 
 type UpdateCardProps = {
@@ -24,16 +40,62 @@ type UpdateCardProps = {
 
 const UpdateCard = ({ profile, setProfile, onClose }: UpdateCardProps) => {
   const [formData, setFormData] = useState<ProfileType>(profile);
-  const [cropImage, setCropImage] = useState<string | null>(null);
+  const [errors, setErrors] = useState<ErrorsType>({});
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [profileFile, setProfileFile] = useState<File | null>(null);
+  const [removeImage, setRemoveImage] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [cityInput, setCityInput] = useState("");
+
+  const allCityOptions: CityOption[] = useMemo(() => {
+    const cities = City.getCitiesOfCountry("IN") || [];
+
+    return cities.map((city) => ({
+      value: `${city.name}, ${city.stateCode}, India`,
+      label: `${city.name}, ${city.stateCode}, India`,
+    }));
+  }, []);
+
+  const filteredCityOptions = useMemo(() => {
+    if (cityInput.trim().length < 2) return [];
+
+    return allCityOptions
+      .filter((city) =>
+        city.label.toLowerCase().includes(cityInput.toLowerCase())
+      )
+      .slice(0, 50);
+  }, [cityInput, allCityOptions]);
+
+  const selectedCity =
+    allCityOptions.find((city) => city.value === formData.city) || null;
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) {
+    const { name, value } = e.target;
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
+    });
+
+    setErrors({
+      ...errors,
+      [name]: "",
+    });
+  }
+
+  function handlePhoneChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const value = e.target.value.replace(/\D/g, "").slice(0, 10);
+
+    setFormData({
+      ...formData,
+      phoneNumber: value,
+    });
+
+    setErrors({
+      ...errors,
+      phoneNumber: "",
     });
   }
 
@@ -42,36 +104,74 @@ const UpdateCard = ({ profile, setProfile, onClose }: UpdateCardProps) => {
     if (!file) return;
 
     const imageUrl = URL.createObjectURL(file);
-    setCropImage(imageUrl);
+    setSelectedImage(imageUrl);
+    setRemoveImage(false);
   }
 
   function handleCropDone(file: File, previewUrl: string) {
     setProfileFile(file);
+    setRemoveImage(false);
 
     setFormData({
       ...formData,
       profilePicture: previewUrl,
     });
 
-    setCropImage(null);
+    setSelectedImage(null);
+  }
+
+  function handleRemoveImage() {
+    setProfileFile(null);
+    setRemoveImage(true);
+
+    setFormData({
+      ...formData,
+      profilePicture: "",
+    });
   }
 
   async function handleUpdate() {
+    const result = updateProfileSchema.safeParse({
+      username: formData.username,
+      phoneNumber: formData.phoneNumber,
+      city: formData.city,
+      farmName: formData.farmName,
+      crops: formData.crops,
+      farmAddress: formData.farmAddress,
+      bio: formData.bio,
+    });
+
+    if (!result.success) {
+      const fieldErrors = result.error.flatten().fieldErrors;
+
+      setErrors({
+        username: fieldErrors.username?.[0],
+        phoneNumber: fieldErrors.phoneNumber?.[0],
+        city: fieldErrors.city?.[0],
+        farmName: fieldErrors.farmName?.[0],
+        crops: fieldErrors.crops?.[0],
+        farmAddress: fieldErrors.farmAddress?.[0],
+      });
+
+      return;
+    }
+
     try {
       setLoading(true);
 
       const data = new FormData();
 
-      data.append("username", formData.username);
-      data.append("phoneNumber", formData.phoneNumber);
-      // data.append("shopName", formData.shopName);
-      data.append("farmName", formData.farmName);
-      data.append("mainCrops", formData.crops);
-      // data.append("address", formData.address);
-      data.append("farmAddress", formData.farmAddress);
-      data.append("bio", formData.bio);
+      data.append("username", result.data.username);
+      data.append("phoneNumber", result.data.phoneNumber);
+      data.append("city", result.data.city);
+      data.append("farmName", result.data.farmName);
+      data.append("mainCrops", result.data.crops);
+      data.append("farmAddress", result.data.farmAddress);
+      data.append("bio", result.data.bio || "");
 
-      if (profileFile) {
+      if (removeImage) {
+        data.append("removeProfilePicture", "true");
+      } else if (profileFile) {
         data.append("profilePicture", profileFile);
       }
 
@@ -80,7 +180,16 @@ const UpdateCard = ({ profile, setProfile, onClose }: UpdateCardProps) => {
       if (response.data.success) {
         setProfile({
           ...formData,
-          profilePicture: response.data.user.profilePicture || formData.profilePicture,
+          username: result.data.username,
+          phoneNumber: result.data.phoneNumber,
+          city: result.data.city,
+          farmName: result.data.farmName,
+          crops: result.data.crops,
+          farmAddress: result.data.farmAddress,
+          bio: result.data.bio || "",
+          profilePicture: removeImage
+            ? ""
+            : response.data.user.profilePicture || formData.profilePicture,
         });
 
         onClose();
@@ -111,7 +220,7 @@ const UpdateCard = ({ profile, setProfile, onClose }: UpdateCardProps) => {
             Update your farmer profile details
           </p>
 
-          <div className="flex justify-center mt-6">
+          <div className="flex flex-col items-center mt-6">
             <div className="relative">
               <img
                 src={
@@ -133,51 +242,101 @@ const UpdateCard = ({ profile, setProfile, onClose }: UpdateCardProps) => {
                 />
               </label>
             </div>
+
+            {formData.profilePicture && (
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="mt-3 flex items-center gap-1 text-sm font-medium text-red-600 hover:text-red-700 cursor-pointer"
+              >
+                <Trash2 size={15} />
+                Remove Image
+              </button>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4 mt-6">
             <div>
               <label className="text-sm font-semibold">Name</label>
               <input
-                name="name"
+                name="username"
                 value={formData.username}
                 onChange={handleChange}
                 placeholder="Enter your name"
                 className="w-full mt-1 border rounded-xl px-4 py-2 outline-none"
               />
+              {errors.username && (
+                <p className="text-red-500 text-xs mt-1">{errors.username}</p>
+              )}
             </div>
 
             <div>
               <label className="text-sm font-semibold">Phone Number</label>
               <input
-                name="phone"
+                name="phoneNumber"
+                type="tel"
+                maxLength={10}
                 value={formData.phoneNumber}
-                onChange={handleChange}
+                onChange={handlePhoneChange}
                 placeholder="Enter phone number"
                 className="w-full mt-1 border rounded-xl px-4 py-2 outline-none"
               />
+              {errors.phoneNumber && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.phoneNumber}
+                </p>
+              )}
             </div>
 
             <div>
-              <label className="text-sm font-semibold">Email</label>
-              <input
-                name="email"
-                value={formData.email}
-                disabled
-                className="w-full mt-1 border rounded-xl px-4 py-2 bg-gray-100 text-gray-500 cursor-not-allowed"
-              />
-            </div>
+              <label className="text-sm font-semibold">City</label>
 
-            {/* <div>
-              <label className="text-sm font-semibold">Shop Name</label>
-              <input
-                name="shopName"
-                value={formData.shopName}
-                onChange={handleChange}
-                placeholder="Enter shop name"
-                className="w-full mt-1 border rounded-xl px-4 py-2 outline-none"
+              <Select<CityOption, false>
+                options={filteredCityOptions}
+                value={selectedCity}
+                onInputChange={(value) => setCityInput(value)}
+                onChange={(selected) => {
+                  setFormData({
+                    ...formData,
+                    city: selected?.value || "",
+                  });
+
+                  setErrors({
+                    ...errors,
+                    city: "",
+                  });
+                }}
+                placeholder="Type at least 2 letters"
+                isSearchable
+                noOptionsMessage={() =>
+                  cityInput.length < 2
+                    ? "Type at least 2 letters"
+                    : "No city found"
+                }
+                className="mt-1"
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    minHeight: "42px",
+                    borderRadius: "12px",
+                    borderColor: errors.city ? "#ef4444" : "#d1d5db",
+                    boxShadow: "none",
+                  }),
+                  valueContainer: (base) => ({
+                    ...base,
+                    padding: "2px 12px",
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    zIndex: 9999,
+                  }),
+                }}
               />
-            </div> */}
+
+              {errors.city && (
+                <p className="text-red-500 text-xs mt-1">{errors.city}</p>
+              )}
+            </div>
 
             <div>
               <label className="text-sm font-semibold">Farm Name</label>
@@ -188,6 +347,9 @@ const UpdateCard = ({ profile, setProfile, onClose }: UpdateCardProps) => {
                 placeholder="Enter farm name"
                 className="w-full mt-1 border rounded-xl px-4 py-2 outline-none"
               />
+              {errors.farmName && (
+                <p className="text-red-500 text-xs mt-1">{errors.farmName}</p>
+              )}
             </div>
 
             <div>
@@ -199,18 +361,10 @@ const UpdateCard = ({ profile, setProfile, onClose }: UpdateCardProps) => {
                 placeholder="Potato, Tomato, Onion"
                 className="w-full mt-1 border rounded-xl px-4 py-2 outline-none"
               />
+              {errors.crops && (
+                <p className="text-red-500 text-xs mt-1">{errors.crops}</p>
+              )}
             </div>
-
-            {/* <div>
-              <label className="text-sm font-semibold">Address</label>
-              <input
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                placeholder="Enter your address"
-                className="w-full mt-1 border rounded-xl px-4 py-2 outline-none"
-              />
-            </div> */}
 
             <div>
               <label className="text-sm font-semibold">Farm Address</label>
@@ -221,11 +375,16 @@ const UpdateCard = ({ profile, setProfile, onClose }: UpdateCardProps) => {
                 placeholder="Enter farm address"
                 className="w-full mt-1 border rounded-xl px-4 py-2 outline-none"
               />
+              {errors.farmAddress && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.farmAddress}
+                </p>
+              )}
             </div>
           </div>
 
           <div className="mt-4">
-            <label className="text-sm font-semibold">Bio</label>
+            <label className="text-sm font-semibold">Bio Optional</label>
             <textarea
               name="bio"
               value={formData.bio}
@@ -246,10 +405,10 @@ const UpdateCard = ({ profile, setProfile, onClose }: UpdateCardProps) => {
         </div>
       </div>
 
-      {cropImage && (
+      {selectedImage && (
         <ImageCropModal
-          image={cropImage}
-          onClose={() => setCropImage(null)}
+          image={selectedImage}
+          onClose={() => setSelectedImage(null)}
           onCropDone={handleCropDone}
         />
       )}

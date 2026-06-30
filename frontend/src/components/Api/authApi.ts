@@ -102,6 +102,7 @@ export const deleteAccount =async () => {
 };
 
 export const updateUserProfile = async (data: FormData) => {
+  console.log([...data.entries()]);
   return await api.put("/profile", data, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
