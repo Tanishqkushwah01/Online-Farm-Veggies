@@ -1,6 +1,6 @@
 import { XCircle } from "lucide-react";
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import useWebNavigate from "../components/hooks/useWebNavigate";
 
 const VerifyFailed = () => {

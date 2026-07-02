@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import "./VerifySuccess.css";
 import useWebNavigate from "../components/hooks/useWebNavigate";
 import { useEffect } from "react";

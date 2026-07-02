@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CgPassword } from "react-icons/cg";
+// import { CgPassword } from "react-icons/cg";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_AUTH_URL
@@ -102,7 +102,7 @@ export const deleteAccount =async () => {
 };
 
 export const updateUserProfile = async (data: FormData) => {
-  console.log([...data.entries()]);
+  // console.log([...data.entries()]);
   return await api.put("/profile", data, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,

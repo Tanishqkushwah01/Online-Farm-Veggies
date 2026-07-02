@@ -6,16 +6,23 @@ import jwt from "jsonwebtoken";
 import { FarmerModel } from "../models/farmer.model";
 import ProductModel  from "../models/product.model";
 
+/**
+ * @POST Product Update Route
+ * @description This API uses to update the product by the farmer.
+ * @Route /api/product/:productId
+ */
+
 
 export const createProduct = async (
   req: Request,
   res: Response
 ) => {
   try {
-    const userId = req.user._id;
+    console.log("User ID:", req.user._id);
+    const UserId = req.user._id;
 
-    const farmer = await FarmerModel.findOne({ userId });
-
+    const farmer = await FarmerModel.findOne({_id:UserId });
+// console.log(farmer)
     if (!farmer) {
       return res.status(404).json({
         success: false,
@@ -35,7 +42,7 @@ export const createProduct = async (
     const image = req.file?.path;
 
     const product = await ProductModel.create({
-      farmerId: farmer._id,
+      farmerId:farmer._id,
       productName,
       description,
       category,
@@ -43,6 +50,12 @@ export const createProduct = async (
       quantity,
       unit,
       image,
+      city:farmer.city
+
+  
+   
+   
+
     });
 
     return res.status(201).json({
@@ -62,8 +75,11 @@ export const createProduct = async (
 };
 
 
-
-
+/**
+ * @GET Product Update Route
+ * @description This API uses to update the product by the farmer.
+ * @Route /api/product/products
+ */
 
 export const getFarmerProducts = async (
   req: Request,
@@ -73,7 +89,7 @@ export const getFarmerProducts = async (
 
     const userId = req.user._id;
 
-    const farmer = await FarmerModel.findOne({ userId });
+    const farmer = await FarmerModel.findOne({ _id:userId });
 
     if (!farmer) {
       return res.status(404).json({
@@ -90,7 +106,9 @@ export const getFarmerProducts = async (
       success: true,
       count: products.length,
       data: products,
+      
     });
+   
 
   } catch (error) {
 
@@ -106,7 +124,11 @@ export const getFarmerProducts = async (
 
 
 
-
+/**
+ * @PUT Product Update Route
+ * @description This API uses to update the product by the farmer.
+ * @Route /api/product/:productId
+ */
 
 
 export const updateProduct = async (
@@ -114,7 +136,6 @@ export const updateProduct = async (
   res: Response
 ) => {
   try {
-
     const { productId } = req.params;
 
     const updates = req.body;
@@ -127,7 +148,7 @@ export const updateProduct = async (
       productId,
       updates,
       {
-        new: true,
+        returnDocument:'after',
         runValidators: true,
       }
     );
@@ -157,7 +178,11 @@ export const updateProduct = async (
   }
 };
 
-
+/**
+ * @DELETE Product Update Route
+ * @description This API uses to update the product by the farmer.
+ * @Route /api/product/:productId
+ */
 
 
 

@@ -17,12 +17,14 @@ app.use(cors({
 import userRouter from "./routes/user.router"
 import connectToDB from "./utilities/database";
 import farmerRoute from "./routes/farmer.router";
+import customerRoute from "./routes/customer.route";
 connectToDB();
 
 // Auth Routes
 app.use("/api/auth",userRouter);
 // Farmer Routes
 app.use("/api",farmerRoute)
+app.use("/api",customerRoute)
 console.log(process.env.PORT)
 app.listen(process.env.PORT,()=>{
 console.log("server running at 3000");

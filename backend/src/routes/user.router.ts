@@ -11,11 +11,12 @@ router.post("/resend-email", userController.resendVerificationEmail);
 router.get("/verify-email/:token", userController.verifyEmail);
 router.post("/forgot-password", userController.forgotPassword);
 router.put("/reset-password/:token", userController.resetPassword);
-// router.put("/change-password/:token",userController.changePassword);
 router.post("/change-password",authMiddleware,userController.requestChangePassword);
 //Profile Routes
 router.put("/profile",authMiddleware,upload.single("profilePicture"),userController.updateUser);
 router.post("/verify-delete-password",authMiddleware, userController.verifyDeletePassword);
 router.delete("/profile",authMiddleware,userController.deleteUser)
+// router.get("/profile",authMiddleware,userController.getallProducts)
+
 
 export default router

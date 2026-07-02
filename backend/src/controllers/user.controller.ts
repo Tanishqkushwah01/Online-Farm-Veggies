@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import UserModel from "../models/user.model";
+import productModel from "../models/product.model";
 import userValidation from "../types/user.validation"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -61,7 +62,7 @@ export const signup = async (req: Request, res: Response) => {
       //If Farmer, creates Farmer Profile.
       if (User.role === "Farmer") {
         // await FarmerModel.create({ userId: User._id, isProfileCompleted: false })
-       await FarmerModel.create({ _id: User._id, isProfileCompleted: false })
+        await FarmerModel.create({ _id: User._id, isProfileCompleted: false })
       }
       console.log("User email:", User.email)
 
@@ -440,9 +441,9 @@ export const updateUser = async (req: Request, res: Response) => {
       farmerUpdates.mainCrops = Array.isArray(mainCrops)
         ? mainCrops
         : mainCrops
-            .split(",")
-            .map((crop: string) => crop.trim())
-            .filter(Boolean);
+          .split(",")
+          .map((crop: string) => crop.trim())
+          .filter(Boolean);
     }
 
     let updatedFarmer = await FarmerModel.findOneAndUpdate(
@@ -453,12 +454,12 @@ export const updateUser = async (req: Request, res: Response) => {
 
     updatedFarmer.isProfileCompleted = Boolean(
       updatedUser.username &&
-        updatedUser.phoneNumber &&
-        updatedFarmer.city &&
-        updatedFarmer.farmName &&
-        updatedFarmer.farmAddress &&
-        updatedFarmer.mainCrops &&
-        updatedFarmer.mainCrops.length > 0
+      updatedUser.phoneNumber &&
+      updatedFarmer.city &&
+      updatedFarmer.farmName &&
+      updatedFarmer.farmAddress &&
+      updatedFarmer.mainCrops &&
+      updatedFarmer.mainCrops.length > 0
     );
 
     await updatedFarmer.save();
