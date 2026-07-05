@@ -276,6 +276,7 @@ export const signin = async (req: Request, res: Response) => {
 
     // Remove sensitive fields
     delete userObj.password;
+    delete userObj.isVerified;
     delete userObj.verificationToken;
     delete userObj.verificationTokenExpires;
     delete userObj.resetPasswordToken;
@@ -287,7 +288,6 @@ export const signin = async (req: Request, res: Response) => {
       success: true,
       message: "Login successful",
       user: userObj,
-      isProfileCompleted,
       token,
     });
 

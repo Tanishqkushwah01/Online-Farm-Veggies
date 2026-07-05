@@ -53,7 +53,7 @@ const Login = () => {
             };
 
         const res = await userLogin(data);
-        console.log(res.data.userExist.role);
+        console.log("user data ===",res.data);
         const role = res.data.userExist.role;
         if(role ==="Customer"){
             gotoCustomer()
