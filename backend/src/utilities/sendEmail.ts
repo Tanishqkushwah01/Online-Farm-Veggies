@@ -1,9 +1,19 @@
-import UserModel from "../models/user.model";
+import customerModel from "../models/customer.model";
+import farmerModel from "../models/farmer.model";
 import { sendVerificationEmail } from "../utilities/sendEmailVerification";
 
-export const sendVerificationMailToUser = async (email: string) => {
-  const user = await UserModel.findOne({ email });
-console.log("USER---->",user)
+export const sendVerificationMailToUser = async (email: string , role: string) => {
+
+  let user : any;
+
+  if (role === "customer") {
+    user = await customerModel.findOne({ email });
+  }
+
+  if (role === "farmer") {
+    user = await farmerModel.findOne({ email });
+  }
+
   if (!user) {
     throw new Error("User not found");
   }

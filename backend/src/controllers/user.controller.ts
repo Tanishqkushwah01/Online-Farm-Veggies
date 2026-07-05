@@ -126,7 +126,7 @@ import signinValidation from "../types/signin.validation";
     }
 
     // Send verification email
-    const emailSent = await sendVerificationMailToUser(validatedData.email);
+    const emailSent = await sendVerificationMailToUser(validatedData.email, validatedData.role);
 
     if (!emailSent) {
       return res.status(500).json({
