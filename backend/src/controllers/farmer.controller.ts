@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import UserModel from "../models/user.model";
+import customerModel from "../models/customer.model";
 import userValidation from "../types/user.validation"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { FarmerModel } from "../models/farmer.model";
+import farmerModel from "../models/farmer.model";
 import ProductModel  from "../models/product.model";
 
 /**
@@ -21,7 +21,7 @@ export const createProduct = async (
     console.log("User ID:", req.user._id);
     const UserId = req.user._id;
 
-    const farmer = await FarmerModel.findOne({_id:UserId });
+    const farmer = await farmerModel.findOne({_id:UserId });
 // console.log(farmer)
     if (!farmer) {
       return res.status(404).json({
@@ -89,7 +89,7 @@ export const getFarmerProducts = async (
 
     const userId = req.user._id;
 
-    const farmer = await FarmerModel.findOne({ _id:userId });
+    const farmer = await farmerModel.findOne({ _id:userId });
 
     if (!farmer) {
       return res.status(404).json({

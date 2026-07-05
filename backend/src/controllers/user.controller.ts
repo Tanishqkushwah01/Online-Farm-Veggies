@@ -12,115 +12,189 @@ import { sendVerificationMailToUser } from "../utilities/sendEmail";
 import resetPassValidation from "../types/reset.password.validation";
 import { sendChangePasswordEmail } from "../utilities/sendChangePassMail";
 import blacklistModel from "../models/blacklist.model";
+// import userValidation from "../types/user.validation";
 /**
      * Register API
      * @description: This API is used to create a new user account
      * @route /api/auth/signup
 */
-export const signup = async (req: Request, res: Response) => {
+
+ export const signup = async (req: Request, res: Response) => {
   try {
-
     const details = req.body;
-    console.log("data =", details)
-    const validUser = userValidation.safeParse(details)
-    console.log(validUser)
-    if (validUser.success) {
 
-      const [customer, farmer] = await Promise.all([
-        customerModel.findOne({
-          $or: [
-            { email: details.email },
-            { phoneNumber: details.phoneNumber },
-          ],
-        }),
-        farmerModel.findOne({
-          $or: [
-            { email: details.email },
-            { phoneNumber: details.phoneNumber },
-          ],
-        }),
-      ]);
+    // Select validation by role
+    const validationSchema =
+      details.role === "Farmer" ? userValidation : userValidation;
 
-      if (customer || farmer) {
-        return res.status(400).json({
-          success: false,
-          message: "Email or phone number already exists",
-        });
-      }
-  
-    const hashedPass = await bcrypt.hash(details.password, 10)
-    const verificationToken = crypto.randomBytes(32).toString("hex");
-    // console.log(hashedPass, verificationToken)
-    if(details.role === "Farmer") {
-    const User = await farmerModel.create({
-      ...details,
-      password: hashedPass,
-      verificationToken,
-      isVerified: false,
-      verificationTokenExpires: new Date(Date.now() + 30 * 60 * 1000), // 30 minutes
-    });
+    const validUser = validationSchema.safeParse(details);
 
-    //If Farmer, creates Farmer Profile.
-    if (User.role === "Farmer") {
-      // await FarmerModel.create({ userId: User._id, isProfileCompleted: false })
-      await FarmerModel.create({ _id: User._id, isProfileCompleted: false })
+    // Zod validation error response
+    if (!validUser.success) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: validUser.error.issues.map((issue) => ({
+          field: issue.path.join("."),
+          message: issue.message,
+        })),
+      });
     }
-    console.log("User email:", User.email)
 
+    const validatedData = validUser.data;
+
+    // Check duplicate email or phone in both models
+    const [existingCustomer, existingFarmer] = await Promise.all([
+      customerModel.findOne({
+        $or: [
+          { email: validatedData.email },
+          { phoneNumber: validatedData.phoneNumber },
+        ],
+      }),
+      farmerModel.findOne({
+        $or: [
+          { email: validatedData.email },
+          { phoneNumber: validatedData.phoneNumber },
+        ],
+      }),
+    ]);
+
+    const existingUser = existingCustomer || existingFarmer;
+
+    if (existingUser) {
+      let field = "emailOrPhone";
+      let message = "Email or phone number already exists";
+
+      if (existingUser.email === validatedData.email) {
+        field = "email";
+        message = "Email already exists";
+      }
+
+      if (existingUser.phoneNumber === validatedData.phoneNumber) {
+        field = "phoneNumber";
+        message = "Phone number already exists";
+      }
+
+      return res.status(409).json({
+        success: false,
+        message,
+        errors: [
+          {
+            field,
+            message,
+          },
+        ],
+      });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+
+    // Verification token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+
+    let user: any;
     let isProfileCompleted: boolean | null = null;
 
-    if (User.role === "Farmer") {
-      const farmer = await farmerModel.findOne({
-        userId: User._id,
+    // Create Farmer
+    if (validatedData.role === "Farmer") {
+      user = await farmerModel.create({
+        ...validatedData,
+        password: hashedPassword,
+        verificationToken,
+        verificationTokenExpires: new Date(Date.now() + 30 * 60 * 1000),
+        isVerified: false,
+        isProfileCompleted: false,
       });
 
-      isProfileCompleted = farmer?.isProfileCompleted ?? false;
+      isProfileCompleted = false;
     }
+
+    // Create Customer
+    if (validatedData.role === "Customer") {
+      user = await customerModel.create({
+        ...validatedData,
+        password: hashedPassword,
+        verificationToken,
+        verificationTokenExpires: new Date(Date.now() + 30 * 60 * 1000),
+        isVerified: false,
+      });
+
+      isProfileCompleted = null;
+    }
+
     // Send verification email
-    const result = await sendVerificationMailToUser(User.email);
+    const emailSent = await sendVerificationMailToUser(validatedData.email);
 
-    if (!result) {
-      return res.status(301).json({ msg: "Verification of mail not .........." })
+    if (!emailSent) {
+      return res.status(500).json({
+        success: false,
+        message: "Verification email could not be sent",
+      });
     }
 
+    // JWT token
     const token = jwt.sign(
-      { UserId: User._id },
+      {
+        UserId: user._id,
+        role: user.role,
+      },
       process.env.JWT_SECRET!,
       {
         expiresIn: "7d",
-      });
+      }
+    );
+    const userObj = user.toObject();
+
+    delete userObj.password;
+    delete userObj.verificationToken;
+    delete userObj.verificationTokenExpires;
+    delete userObj.resetPasswordToken;
+    delete userObj.resetPasswordExpires;
+
+    console.log("userObj::", userObj);
     return res.status(201).json({
-      msg: "registered",
-      User: {
-        email: User.email,
-        username: User.username,
-        role: User.role,
-        phoneNumber: User.phoneNumber,
-      },
+      success: true,
+      message: "Registration successful",
+      user: userObj,
       isProfileCompleted,
       token,
     });
-    console.log("TOKEN--------->Registration", token)
-  }
   } catch (error: any) {
+    console.error("Signup Error:", error);
 
-  console.error("Signup Error:", error);
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern || {})[0] || "unknown";
 
-  if (error.code === 11000) {
-    return res.status(409).json({
+      return res.status(409).json({
+        success: false,
+        message: `${field} already exists`,
+        errors: [
+          {
+            field,
+            message: `${field} already exists`,
+          },
+        ],
+      });
+    }
+
+    if (error.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: "Mongoose validation failed",
+        errors: Object.keys(error.errors).map((field) => ({
+          field,
+          message: error.errors[field].message,
+        })),
+      });
+    }
+
+    return res.status(500).json({
       success: false,
-      message: "Email or phone number already exists",
+      message: "Internal Server Error",
     });
   }
-
-  if (error.name === "ValidationError") {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
-  }
-}
-}
+};
 
 /**
      * Login API
@@ -129,66 +203,100 @@ export const signup = async (req: Request, res: Response) => {
 */
 export const signin = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
-    console.log("EMail---->", email)
-    const userExist = await UserModel.findOne({ email })
+    const validatedData = userValidation.safeParse(req.body);
 
-    if (!userExist) {
+    if (!validatedData.success) {
+      return res.status(400).json({
+        success: false,
+        message: validatedData.error.issues[0].message,
+        errors: validatedData.error.flatten().fieldErrors,
+      });
+    }
+
+    const { email, phoneNumber, password } = validatedData.data;
+
+    const query = email ? { email } : { phoneNumber };
+
+    let user: any = await customerModel.findOne(query);
+
+    if (!user) {
+      user = await farmerModel.findOne(query);
+    }
+
+    if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found"
-      })
+        message: email
+          ? "No account found with this email"
+          : "No account found with this phone number",
+      });
     }
-    const isPasswordCorrect = await bcrypt.compare(password, userExist.password)
+
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password",
+        message: "Invalid password",
       });
     }
-    if (!userExist.isVerified) {
+
+    if (!user.isVerified) {
       return res.status(403).json({
         success: false,
-        message: "Please verify your email first."
+        message: "Please verify your email first",
       });
     }
-    // Token Creation
+
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({
+        success: false,
+        message: "JWT secret is missing",
+      });
+    }
+
     const token = jwt.sign(
-      { UserId: userExist.id },
-      process.env.JWT_SECRET!,
       {
-        expiresIn: "7d"
-      })
-    let isProfileCompleted = null;
+        userId: user._id,
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
 
-    if (userExist.role === "Farmer") {
-      const farmer = await FarmerModel.findOne({
-        userId: userExist._id,
-      });
+    const isProfileCompleted =
+      user.role === "Farmer" ? user.isProfileCompleted || false : null;
 
-      isProfileCompleted = farmer?.isProfileCompleted ?? false;
-    }
-    res.status(201).json({
-      msg: "LoggedIn", userExist: {
-        email: userExist.email,
-        username: userExist.username,
-        role: userExist.role,
-        phoneNumber: userExist.phoneNumber,
-        profilePicture: userExist.profilePicture,
-      }, token
-    })
-  }
-  catch (error: any) {
+    const userObj = user.toObject();
+
+    // Remove sensitive fields
+    delete userObj.password;
+    delete userObj.verificationToken;
+    delete userObj.verificationTokenExpires;
+    delete userObj.resetPasswordToken;
+    delete userObj.resetPasswordExpires;
+
+    console.log("userObj::", userObj);
+
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user: userObj,
+      isProfileCompleted,
+      token,
+    });
+    
+  } catch (error) {
     console.error("Signin Error:", error);
 
     return res.status(500).json({
       success: false,
-      message: "Something went wrong. Please try again later."
+      message: "Internal server error",
     });
   }
-}
-
+};
 /**
      * Resend Email API
      * @description: This API is used by client to resend their email to the backend.
@@ -200,10 +308,16 @@ export const resendVerificationEmail = async (
 ) => {
   try {
     const { email } = req.body;
-    console.log(email);
 
-    const user = await UserModel.findOne({ email });
-    console.log("user::", user)
+    // Search in Customer Collection
+    let user: any = await customerModel.findOne({ email });
+
+    // If not found, search in Farmer Collection
+    if (!user) {
+      user = await farmerModel.findOne({ email });
+    }
+
+    // User not found
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -211,6 +325,7 @@ export const resendVerificationEmail = async (
       });
     }
 
+    // Already verified
     if (user.isVerified) {
       return res.status(400).json({
         success: false,
@@ -218,9 +333,8 @@ export const resendVerificationEmail = async (
       });
     }
 
-    // Generate new token
+    // Generate new verification token
     const verificationToken = crypto.randomBytes(32).toString("hex");
-    console.log("hi verify", verificationToken)
 
     user.verificationToken = verificationToken;
     user.verificationTokenExpires = new Date(
@@ -229,20 +343,19 @@ export const resendVerificationEmail = async (
 
     await user.save();
 
-    await sendVerificationEmail(
+    // Send verification email
+     await sendVerificationEmail(
       user.email,
       verificationToken
     );
-    console.log("user::", user)
-
 
     return res.status(200).json({
       success: true,
       message: "Verification email sent successfully",
     });
 
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    console.error("Resend Verification Error:", error);
 
     return res.status(500).json({
       success: false,
@@ -260,18 +373,19 @@ export const verifyEmail = async (req: Request, res: Response) => {
   try {
     const { token } = req.params;
 
-    const user = await UserModel.findOne({
+    let user : any = await customerModel.findOne({
       verificationToken: token,
       verificationTokenExpires: { $gt: new Date() },
     });
 
-    console.log(user)
+    if(!user){
+      user = await farmerModel.findOne({
+        verificationToken: token,
+        verificationTokenExpires: { $gt: new Date() },
+      });
+    }
 
     if (!user) {
-      // return res.status(400).json({
-      //   success: false,
-      //   message: "Invalid or expired verification token",
-      // });
       return res.redirect(`${process.env.CLIENT_URL}/verify-failed`);
     }
     user.isVerified = true;
@@ -415,7 +529,7 @@ export const updateUser = async (req: Request, res: Response) => {
       userUpdates.profilePicture = profilePicture;
     }
 
-    const updatedUser = await UserModel.findByIdAndUpdate(
+    const updatedUser = await customerModel.findByIdAndUpdate(
       userId,
       { $set: userUpdates },
       { new: true, runValidators: true }
@@ -447,7 +561,7 @@ export const updateUser = async (req: Request, res: Response) => {
           .filter(Boolean);
     }
 
-    let updatedFarmer = await FarmerModel.findOneAndUpdate(
+    let updatedFarmer = await farmerModel.findOneAndUpdate(
       { _id: userId },
       { $set: farmerUpdates },
       { new: true, runValidators: true, upsert: true }
@@ -512,7 +626,6 @@ export const forgotPassword = async (
   try {
     const { email } = req.body;
 
-    // Check if email is provided
     if (!email) {
       return res.status(400).json({
         success: false,
@@ -520,8 +633,13 @@ export const forgotPassword = async (
       });
     }
 
-    // Find user
-    const user = await UserModel.findOne({ email });
+    // Search Customer
+    let user: any = await customerModel.findOne({ email });
+
+    // If not found, search Farmer
+    if (!user) {
+      user = await farmerModel.findOne({ email });
+    }
 
     if (!user) {
       return res.status(404).json({
@@ -530,18 +648,18 @@ export const forgotPassword = async (
       });
     }
 
-    // Generate reset token
+    // Generate Reset Token
     const resetToken = crypto.randomBytes(32).toString("hex");
 
-    // Save token and expiry
+    // Save Token & Expiry
     user.resetPasswordToken = resetToken;
     user.resetPasswordExpires = new Date(
-      Date.now() + 15 * 60 * 1000 // 10 minutes
+      Date.now() + 15 * 60 * 1000
     );
 
     await user.save();
 
-    // Send email
+    // Send Reset Password Email
     await sendResetPasswordEmail(
       user.email,
       resetToken
@@ -552,7 +670,7 @@ export const forgotPassword = async (
       message: "Password reset email sent successfully",
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Forgot Password Error:", error);
 
     return res.status(500).json({
@@ -584,12 +702,22 @@ export const resetPassword = async (
         });
       }
       // Find user with valid token
-      const user = await UserModel.findOne({
+      let user : any = await customerModel.findOne({
         resetPasswordToken: token,
         resetPasswordExpires: {
           $gt: new Date(),
         },
       });
+
+      if(!user){
+        user = await farmerModel.findOne({
+          resetPasswordToken: token,
+          resetPasswordExpires: {
+            $gt: new Date(),
+          }
+        });
+      }
+
       if (!user) {
         return res.status(400).json({
           success: false,
@@ -628,22 +756,36 @@ export const deleteUser = async (
   try {
     const userId = req.user._id;
 
-    const deletedUser = await UserModel.findByIdAndDelete(userId);
+    // Try deleting customer
+    let deletedUser = await customerModel.findByIdAndDelete(userId);
 
+    // If not found, try deleting farmer
     if (!deletedUser) {
-      console.log("User not deleted==>")
-      return res.status(201).json({ success: false, msg: "User not deleted" });
+      deletedUser = await farmerModel.findByIdAndDelete(userId);
     }
-    res.status(201).json({ success: true })
-  } catch (err) {
-    console.log("Error in deletion:", err)
+
+    // User not found
+    if (!deletedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+
+  } catch (error) {
+    console.error("Delete User Error:", error);
+
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
     });
   }
-}
-
+};
 /**
  * Change Password API : 
  * @description: This API used to change the password of requested user.
@@ -655,32 +797,26 @@ export const requestChangePassword = async (
 ) => {
   try {
     const userId = req.user._id;
+    const { password } = req.body;
 
-    const { email, phoneNumber, password } = req.body;
-    console.log("3 things to know ===", email, phoneNumber, password)
-    let user;
+    // Find Customer
+    let user: any = await customerModel.findById(userId);
 
-    if (email) {
-      user = await UserModel.findOne({ _id: userId, email });
-    } else if (phoneNumber) {
-      user = await UserModel.findOne({ _id: userId, phoneNumber });
-    } else {
-      return res.status(400).json({
-        message: "Email or Phone Number is required",
-      });
+    // If not found, find Farmer
+    if (!user) {
+      user = await farmerModel.findById(userId);
     }
 
+    // User not found
     if (!user) {
-      return res.status(400).json({
+      return res.status(404).json({
+        success: false,
         message: "User not found",
       });
     }
 
     // Verify current password
-    const isMatch = await bcrypt.compare(
-      password,
-      user.password
-    );
+    const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res.status(400).json({
@@ -689,20 +825,17 @@ export const requestChangePassword = async (
       });
     }
 
-    // Generate Token
-    const resetToken = crypto
-      .randomBytes(32)
-      .toString("hex");
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString("hex");
 
     user.resetPasswordToken = resetToken;
-
     user.resetPasswordExpires = new Date(
       Date.now() + 15 * 60 * 1000
     );
 
     await user.save();
 
-    // Send Mail
+    // Send change password email
     await sendChangePasswordEmail(
       user.email,
       resetToken
@@ -710,11 +843,11 @@ export const requestChangePassword = async (
 
     return res.status(200).json({
       success: true,
-      message:
-        "Password change link sent successfully",
+      message: "Password change link sent successfully",
     });
-  } catch (error) {
-    console.log(error);
+
+  } catch (error: any) {
+    console.error("Request Change Password Error:", error);
 
     return res.status(500).json({
       success: false,
@@ -769,12 +902,19 @@ export const verifyDeletePassword = async (
   req: Request,
   res: Response
 ) => {
-
   try {
     const { password } = req.body;
-    const userId = req.user.id;
-    const user = await UserModel.findById(userId);
+    const userId = req.user._id;
 
+    // Search Customer
+    let user: any = await customerModel.findById(userId);
+
+    // If not found, search Farmer
+    if (!user) {
+      user = await farmerModel.findById(userId);
+    }
+
+    // User not found
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -782,7 +922,11 @@ export const verifyDeletePassword = async (
       });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    // Compare Password
+    const isMatch = await bcrypt.compare(
+      password,
+      user.password
+    );
 
     if (!isMatch) {
       return res.status(400).json({
@@ -795,8 +939,9 @@ export const verifyDeletePassword = async (
       success: true,
       message: "Password verified",
     });
-  } catch (err: any) {
-    console.log("Logout Error:", err);
+
+  } catch (error: any) {
+    console.error("Verify Delete Password Error:", error);
 
     return res.status(500).json({
       success: false,
@@ -804,5 +949,3 @@ export const verifyDeletePassword = async (
     });
   }
 };
-
-
