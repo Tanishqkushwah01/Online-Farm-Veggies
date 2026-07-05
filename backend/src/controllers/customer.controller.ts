@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import productModel from "../models/product.model";
 import { FarmerModel } from "../models/farmer.model";
 import { populate } from "dotenv";
+import ReviewModel from "../models/ReviewModel";
 
 
 
@@ -72,47 +73,46 @@ export const getAllProducts = async (
 };
 
 
-
-export const getFarmerProfile = async (
+// Get All Products of a Specific Farmer
+export const getFarmerProducts = async (
     req: Request,
     res: Response
-)=> {
-try{
-    const {farmerId} = req.params;
+): Promise<any> => {
+    try {
 
-    console.log("Farmer ID:", farmerId);
+        const { farmerId } = req.params;
 
+        const farmer = await FarmerModel.findById(farmerId);
 
-    const farmer= await FarmerModel.findById(farmerId);
+        if (!farmer) {
+            return res.status(404).json({
+                success: false,
+                msg: "Farmer not found"
+            });
+        }
 
-    if(!farmer){
-       return res.status(404).json({
-            success:false,
-            msg:"Farmer not found"
-        })
+        const products = await productModel.find({
+            farmerId: farmerId
+        });
+
+        return res.status(200).json({
+            success: true,
+            farmer,
+            totalProducts: products.length,
+            products
+        });
+
+    } catch (error: any) {
+
+        return res.status(500).json({
+            success: false,
+            msg: error.message
+        });
+
     }
-      return  res.status(200).json({
-            success:true,
-            msg:"Farmer Found",
-            data:{
-               farmName: farmer.farmName,
-                city: farmer.city,
-                bio: farmer.bio,
-                mainCrops: farmer.mainCrops,
-                farmAddress: farmer.farmAddress
-            }
-        })  }catch(err){
-    console.log(err);
+};
 
-    res.status(500).json({
-        success:false,
-        msg:"Internal Server Error"
-    })
-}
-
-}
-
-
+// Get Specific Product Details
 export const getProductDetails = async (
     req: Request,
     res: Response
@@ -150,3 +150,203 @@ export const getProductDetails = async (
         })
 }
 }
+
+
+// Get Farmer Profile
+export const getFarmerProfile = async (
+    req: Request,
+    res: Response
+) => {
+    try {
+        const { farmerId } = req.params;
+        const farmer = await FarmerModel.findById(farmerId);
+
+        if (!farmer) {
+            return res.status(404).json({
+                success: false,
+                msg: "Farmer not found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            msg: "Farmer Found",
+            data: farmer
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            success: false,
+            msg: "Internal Server Error"
+        });
+    }
+};
+
+
+
+// Posting a review for a product
+export const postReview = async (
+    req: Request,
+    res: Response
+) => {
+    try {
+        const { productId } = req.params;
+        const userId = req.user._id; // Assuming you have user authentication and the user ID is available in req.user
+        const { rating, review } = req.body;
+
+        const product = await productModel.findById(productId);
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                msg: "Product not found"
+            });
+        }
+
+        const comments = new ReviewModel({
+            customerId:userId,
+            productId,
+            rating,
+            review
+        });
+
+        await comments.save();
+
+        return res.status(201).json({
+            success: true,
+            msg: "Review posted successfully",
+            data: comments
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            success: false,
+            msg: "Internal Server Error"
+        });
+    }
+};
+
+
+
+
+// get product reviews
+export const getProductReviews = async (
+    req: Request,
+    res: Response
+): Promise<any> => {
+
+    try {
+
+        const { productId } = req.params;
+
+        const reviews = await ReviewModel.find({
+            productId
+        })
+        .populate({
+            path: "customerId",
+            select: "username name profileImage"
+        })
+        .sort({
+            // latest reviews first
+            createdAt: -1
+        });
+
+        return res.status(200).json({
+            success: true,
+            totalReviews: reviews.length,
+            reviews
+        });
+
+    } catch (error: any) {
+
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+
+    }
+
+};
+
+// Posting a review for a farmer
+export const postFarmerReview = async (
+    req: Request,       
+    res: Response
+) => {
+    try {
+        const { farmerId } = req.params;
+        const userId = req.user._id; // Assuming you have user authentication and the user ID is available in req.user
+        const { rating, review } = req.body;
+        const farmer = await FarmerModel.findById(farmerId);
+
+        if (!farmer) {
+            return res.status(404).json({
+                success: false,
+                msg: "Farmer not found"
+            });
+        }   
+
+        const comments = new ReviewModel({
+            customerId:userId,
+            farmerId,
+            rating,
+            review
+        });
+        await comments.save();
+
+        return res.status(201).json({
+            success: true,
+            msg: "Review posted successfully",
+            data: comments
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            success: false,
+            msg: "Internal Server Error"
+        });
+    }
+};
+
+
+// Get All Reviews of a Specific Farmer
+export const getFarmerReviews = async (
+    req: Request,
+    res: Response
+): Promise<any> => {
+
+    try {
+
+        const { farmerId } = req.params;
+        const reviews = await ReviewModel.find({
+            farmerId
+        })
+        .populate({
+            path: "customerId",
+            select: "username name profileImage"
+        })
+        .sort({
+            // latest reviews first
+            createdAt: -1
+        });
+
+        return res.status(200).json({
+            success: true,
+            totalReviews: reviews.length,
+            reviews
+        });
+
+    } catch (error: any) {
+
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+
+    }
+
+};
+
+
+
+

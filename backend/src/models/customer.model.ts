@@ -1,9 +1,8 @@
-import mongoose from "mongoose";
+ import mongoose from "mongoose";
 
-
-const farmerSchema= new mongoose.Schema({
-
-     username: {
+ const customerSchema = new mongoose.Schema({
+ 
+ username: {
         type: String,
         required: true,
         trim: true,
@@ -80,31 +79,8 @@ const farmerSchema= new mongoose.Schema({
         type: Date,
         default: null,
     },
-    
-    farmName:{
-        type:String,
-        default:""
-    },
 
-    review:{
-        type:[mongoose.Schema.Types.ObjectId],
-        ref:"ReviewModel",
-        default:[]
-    },
-    mainCrops:{
-        type:[String],
-        default:""
-    },
-    
-    farmAddress:{
-        type:String,
-        default:""
-    },
+}, { timestamps: true });
 
-    isProfileCompleted:{
-        type:Boolean,
-        default:"false"
-    }   
-});
-const farmerModel = mongoose.model("Farmer",farmerSchema);
-export default farmerModel;
+ const customerModel = mongoose.model("Customer", customerSchema);
+export default customerModel;
