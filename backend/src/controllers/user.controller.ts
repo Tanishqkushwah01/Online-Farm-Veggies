@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import UserModel from "../models/user.model";
+import customerModel from "../models/customer.model";
+import farmerModel from "../models/farmer.model";
 import productModel from "../models/product.model";
 import userValidation from "../types/user.validation"
 import bcrypt from "bcrypt";
@@ -9,7 +10,6 @@ import { sendVerificationEmail } from "../utilities/sendEmailVerification";
 import { sendResetPasswordEmail } from "../utilities/resetpasswordemail";
 import { sendVerificationMailToUser } from "../utilities/sendEmail";
 import resetPassValidation from "../types/reset.password.validation";
-import { FarmerModel } from "../models/farmer.model";
 import { sendChangePasswordEmail } from "../utilities/sendChangePassMail";
 import blacklistModel from "../models/blacklist.model";
 /**
@@ -26,99 +26,100 @@ export const signup = async (req: Request, res: Response) => {
     console.log(validUser)
     if (validUser.success) {
 
-      const existingUser = await UserModel.findOne({
-        $or: [
-          { email: details.email },
-          { phoneNumber: details.phoneNumber }
-        ]
-      });
+      const [customer, farmer] = await Promise.all([
+        customerModel.findOne({
+          $or: [
+            { email: details.email },
+            { phoneNumber: details.phoneNumber },
+          ],
+        }),
+        farmerModel.findOne({
+          $or: [
+            { email: details.email },
+            { phoneNumber: details.phoneNumber },
+          ],
+        }),
+      ]);
 
-      if (existingUser) {
-        if (existingUser.email === details.email) {
-          return res.status(409).json({
-            success: false,
-            message: "Email already exists"
-          });
-        }
-
-        if (existingUser.phoneNumber === details.phoneNumber) {
-          return res.status(409).json({
-            success: false,
-            message: "Phone number already exists"
-          });
-        }
-      }
-      const hashedPass = await bcrypt.hash(details.password, 10)
-      const verificationToken = crypto.randomBytes(32).toString("hex");
-      // console.log(hashedPass, verificationToken)
-      const User = await UserModel.create({
-        ...details,
-        password: hashedPass,
-        verificationToken,
-        isVerified: false,
-        verificationTokenExpires: new Date(Date.now() + 30 * 60 * 1000), // 30 minutes
-      });
-
-      //If Farmer, creates Farmer Profile.
-      if (User.role === "Farmer") {
-        // await FarmerModel.create({ userId: User._id, isProfileCompleted: false })
-        await FarmerModel.create({ _id: User._id, isProfileCompleted: false })
-      }
-      console.log("User email:", User.email)
-
-      let isProfileCompleted: boolean | null = null;
-
-      if (User.role === "Farmer") {
-        const farmer = await FarmerModel.findOne({
-          userId: User._id,
+      if (customer || farmer) {
+        return res.status(400).json({
+          success: false,
+          message: "Email or phone number already exists",
         });
-
-        isProfileCompleted = farmer?.isProfileCompleted ?? false;
       }
-      // Send verification email
-      const result = await sendVerificationMailToUser(User.email);
+  
+    const hashedPass = await bcrypt.hash(details.password, 10)
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    // console.log(hashedPass, verificationToken)
+    if(details.role === "Farmer") {
+    const User = await farmerModel.create({
+      ...details,
+      password: hashedPass,
+      verificationToken,
+      isVerified: false,
+      verificationTokenExpires: new Date(Date.now() + 30 * 60 * 1000), // 30 minutes
+    });
 
-      if (!result) {
-        return res.status(301).json({ msg: "Verification of mail not .........." })
-      }
-
-      const token = jwt.sign(
-        { UserId: User._id },
-        process.env.JWT_SECRET!,
-        {
-          expiresIn: "7d",
-        });
-      return res.status(201).json({
-        msg: "registered",
-        User: {
-          email: User.email,
-          username: User.username,
-          role: User.role,
-          phoneNumber: User.phoneNumber,
-        },
-        isProfileCompleted,
-        token,
-      });
-      console.log("TOKEN--------->Registration", token)
+    //If Farmer, creates Farmer Profile.
+    if (User.role === "Farmer") {
+      // await FarmerModel.create({ userId: User._id, isProfileCompleted: false })
+      await FarmerModel.create({ _id: User._id, isProfileCompleted: false })
     }
+    console.log("User email:", User.email)
+
+    let isProfileCompleted: boolean | null = null;
+
+    if (User.role === "Farmer") {
+      const farmer = await farmerModel.findOne({
+        userId: User._id,
+      });
+
+      isProfileCompleted = farmer?.isProfileCompleted ?? false;
+    }
+    // Send verification email
+    const result = await sendVerificationMailToUser(User.email);
+
+    if (!result) {
+      return res.status(301).json({ msg: "Verification of mail not .........." })
+    }
+
+    const token = jwt.sign(
+      { UserId: User._id },
+      process.env.JWT_SECRET!,
+      {
+        expiresIn: "7d",
+      });
+    return res.status(201).json({
+      msg: "registered",
+      User: {
+        email: User.email,
+        username: User.username,
+        role: User.role,
+        phoneNumber: User.phoneNumber,
+      },
+      isProfileCompleted,
+      token,
+    });
+    console.log("TOKEN--------->Registration", token)
+  }
   } catch (error: any) {
 
-    console.error("Signup Error:", error);
+  console.error("Signup Error:", error);
 
-    if (error.code === 11000) {
-      return res.status(409).json({
-        success: false,
-        message: "Email or phone number already exists",
-      });
-    }
-
-    if (error.name === "ValidationError") {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
+  if (error.code === 11000) {
+    return res.status(409).json({
+      success: false,
+      message: "Email or phone number already exists",
+    });
   }
+
+  if (error.name === "ValidationError") {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
 }
 
 /**
