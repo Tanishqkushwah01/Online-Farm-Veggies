@@ -1,8 +1,8 @@
- import mongoose from "mongoose";
+import mongoose from "mongoose";
 
- const customerSchema = new mongoose.Schema({
- 
- username: {
+const customerSchema = new mongoose.Schema({
+
+    username: {
         type: String,
         required: true,
         trim: true,
@@ -39,15 +39,13 @@
 
     city: {
         type: String,
-        required: true,
         trim: true,
     },
     address: {
         type: String,
-        required: true,
         trim: true,
     },
-    bio:{
+    bio: {
         type: String,
         trim: true,
         maxlength: 500,
@@ -82,5 +80,5 @@
 
 }, { timestamps: true });
 
- const customerModel = mongoose.model("Customer", customerSchema);
+const customerModel = mongoose.model("Customer", customerSchema);
 export default customerModel;

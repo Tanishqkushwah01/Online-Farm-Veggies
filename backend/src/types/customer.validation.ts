@@ -28,12 +28,13 @@ const customerValidation = z.object({
 
   city: z
     .string()
-    .min(2, "City is required"),
+    .min(2, "City is required")
+    .optional(),
 
   address: z
     .string()
-    .min(5, "Address is required"),
-
+    .min(5, "Address is required")
+    .optional(),
   bio: z
     .string()
     .max(500, "Bio cannot exceed 500 characters")
