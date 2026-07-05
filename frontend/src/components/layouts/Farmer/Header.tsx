@@ -1,4 +1,4 @@
-import { Bell, Search, User } from "lucide-react";
+import { Bell, Plus, Search, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import AddProductModal from "./CreateCard";
 import ProfileCard from "./ProfileCard";
@@ -56,11 +56,19 @@ const Header = ({ username }: { username: string }) => {
         </div>
 
         {/* Create */}
-        <button
+        {/* <button
           onClick={() => setOpen(true)}
           className="h-12 px-7 rounded-2xl border border-slate-300 bg-white text-slate-700 font-medium transition hover:bg-gray-300 cursor-pointer"
         >
-          Create
+           Create 
+          <Plus size={20} />
+          Add Product
+        </button> */}
+        <button
+        onClick={() => setOpen(true)}
+        className="bg-white h-12 px-7 border border-slate-300 text-slate-700 rounded-2xl font-medium flex items-center gap-2 transition hover:bg-gray-300 cursor-pointer">
+          <Plus size={20} />
+          Add Product
         </button>
 
         {/* Notification */}

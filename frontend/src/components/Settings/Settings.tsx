@@ -15,17 +15,17 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import UpdateCard from "./UpdateCard";
-import useWebNavigate from "../../hooks/useWebNavigate";
-import { logoutUser } from "../../Api/authApi";
+import useWebNavigate from "../hooks/useWebNavigate";
+import { logoutUser } from "../Api/authApi";
 
 type ProfileType = {
   username: string;
   email: string;
   phoneNumber: string;
-  farmName: string;
-  farmAddress: string;
+  farmName?: string;
+  farmAddress?: string;
   bio: string;
-  crops: string;
+  crops?: string;
   profilePicture: string;
   city: string;
 };
@@ -38,6 +38,7 @@ const Settings = ({ setActivePage }: SettingsProps) => {
   const { gotoLogin } = useWebNavigate();
 
   const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+  const role = userInfo.role?.toLowerCase();
 
   const [openUpdate, setOpenUpdate] = useState(false);
   const [orderUpdates, setOrderUpdates] = useState(true);
@@ -48,14 +49,12 @@ const Settings = ({ setActivePage }: SettingsProps) => {
   const [profile, setProfile] = useState<ProfileType>({
     username: userInfo.username || "Tanishq Kushwah",
     email: userInfo.email || "tanishq@gmail.com",
-    // phoneNumber: userInfo.phoneNumber || "",
     phoneNumber: String(userInfo.phoneNumber || ""),
     farmName: userInfo.farmName || "",
     farmAddress: userInfo.farmAddress || "",
     bio:
       userInfo.bio ||
       "I provide fresh and organic vegetables directly from my farm.",
-    // crops: userInfo.mainCrops || userInfo.crops || "Potato, Tomato, Onion, Wheat",
     crops: Array.isArray(userInfo.mainCrops)
       ? userInfo.mainCrops.join(", ")
       : userInfo.mainCrops || userInfo.crops || "Potato, Tomato, Onion, Wheat",
@@ -64,9 +63,7 @@ const Settings = ({ setActivePage }: SettingsProps) => {
   });
 
   useEffect(() => {
-    const info = JSON.parse(localStorage.getItem("userInfo") || "{}");
-
-    if (info.isProfileCompleted === false) {
+    if (userInfo.isProfileCompleted === false) {
       setOpenUpdate(true);
     }
   }, []);
@@ -87,11 +84,22 @@ const Settings = ({ setActivePage }: SettingsProps) => {
   return (
     <div className="min-h-screen rounded-md bg-[#EEF3EC] px-6 py-8">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-slate-900">Settings</h1>
-          <p className="mt-2 text-slate-600">
-            Manage your profile, security and preferences.
-          </p>
+        <div className="mb-8 flex items-start gap-10">
+          {userInfo.role === "Customer" && (
+            <button
+              onClick={() => setActivePage("home")}
+              className="cursor-pointer rounded-lg text-base bg-green-600 px-6 py-3 font-semibold text-white hover:bg-green-700"
+            >
+              go back
+            </button>
+          )}
+
+          <div>
+            <h1 className="text-4xl font-bold text-slate-900">Settings</h1>
+            <p className="mt-2 text-slate-600">
+              Manage your profile, security and preferences.
+            </p>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-7 lg:grid-cols-[300px_1fr] lg:grid-rows-[auto_auto]">
@@ -168,10 +176,12 @@ const Settings = ({ setActivePage }: SettingsProps) => {
                 </p>
               </div>
 
-              <div className="mt-5">
-                <h3 className="font-bold text-slate-900">Crop Types</h3>
-                <p className="mt-2 text-slate-600">{profile.crops}</p>
-              </div>
+              {role === "farmer" && (
+                <div className="mt-5">
+                  <h3 className="font-bold text-slate-900">Crop Types</h3>
+                  <p className="mt-2 text-slate-600">{profile.crops}</p>
+                </div>
+              )}
             </div>
 
             <div className="rounded-3xl bg-white p-6 shadow-lg">

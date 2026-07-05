@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Lock, EyeOff, Eye, User } from "lucide-react";
-import { changePasswordSchema } from "../../Validation/ChangePassword.schema";
-import { changePassword } from "../../Api/authApi";
+import { changePasswordSchema } from "../Validation/ChangePassword.schema";
+import { changePassword } from "../Api/authApi";
 // import useWebNavigate from "../../hooks/useWebNavigate";
 
 type ChangePasswordProps = {

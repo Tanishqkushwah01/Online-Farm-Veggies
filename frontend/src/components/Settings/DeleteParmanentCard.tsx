@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Lock, Trash2, AlertTriangle, EyeOff, Eye } from "lucide-react";
-import { deleteAccount, verifyDeletePassword } from "../../Api/authApi";
-import useWebNavigate from "../../hooks/useWebNavigate";
+import { deleteAccount, verifyDeletePassword } from "../Api/authApi";
+import useWebNavigate from "../hooks/useWebNavigate";
 
 const DeleteAccount = () => {
     const { gotoRegister } = useWebNavigate();

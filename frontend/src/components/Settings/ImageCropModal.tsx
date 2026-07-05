@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Cropper from "react-easy-crop";
 import { X } from "lucide-react";
-import { getCroppedImg, type Area } from "../../../utils/cropImage";
+import { getCroppedImg, type Area } from "../../utils/cropImage";
 
 type ImageCropModalProps = {
   image: string;

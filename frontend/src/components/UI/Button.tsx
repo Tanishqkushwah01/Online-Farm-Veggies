@@ -9,6 +9,7 @@ interface ButtonProps
     size?: ButtonSize;
     children: React.ReactNode;
     className?:String
+    onClick:()=>void;
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
@@ -29,11 +30,13 @@ const Button = ({
     variant = "primary",
     size = "md",
     children,
+    onClick,
     className = "",
     ...props
 }: ButtonProps) => {
     return (
         <button
+        onClick={onClick}
             className={`
         ${variantStyles[variant]}
         ${sizeStyles[size]}
