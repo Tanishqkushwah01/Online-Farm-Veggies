@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import productModel from "../models/product.model";
-import { FarmerModel } from "../models/farmer.model";
+import  farmerModel from "../models/farmer.model";
 import { populate } from "dotenv";
 import ReviewModel from "../models/ReviewModel";
 
