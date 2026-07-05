@@ -1,11 +1,6 @@
 import { Request, Response } from "express";
-<<<<<<< HEAD
 import customerModel from "../models/customer.model";
-import userValidation from "../types/user.validation"
-=======
-import UserModel from "../models/user.model";
-import userValidation from "../types/farmer.validation"
->>>>>>> 9f7027cfa5de70c97c6a2f5e72077e86c7f33481
+// import userValidation from "../types/user.validation"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import farmerModel from "../models/farmer.model";
