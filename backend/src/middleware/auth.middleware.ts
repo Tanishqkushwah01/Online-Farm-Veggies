@@ -49,8 +49,9 @@
 
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import UserModel from "../models/user.model";
+import customerModel from "../models/customer.model";
 import blacklistModel from "../models/blacklist.model";
+import farmerModel from "../models/farmer.model";
 
 const authMiddleware = async (
   req: Request,
@@ -85,10 +86,17 @@ const authMiddleware = async (
     // 4. Verify JWT
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
       UserId: string;
+      role: string;
     };
- 
+ let user : any
     // 5. User exists or not
-    const user = await UserModel.findById(decoded.UserId);
+    if (decoded.role === "farmer"){
+     user = await farmerModel.findById(decoded.UserId);
+    }
+
+    else if(decoded.role === "customer"){
+      user = await customerModel.findById(decoded.UserId);
+    }
 
     if (!user) {
       return res.status(404).json({
@@ -96,11 +104,13 @@ const authMiddleware = async (
         message: "User not found",
       });
     }
-
+ 
     // 6. Attach user to request
     req.user = user;
+ 
 console.log("Middleware user-->",req.user)
     next();
+  
   } catch (error) {
     return res.status(401).json({
       success: false,
