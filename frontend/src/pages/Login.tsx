@@ -11,7 +11,7 @@ const Login = () => {
     const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const { gotoForgotPassword,gotoCustomer,gotoAdmin,gotoFarmer ,gotoRegister} = useWebNavigate();
+    const { gotoForgotPassword, gotoCustomer, gotoAdmin, gotoFarmer, gotoRegister } = useWebNavigate();
 
     const [errors, setErrors] = useState<{
         identifier?: string;
@@ -53,22 +53,20 @@ const Login = () => {
             };
 
         const res = await userLogin(data);
-        console.log("user data ===",res.data);
-        const role = res.data.userExist.role;
-        if(role ==="Customer"){
-            gotoCustomer()
-        }else if(role ==="Admin"){
-            gotoAdmin();
-        }else{
+        console.log("user data ===", res.data.user);
+        const role = res.data.user.role;
+        if (role === "Farmer") {
             gotoFarmer();
+        } else if (role === "Admin") {
+            gotoAdmin();
+        } else {
+            gotoCustomer()
         }
 
-        const userInfo = JSON.stringify(res.data.userExist);
+        const userInfo = JSON.stringify(res.data.user);
         console.log(userInfo)
         localStorage.setItem("userInfo", userInfo);
         localStorage.setItem("token", res.data.token);
-
-
         setIdentifier("");
         setPassword("");
     }
