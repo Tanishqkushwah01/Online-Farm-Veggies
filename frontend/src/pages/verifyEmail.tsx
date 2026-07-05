@@ -14,8 +14,8 @@ const VerifyEmail = () => {
 
 
   const openEmail = () => {
-    window.open("https://mail.google.com/mail/u/0/#spam", "_blank");
-    window.open("/page");
+    window.open("https://mail.google.com/mail/u/0/#inbox", "_blank");
+    window.location.href = "/verify-email";
     window.close();
   };
 

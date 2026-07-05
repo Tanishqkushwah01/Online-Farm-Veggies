@@ -40,14 +40,9 @@ const farmerSchema= new mongoose.Schema({
 
     city: {
         type: String,
-        required: true,
         trim: true,
     },
-    address: {
-        type: String,
-        required: true,
-        trim: true,
-    },
+     
     bio:{
         type: String,
         trim: true,

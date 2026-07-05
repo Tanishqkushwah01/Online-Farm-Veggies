@@ -28,11 +28,8 @@ const farmerValidation = z.object({
 
   city: z
     .string()
-    .min(2, "City is required"),
-
-  address: z
-    .string()
-    .min(5, "Address is required"),
+    .min(2, "City is required")
+    .optional(),
 
   bio: z
     .string()

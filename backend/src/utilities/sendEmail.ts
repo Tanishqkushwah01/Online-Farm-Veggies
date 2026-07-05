@@ -1,3 +1,4 @@
+import { ro } from "zod/locales";
 import customerModel from "../models/customer.model";
 import farmerModel from "../models/farmer.model";
 import { sendVerificationEmail } from "../utilities/sendEmailVerification";
@@ -5,12 +6,13 @@ import { sendVerificationEmail } from "../utilities/sendEmailVerification";
 export const sendVerificationMailToUser = async (email: string , role: string) => {
 
   let user : any;
+  console.log("email==",email,role);
 
-  if (role === "customer") {
+  if (role === "Customer") {
     user = await customerModel.findOne({ email });
   }
 
-  if (role === "farmer") {
+  if (role === "Farmer") {
     user = await farmerModel.findOne({ email });
   }
 

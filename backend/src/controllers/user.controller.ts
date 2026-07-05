@@ -21,7 +21,7 @@ import signinValidation from "../types/signin.validation";
      * @route /api/auth/signup
 */
 
- export const signup = async (req: Request, res: Response) => {
+export const signup = async (req: Request, res: Response) => {
   try {
     const details = req.body;
 
@@ -30,7 +30,7 @@ import signinValidation from "../types/signin.validation";
       details.role === "Farmer" ? farmerValidation : customerValidation;
 
     const validUser = validationSchema.safeParse(details);
-
+    console.log("validUser===", validUser)
     // Zod validation error response
     if (!validUser.success) {
       return res.status(400).json({
@@ -124,9 +124,10 @@ import signinValidation from "../types/signin.validation";
 
       isProfileCompleted = null;
     }
-
+    console.log("user==", user);
     // Send verification email
     const emailSent = await sendVerificationMailToUser(validatedData.email, validatedData.role);
+    console.log("emailSent==", emailSent);
 
     if (!emailSent) {
       return res.status(500).json({
@@ -149,6 +150,7 @@ import signinValidation from "../types/signin.validation";
     const userObj = user.toObject();
 
     delete userObj.password;
+    delete userObj.isVerified;
     delete userObj.verificationToken;
     delete userObj.verificationTokenExpires;
     delete userObj.resetPasswordToken;
@@ -159,7 +161,6 @@ import signinValidation from "../types/signin.validation";
       success: true,
       message: "Registration successful",
       user: userObj,
-      isProfileCompleted,
       token,
     });
   } catch (error: any) {
@@ -289,7 +290,7 @@ export const signin = async (req: Request, res: Response) => {
       isProfileCompleted,
       token,
     });
-    
+
   } catch (error) {
     console.error("Signin Error:", error);
 
@@ -346,7 +347,7 @@ export const resendVerificationEmail = async (
     await user.save();
 
     // Send verification email
-     await sendVerificationEmail(
+    await sendVerificationEmail(
       user.email,
       verificationToken
     );
@@ -375,12 +376,12 @@ export const verifyEmail = async (req: Request, res: Response) => {
   try {
     const { token } = req.params;
 
-    let user : any = await customerModel.findOne({
+    let user: any = await customerModel.findOne({
       verificationToken: token,
       verificationTokenExpires: { $gt: new Date() },
     });
 
-    if(!user){
+    if (!user) {
       user = await farmerModel.findOne({
         verificationToken: token,
         verificationTokenExpires: { $gt: new Date() },
@@ -704,14 +705,14 @@ export const resetPassword = async (
         });
       }
       // Find user with valid token
-      let user : any = await customerModel.findOne({
+      let user: any = await customerModel.findOne({
         resetPasswordToken: token,
         resetPasswordExpires: {
           $gt: new Date(),
         },
       });
 
-      if(!user){
+      if (!user) {
         user = await farmerModel.findOne({
           resetPasswordToken: token,
           resetPasswordExpires: {

@@ -58,9 +58,12 @@ const Register = () => {
     setErrors({});
     const data = { password, email, username, phoneNumber, role }
     const res = await userRegister(data);
+    console.log("token==",res.data.tokane);
+    console.log("user==",res.data.user);
+    console.log("token==",res.data.tokane);
     gotoVerifyEmail();
-    const userInfo = JSON.stringify(res.data.User);
-    console.log(userInfo)
+    const userInfo = JSON.stringify(res.data.user);
+    console.log("userInfo==",userInfo);
     localStorage.setItem("userInfo", userInfo);
     localStorage.setItem("token", res.data.token);
 

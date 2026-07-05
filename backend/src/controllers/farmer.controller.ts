@@ -50,12 +50,7 @@ export const createProduct = async (
       quantity,
       unit,
       image,
-      city:farmer.city
-
-  
-   
-   
-
+      city:farmer.city?? ""
     });
 
     return res.status(201).json({
