@@ -16,7 +16,7 @@ type LoginRequest =
   };
 
 export const userLogin = async (data: LoginRequest) => {
-  // console.log(data)
+  console.log(data)
   return await api.post("/signin", data);
 };
 
