@@ -103,7 +103,7 @@ const farmerSchema= new mongoose.Schema({
 
     isProfileCompleted:{
         type:Boolean,
-        default:"false"
+        default:false
     }   
 });
 const farmerModel = mongoose.model("Farmer",farmerSchema);

@@ -82,7 +82,7 @@ export const getFarmerProducts = async (
 
         const { farmerId } = req.params;
 
-        const farmer = await FarmerModel.findById(farmerId);
+        const farmer = await farmerModel.findById(farmerId);
 
         if (!farmer) {
             return res.status(404).json({
@@ -159,7 +159,7 @@ export const getFarmerProfile = async (
 ) => {
     try {
         const { farmerId } = req.params;
-        const farmer = await FarmerModel.findById(farmerId);
+        const farmer = await farmerModel.findById(farmerId);
 
         if (!farmer) {
             return res.status(404).json({
@@ -277,7 +277,7 @@ export const postFarmerReview = async (
         const { farmerId } = req.params;
         const userId = req.user._id; // Assuming you have user authentication and the user ID is available in req.user
         const { rating, review } = req.body;
-        const farmer = await FarmerModel.findById(farmerId);
+        const farmer = await farmerModel.findById(farmerId);
 
         if (!farmer) {
             return res.status(404).json({

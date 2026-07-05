@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import customerModel from "../models/customer.model";
 import farmerModel from "../models/farmer.model";
 import productModel from "../models/product.model";
-import userValidation from "../types/user.validation"
+import userValidation from "../types/farmer.validation"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
@@ -12,7 +12,13 @@ import { sendVerificationMailToUser } from "../utilities/sendEmail";
 import resetPassValidation from "../types/reset.password.validation";
 import { sendChangePasswordEmail } from "../utilities/sendChangePassMail";
 import blacklistModel from "../models/blacklist.model";
+<<<<<<< HEAD
 // import userValidation from "../types/user.validation";
+=======
+import farmerValidation from "../types/farmer.validation";
+import customerValidation from "../types/customer.validation";
+import signinValidation from "../types/signin.validation";
+>>>>>>> 9f7027cfa5de70c97c6a2f5e72077e86c7f33481
 /**
      * Register API
      * @description: This API is used to create a new user account
@@ -25,7 +31,11 @@ import blacklistModel from "../models/blacklist.model";
 
     // Select validation by role
     const validationSchema =
+<<<<<<< HEAD
       details.role === "Farmer" ? userValidation : userValidation;
+=======
+      details.role === "Farmer" ? farmerValidation : customerValidation;
+>>>>>>> 9f7027cfa5de70c97c6a2f5e72077e86c7f33481
 
     const validUser = validationSchema.safeParse(details);
 
@@ -203,7 +213,11 @@ import blacklistModel from "../models/blacklist.model";
 */
 export const signin = async (req: Request, res: Response) => {
   try {
+<<<<<<< HEAD
     const validatedData = userValidation.safeParse(req.body);
+=======
+    const validatedData = signinValidation.safeParse(req.body);
+>>>>>>> 9f7027cfa5de70c97c6a2f5e72077e86c7f33481
 
     if (!validatedData.success) {
       return res.status(400).json({
@@ -297,6 +311,10 @@ export const signin = async (req: Request, res: Response) => {
     });
   }
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9f7027cfa5de70c97c6a2f5e72077e86c7f33481
 /**
      * Resend Email API
      * @description: This API is used by client to resend their email to the backend.
