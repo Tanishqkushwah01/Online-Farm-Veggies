@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import UserModel from "../models/user.model";
-import userValidation from "../types/user.validation"
+import userValidation from "../types/farmer.validation"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { FarmerModel } from "../models/farmer.model";
