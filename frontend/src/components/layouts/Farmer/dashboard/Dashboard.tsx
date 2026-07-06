@@ -5,7 +5,12 @@ import AddProductBanner from "./AddProductBanner";
 import ProductTable from "./ProductTable";
 import CustomerReviews from "./CustomerReviews";
 
-const Dashboard = () => {
+
+type DashboardProps = {
+  setActivePage: React.Dispatch<React.SetStateAction<string>>;
+};
+
+const Dashboard = ({ setActivePage }: DashboardProps) => {
   return (
     <div className="bg-gray-300 rounded-md p-6 min-h-full">
       <div>
@@ -27,7 +32,7 @@ const Dashboard = () => {
       </div>
 
       <div className="mt-5">
-        <ProductTable />
+        <ProductTable setActivePage={setActivePage}/>
       </div>
 
       <div className="mt-5">

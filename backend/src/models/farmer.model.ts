@@ -42,10 +42,6 @@ const farmerSchema= new mongoose.Schema({
         type: String,
         trim: true,
     },
-     totalProducts: {
-        type: Number,
-        default: 0,
-     },
     bio:{
         type: String,
         trim: true,
@@ -64,26 +60,21 @@ const farmerSchema= new mongoose.Schema({
     verificationToken: {
         type: String,
     },
-
     verificationTokenExpires: {
         type: Date,
     },
-
     resetPasswordToken: {
         type: String,
         default: null,
     },
-
     resetPasswordExpires: {
         type: Date,
         default: null,
-    },
-    
+    },  
     farmName:{
         type:String,
         default:""
     },
-
     review:{
         type:[mongoose.Schema.Types.ObjectId],
         ref:"ReviewModel",
@@ -92,13 +83,11 @@ const farmerSchema= new mongoose.Schema({
     mainCrops:{
         type:[String],
         default:""
-    },
-    
+    },  
     farmAddress:{
         type:String,
         default:""
     },
-
     isProfileCompleted:{
         type:Boolean,
         default:"false"

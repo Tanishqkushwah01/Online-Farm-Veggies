@@ -13,4 +13,6 @@ router.put("/products/:productId",authMiddleware,upload.single("image"),farmerCo
 
 router.delete("/products/:productId",authMiddleware,farmerController.deleteProduct);
 
+router.get("/products/stats", authMiddleware, farmerController.getFarmerProductStats);
+
 export default router;

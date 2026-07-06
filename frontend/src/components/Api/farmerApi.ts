@@ -79,3 +79,10 @@ export const deleteProduct = (id: string) => {
     });
 };
 
+export const getProductStats = () => {
+  return api.get("/products/stats", {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+};

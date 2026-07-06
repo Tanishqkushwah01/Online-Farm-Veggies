@@ -221,3 +221,31 @@ export const deleteProduct = async (req: Request, res: Response) => {
     });
   }
 };
+
+// controller
+export const getFarmerProductStats = async (req: Request, res: Response) => {
+  try {
+    const farmerId = req.user._id;
+
+    const totalProducts = await ProductModel.countDocuments({ farmerId });
+
+    const weekStart = new Date();
+    weekStart.setDate(weekStart.getDate() - 7);
+
+    const newThisWeek = await ProductModel.countDocuments({
+      farmerId,
+      createdAt: { $gte: weekStart },
+    });
+
+    return res.status(200).json({
+      success: true,
+      totalProducts,
+      newThisWeek,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};

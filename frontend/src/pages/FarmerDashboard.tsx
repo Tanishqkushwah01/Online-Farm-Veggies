@@ -48,7 +48,7 @@ const FarmerDashboard = () => {
 
             <main className="flex-1 bg-gray-300 p-6 overflow-auto rounded-md no-scrollbar">
 
-              {activePage === "dashboard" && <Dashboard />}
+              {activePage === "dashboard" && <Dashboard setActivePage={setActivePage}/>}
 
               {activePage === "products" && <Products />}
 
