@@ -525,8 +525,10 @@ export const verifyEmail = async (req: Request, res: Response) => {
 //   }
 // };
 
-
-export const updateUser = async (req: Request, res: Response) => {
+export const updateUser = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const userId = req.user._id;
     const role = req.user.role;
@@ -566,118 +568,117 @@ export const updateUser = async (req: Request, res: Response) => {
         .filter(Boolean);
     };
 
-    const commonUpdates: any = cleanObject({
-      username,
-      phoneNumber,
-      city,
-      bio,
-    });
-
-    if (removeProfilePicture === "true") {
-      commonUpdates.profilePicture = "";
-    } else if (profilePicture) {
-      commonUpdates.profilePicture = profilePicture;
-    }
-
-    let updates: any = {};
-
-    if (role === "Farmer") {
-      updates = cleanObject({
-        ...commonUpdates,
-        farmName,
-        farmAddress,
-        mainCrops: parseMainCrops(mainCrops),
-      });
-    } else if (role === "Customer") {
-      updates = cleanObject({
-        ...commonUpdates,
-        address,
-      });
-    } else {
-      return res.status(403).json({
-        success: false,
-        message: "Invalid user role",
-      });
-    }
-
     let updatedUser: any;
 
-    if (role === "Farmer") {
-      updatedUser = await farmerModel
-        .findByIdAndUpdate(
-          userId,
-          { $set: updates },
-          { new: true, runValidators: true }
-        )
-        .select(
-          "-password -verificationToken -verificationTokenExpires -resetPasswordToken -resetPasswordExpires"
-        );
-    } else {
+    // ---------------- CUSTOMER ----------------
+
+    if (role === "Customer") {
+      const customerUpdates = cleanObject({
+        username,
+        phoneNumber,
+        city,
+        address,
+        bio,
+      });
+
+      if (removeProfilePicture === "true") {
+        customerUpdates.profilePicture = "";
+      } else if (profilePicture) {
+        customerUpdates.profilePicture = profilePicture;
+      }
+
       updatedUser = await customerModel
         .findByIdAndUpdate(
           userId,
-          { $set: updates },
-          { new: true, runValidators: true }
+          { $set: customerUpdates },
+          {
+            new: true,
+            runValidators: true,
+          }
         )
         .select(
           "-password -verificationToken -verificationTokenExpires -resetPasswordToken -resetPasswordExpires"
         );
+
+      if (!updatedUser) {
+        return res.status(404).json({
+          success: false,
+          message: "Customer not found",
+        });
+      }
+
+      updatedUser.isProfileCompleted = Boolean(
+        updatedUser.username &&
+          updatedUser.phoneNumber &&
+          updatedUser.city &&
+          updatedUser.address
+      );
+
+      await updatedUser.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Profile updated successfully.",
+        userInfo: updatedUser,
+      });
     }
+
+    // ---------------- FARMER ----------------
+
+    const farmerUpdates = cleanObject({
+      username,
+      phoneNumber,
+      city,
+      farmName,
+      farmAddress,
+      bio,
+      mainCrops: parseMainCrops(mainCrops),
+    });
+
+    if (removeProfilePicture === "true") {
+      farmerUpdates.profilePicture = "";
+    } else if (profilePicture) {
+      farmerUpdates.profilePicture = profilePicture;
+    }
+
+    updatedUser = await farmerModel
+      .findByIdAndUpdate(
+        userId,
+        { $set: farmerUpdates },
+        {
+          new: true,
+          runValidators: true,
+        }
+      )
+      .select(
+        "-password -verificationToken -verificationTokenExpires -resetPasswordToken -resetPasswordExpires"
+      );
 
     if (!updatedUser) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "Farmer not found",
       });
     }
 
-    updatedUser.isProfileCompleted =
-      role === "Farmer"
-        ? Boolean(
-            updatedUser.username &&
-              updatedUser.phoneNumber &&
-              updatedUser.city &&
-              updatedUser.farmName &&
-              updatedUser.farmAddress &&
-              updatedUser.mainCrops?.length > 0
-          )
-        : Boolean(
-            updatedUser.username &&
-              updatedUser.phoneNumber &&
-              updatedUser.city &&
-              updatedUser.address
-          );
+    updatedUser.isProfileCompleted = Boolean(
+      updatedUser.username &&
+        updatedUser.phoneNumber &&
+        updatedUser.city &&
+        updatedUser.farmName &&
+        updatedUser.farmAddress &&
+        updatedUser.mainCrops &&
+        updatedUser.mainCrops.length > 0
+    );
 
     await updatedUser.save();
-
-    const userInfo = {
-      _id: updatedUser._id,
-      username: updatedUser.username,
-      email: updatedUser.email,
-      phoneNumber: updatedUser.phoneNumber,
-      profilePicture: updatedUser.profilePicture,
-      role: updatedUser.role,
-      city: updatedUser.city,
-      bio: updatedUser.bio,
-      isProfileCompleted: updatedUser.isProfileCompleted,
-
-      ...(role === "Farmer"
-        ? {
-            farmName: updatedUser.farmName,
-            farmAddress: updatedUser.farmAddress,
-            mainCrops: updatedUser.mainCrops,
-            review: updatedUser.review,
-          }
-        : {
-            address: updatedUser.address,
-          }),
-    };
 
     return res.status(200).json({
       success: true,
       message: "Profile updated successfully.",
-      userInfo,
+      userInfo: updatedUser,
     });
+
   } catch (error: any) {
     console.error("Update Profile Error:", error);
 
@@ -688,7 +689,6 @@ export const updateUser = async (req: Request, res: Response) => {
     });
   }
 };
-
 /**
  * Forget password API
  * @description: This API is used if when user forget it's password
