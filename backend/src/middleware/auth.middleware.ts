@@ -1,51 +1,3 @@
-// import { Request, Response, NextFunction } from "express";
-// import jwt from "jsonwebtoken";
-// import UserModel from "../models/user.model";
-
-// export const isAuthenticated = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   try {
-//     // Get token from Authorization header
-//     const authHeader = req.headers.authorization;
-
-//     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-//       return res.status(401).json({
-//         success: false,
-//         message: "Authentication token is missing",
-//       });
-//     }
-
-//     const token = authHeader.split(" ")[1];
-
-//     // Verify token
-//     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
-//       id: string;
-//     };
-
-//     // Find user
-//     const user = await UserModel.findById(decoded.id);
-
-//     if (!user) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "User not found",
-//       });
-//     }
-
-//     // Attach user to request
-//     req.user = user;
-
-//     next();
-//   } catch (error) {
-//     return res.status(401).json({
-//       success: false,
-//       message: "Invalid or expired token",
-//     });
-//   }
-// };
 
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
@@ -88,15 +40,17 @@ const authMiddleware = async (
       UserId: string;
       role: string;
     };
- let user : any
+    // console.log("decoded:",decoded);
+    let user: any
     // 5. User exists or not
-    if (decoded.role === "farmer"){
-     user = await farmerModel.findById(decoded.UserId);
+    if (decoded.role === "Farmer") {
+      user = await farmerModel.findById({_id:decoded.UserId});
     }
+    else if (decoded.role === "Customer") {
+      user = await customerModel.findById({_id:decoded.UserId});
+    }
+    // console.log("user:",user);
 
-    else if(decoded.role === "customer"){
-      user = await customerModel.findById(decoded.UserId);
-    }
 
     if (!user) {
       return res.status(404).json({
@@ -104,13 +58,13 @@ const authMiddleware = async (
         message: "User not found",
       });
     }
- 
+
     // 6. Attach user to request
     req.user = user;
- 
-console.log("Middleware user-->",req.user)
+
+    console.log("Middleware user-->", req.user)
     next();
-  
+
   } catch (error) {
     return res.status(401).json({
       success: false,

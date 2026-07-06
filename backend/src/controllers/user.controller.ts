@@ -124,7 +124,7 @@ export const signup = async (req: Request, res: Response) => {
 
       isProfileCompleted = null;
     }
-    console.log("user==", user);
+    // console.log("user==", user);
     // Send verification email
     const emailSent = await sendVerificationMailToUser(validatedData.email, validatedData.role);
     console.log("emailSent==", emailSent);
@@ -156,7 +156,7 @@ export const signup = async (req: Request, res: Response) => {
     delete userObj.resetPasswordToken;
     delete userObj.resetPasswordExpires;
 
-    console.log("userObj::", userObj);
+    // console.log("userObj::", userObj);
     return res.status(201).json({
       success: true,
       message: "Registration successful",
@@ -260,7 +260,7 @@ export const signin = async (req: Request, res: Response) => {
 
     const token = jwt.sign(
       {
-        userId: user._id,
+        UserId: user._id,
         role: user.role,
       },
       process.env.JWT_SECRET,
@@ -282,7 +282,7 @@ export const signin = async (req: Request, res: Response) => {
     delete userObj.resetPasswordToken;
     delete userObj.resetPasswordExpires;
 
-    console.log("userObj::", userObj);
+    // console.log("userObj::", userObj);
 
     return res.status(200).json({
       success: true,
@@ -411,6 +411,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
  * @route /api/profile/updateProfile/:id
  *  */
 
+
 // export const updateUser = async (req: Request, res: Response) => {
 //   try {
 //     const userId = req.user._id;
@@ -418,28 +419,29 @@ export const verifyEmail = async (req: Request, res: Response) => {
 //     const {
 //       username,
 //       phoneNumber,
+//       city,
 //       farmName,
-//       // shopName,
 //       farmAddress,
 //       mainCrops,
+//       bio,
+//       farmerDescription,
+//       removeProfilePicture,
 //     } = req.body;
 
 //     const profilePicture = req.file?.path;
-// // ye karna padega jaruri hai
-//     // if (req.body.removeProfilePicture === "true") {
-//     //   userUpdates.profilePicture = "";
-//     // }
 
-//     // ----------------------------
-//     // Update User
-//     // ----------------------------
 //     const userUpdates: any = {};
 
 //     if (username !== undefined) userUpdates.username = username;
 //     if (phoneNumber !== undefined) userUpdates.phoneNumber = phoneNumber;
-//     if (profilePicture) userUpdates.profilePicture = profilePicture;
 
-//     const updatedUser = await UserModel.findByIdAndUpdate(
+//     if (removeProfilePicture === "true") {
+//       userUpdates.profilePicture = "";
+//     } else if (profilePicture) {
+//       userUpdates.profilePicture = profilePicture;
+//     }
+
+//     const updatedUser = await customerModel.findByIdAndUpdate(
 //       userId,
 //       { $set: userUpdates },
 //       { new: true, runValidators: true }
@@ -452,33 +454,36 @@ export const verifyEmail = async (req: Request, res: Response) => {
 //       });
 //     }
 
-//     // ----------------------------
-//     // Update Farmer
-//     // ----------------------------
 //     const farmerUpdates: any = {};
 
 //     if (farmName !== undefined) farmerUpdates.farmName = farmName;
-//     // if (shopName !== undefined) farmerUpdates.shopName = shopName;
 //     if (farmAddress !== undefined) farmerUpdates.farmAddress = farmAddress;
-//     if (mainCrops !== undefined) farmerUpdates.mainCrops = mainCrops;
-//     if (profilePicture) farmerUpdates.profilePicture = profilePicture;
-
-//     let updatedFarmer = await FarmerModel.findOneAndUpdate(
-//       { userId },
-//       { $set: farmerUpdates },
-//       { new: true, runValidators: true }
-//     );
-
-//     if (!updatedFarmer) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Farmer profile not found",
-//       });
+//     if (city !== undefined) farmerUpdates.city = city;
+//     if (bio !== undefined) farmerUpdates.bio = bio;
+//     if (farmerDescription !== undefined) {
+//       farmerUpdates.farmerDescription = farmerDescription;
 //     }
 
+//     if (mainCrops !== undefined) {
+//       farmerUpdates.mainCrops = Array.isArray(mainCrops)
+//         ? mainCrops
+//         : mainCrops
+//           .split(",")
+//           .map((crop: string) => crop.trim())
+//           .filter(Boolean);
+//     }
+
+//     let updatedFarmer = await farmerModel.findOneAndUpdate(
+//       { _id: userId },
+//       { $set: farmerUpdates },
+//       { new: true, runValidators: true, upsert: true }
+//     );
+
 //     updatedFarmer.isProfileCompleted = Boolean(
+//       updatedUser.username &&
+//       updatedUser.phoneNumber &&
+//       updatedFarmer.city &&
 //       updatedFarmer.farmName &&
-//       // updatedFarmer.shopName &&
 //       updatedFarmer.farmAddress &&
 //       updatedFarmer.mainCrops &&
 //       updatedFarmer.mainCrops.length > 0
@@ -486,11 +491,28 @@ export const verifyEmail = async (req: Request, res: Response) => {
 
 //     await updatedFarmer.save();
 
+//     const userInfo = {
+//       _id: updatedUser._id,
+//       username: updatedUser.username,
+//       email: updatedUser.email,
+//       phoneNumber: updatedUser.phoneNumber,
+//       profilePicture: updatedUser.profilePicture,
+//       role: updatedUser.role,
+
+//       city: updatedFarmer.city,
+//       farmAddress: updatedFarmer.farmAddress,
+//       farmName: updatedFarmer.farmName,
+//       // farmerDescription: updatedFarmer.farmerDescription,
+//       bio: updatedFarmer.bio,
+//       isProfileCompleted: updatedFarmer.isProfileCompleted,
+//       mainCrops: updatedFarmer.mainCrops,
+//       review: updatedFarmer.review,
+//     };
+
 //     return res.status(200).json({
 //       success: true,
 //       message: "Profile updated successfully.",
-//       user: updatedUser,
-//       farmer: updatedFarmer,
+//       userInfo,
 //     });
 //   } catch (error: any) {
 //     console.error("Update Profile Error:", error);
@@ -503,40 +525,104 @@ export const verifyEmail = async (req: Request, res: Response) => {
 //   }
 // };
 
+
 export const updateUser = async (req: Request, res: Response) => {
   try {
     const userId = req.user._id;
+    const role = req.user.role;
 
     const {
       username,
       phoneNumber,
       city,
+      address,
       farmName,
       farmAddress,
       mainCrops,
       bio,
-      farmerDescription,
       removeProfilePicture,
     } = req.body;
 
     const profilePicture = req.file?.path;
 
-    const userUpdates: any = {};
+    const cleanObject = (obj: Record<string, any>) => {
+      Object.keys(obj).forEach((key) => {
+        if (obj[key] === undefined || obj[key] === "") {
+          delete obj[key];
+        }
+      });
 
-    if (username !== undefined) userUpdates.username = username;
-    if (phoneNumber !== undefined) userUpdates.phoneNumber = phoneNumber;
+      return obj;
+    };
+
+    const parseMainCrops = (crops: any) => {
+      if (crops === undefined) return undefined;
+
+      if (Array.isArray(crops)) return crops;
+
+      return crops
+        .split(",")
+        .map((crop: string) => crop.trim())
+        .filter(Boolean);
+    };
+
+    const commonUpdates: any = cleanObject({
+      username,
+      phoneNumber,
+      city,
+      bio,
+    });
 
     if (removeProfilePicture === "true") {
-      userUpdates.profilePicture = "";
+      commonUpdates.profilePicture = "";
     } else if (profilePicture) {
-      userUpdates.profilePicture = profilePicture;
+      commonUpdates.profilePicture = profilePicture;
     }
 
-    const updatedUser = await customerModel.findByIdAndUpdate(
-      userId,
-      { $set: userUpdates },
-      { new: true, runValidators: true }
-    ).select("-password -verificationToken -resetPasswordToken");
+    let updates: any = {};
+
+    if (role === "Farmer") {
+      updates = cleanObject({
+        ...commonUpdates,
+        farmName,
+        farmAddress,
+        mainCrops: parseMainCrops(mainCrops),
+      });
+    } else if (role === "Customer") {
+      updates = cleanObject({
+        ...commonUpdates,
+        address,
+      });
+    } else {
+      return res.status(403).json({
+        success: false,
+        message: "Invalid user role",
+      });
+    }
+
+    let updatedUser: any;
+
+    if (role === "Farmer") {
+      updatedUser = await farmerModel
+        .findByIdAndUpdate(
+          userId,
+          { $set: updates },
+          { new: true, runValidators: true }
+        )
+        .select(
+          "-password -verificationToken -verificationTokenExpires -resetPasswordToken -resetPasswordExpires"
+        );
+    } else {
+      updatedUser = await customerModel
+        .findByIdAndUpdate(
+          userId,
+          { $set: updates },
+          { new: true, runValidators: true }
+        )
+        .select(
+          "-password -verificationToken -verificationTokenExpires -resetPasswordToken -resetPasswordExpires"
+        );
+    }
 
     if (!updatedUser) {
       return res.status(404).json({
@@ -545,42 +631,24 @@ export const updateUser = async (req: Request, res: Response) => {
       });
     }
 
-    const farmerUpdates: any = {};
+    updatedUser.isProfileCompleted =
+      role === "Farmer"
+        ? Boolean(
+            updatedUser.username &&
+              updatedUser.phoneNumber &&
+              updatedUser.city &&
+              updatedUser.farmName &&
+              updatedUser.farmAddress &&
+              updatedUser.mainCrops?.length > 0
+          )
+        : Boolean(
+            updatedUser.username &&
+              updatedUser.phoneNumber &&
+              updatedUser.city &&
+              updatedUser.address
+          );
 
-    if (farmName !== undefined) farmerUpdates.farmName = farmName;
-    if (farmAddress !== undefined) farmerUpdates.farmAddress = farmAddress;
-    if (city !== undefined) farmerUpdates.city = city;
-    if (bio !== undefined) farmerUpdates.bio = bio;
-    if (farmerDescription !== undefined) {
-      farmerUpdates.farmerDescription = farmerDescription;
-    }
-
-    if (mainCrops !== undefined) {
-      farmerUpdates.mainCrops = Array.isArray(mainCrops)
-        ? mainCrops
-        : mainCrops
-          .split(",")
-          .map((crop: string) => crop.trim())
-          .filter(Boolean);
-    }
-
-    let updatedFarmer = await farmerModel.findOneAndUpdate(
-      { _id: userId },
-      { $set: farmerUpdates },
-      { new: true, runValidators: true, upsert: true }
-    );
-
-    updatedFarmer.isProfileCompleted = Boolean(
-      updatedUser.username &&
-      updatedUser.phoneNumber &&
-      updatedFarmer.city &&
-      updatedFarmer.farmName &&
-      updatedFarmer.farmAddress &&
-      updatedFarmer.mainCrops &&
-      updatedFarmer.mainCrops.length > 0
-    );
-
-    await updatedFarmer.save();
+    await updatedUser.save();
 
     const userInfo = {
       _id: updatedUser._id,
@@ -589,15 +657,20 @@ export const updateUser = async (req: Request, res: Response) => {
       phoneNumber: updatedUser.phoneNumber,
       profilePicture: updatedUser.profilePicture,
       role: updatedUser.role,
+      city: updatedUser.city,
+      bio: updatedUser.bio,
+      isProfileCompleted: updatedUser.isProfileCompleted,
 
-      city: updatedFarmer.city,
-      farmAddress: updatedFarmer.farmAddress,
-      farmName: updatedFarmer.farmName,
-      // farmerDescription: updatedFarmer.farmerDescription,
-      bio: updatedFarmer.bio,
-      isProfileCompleted: updatedFarmer.isProfileCompleted,
-      mainCrops: updatedFarmer.mainCrops,
-      review: updatedFarmer.review,
+      ...(role === "Farmer"
+        ? {
+            farmName: updatedUser.farmName,
+            farmAddress: updatedUser.farmAddress,
+            mainCrops: updatedUser.mainCrops,
+            review: updatedUser.review,
+          }
+        : {
+            address: updatedUser.address,
+          }),
     };
 
     return res.status(200).json({
@@ -615,7 +688,6 @@ export const updateUser = async (req: Request, res: Response) => {
     });
   }
 };
-
 
 /**
  * Forget password API
@@ -760,13 +832,12 @@ export const deleteUser = async (
     const userId = req.user._id;
 
     // Try deleting customer
-    let deletedUser = await customerModel.findByIdAndDelete(userId);
-
-    // If not found, try deleting farmer
-    if (!deletedUser) {
+    let deletedUser:any;
+    if(req.user.role === "Customer"){
+     deletedUser = await customerModel.findByIdAndDelete(userId);
+    }else if(req.user.role === "Farmer"){
       deletedUser = await farmerModel.findByIdAndDelete(userId);
     }
-
     // User not found
     if (!deletedUser) {
       return res.status(404).json({
@@ -774,7 +845,7 @@ export const deleteUser = async (
         message: "User not found",
       });
     }
-
+    
     return res.status(200).json({
       success: true,
       message: "User deleted successfully",
@@ -907,28 +978,29 @@ export const verifyDeletePassword = async (
 ) => {
   try {
     const { password } = req.body;
-    const userId = req.user._id;
+    // const userId = req.user._id;
+    // console.log("user req==",req.user);
 
     // Search Customer
-    let user: any = await customerModel.findById(userId);
+    // let user: any = await customerModel.findById(userId);
 
     // If not found, search Farmer
-    if (!user) {
-      user = await farmerModel.findById(userId);
-    }
+    // if (!user) {
+    //   user = await farmerModel.findById(userId);
+    // }
 
     // User not found
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
+    // if (!user) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     message: "User not found",
+    //   });
+    // }
 
     // Compare Password
     const isMatch = await bcrypt.compare(
       password,
-      user.password
+      req.user.password
     );
 
     if (!isMatch) {

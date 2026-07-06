@@ -187,7 +187,7 @@ const UpdateCard = ({ profile, setProfile, onClose }: UpdateCardProps) => {
       } else if (profileFile) {
         data.append("profilePicture", profileFile);
       }
-
+          // console.log("data=========",formData.data)
       const response = await updateUserProfile(data);
 
       if (response.data.success) {

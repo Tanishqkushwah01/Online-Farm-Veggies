@@ -82,7 +82,7 @@ const Settings = ({ setActivePage }: SettingsProps) => {
   }
 
   return (
-    <div className="min-h-screen rounded-md bg-[#EEF3EC] px-6 py-8">
+    <div className="min-h-screen rounded-md bg-gray-300 px-6 py-8">
       <div className="mx-auto max-w-6xl">
         <div className="mb-8 flex items-start gap-10">
           {userInfo.role === "Customer" && (
