@@ -29,7 +29,6 @@ const ProfileCard = ({
   onSettings,
   onPrivacy,
   onHelp,
-  onLogout,
 }: ProfileCardProps) => {
     const {gotoLogin} = useWebNavigate();
 

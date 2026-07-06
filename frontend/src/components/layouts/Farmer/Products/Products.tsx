@@ -5,6 +5,7 @@ import { useState } from "react";
 
 const Products = () => {
   const [open, setOpen] = useState(false);
+  
 
   return (
     <div className="bg-gray-300 rounded-md p-8 min-h-full">

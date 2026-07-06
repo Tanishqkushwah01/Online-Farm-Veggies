@@ -186,15 +186,15 @@ export const updateProduct = async (
 
 
 
-export const deleteProduct = async (
-  req: Request,
-  res: Response
-) => {
+export const deleteProduct = async (req: Request, res: Response) => {
   try {
-
+    const farmerId = req.user._id;
     const { productId } = req.params;
 
-    const product = await ProductModel.findByIdAndDelete(productId);
+    const product = await ProductModel.findOneAndDelete({
+      _id: productId,
+      farmerId,
+    });
 
     if (!product) {
       return res.status(404).json({
@@ -207,15 +207,12 @@ export const deleteProduct = async (
       success: true,
       message: "Product deleted successfully.",
     });
-
   } catch (error) {
-
     console.log(error);
 
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
     });
-
   }
 };

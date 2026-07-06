@@ -98,9 +98,22 @@ const products = [
 import ProductCard from "./ProductCard";
 import { useProducts } from "../../../hooks/useProducts";
 import type { Product } from "../../../context/ProductContext";
+import { deleteProduct } from "../../../Api/farmerApi";
 
 const ProductGrid = () => {
-  const { products, loading } = useProducts();
+  const { products, loading, fetchProducts } = useProducts();
+
+  const handleDelete = async (id: string) => {
+    try {
+      const response = await deleteProduct(id);
+
+      if (response.data.success) {
+        await fetchProducts();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   if (loading) {
     return <h1>Loading...</h1>;
@@ -112,10 +125,11 @@ const ProductGrid = () => {
 
   return (
     <div className="grid grid-cols-4 gap-6">
-      {products.map((product: Product) => (
+      {products.map((product) => (
         <ProductCard
           key={product._id}
           product={product}
+          onDelete={handleDelete}
         />
       ))}
     </div>
