@@ -4,7 +4,6 @@ import {
   Lock,
   LogOut,
   Mail,
-  MapPin,
   Moon,
   Phone,
   Shield,
@@ -15,8 +14,10 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import UpdateCard from "./UpdateCard";
+import UserCard from "./UserCard";
 import useWebNavigate from "../hooks/useWebNavigate";
 import { logoutUser } from "../Api/authApi";
+import ToggleRow from "./ToggleRow";
 
 type ProfileType = {
   username: string;
@@ -103,33 +104,8 @@ const Settings = ({ setActivePage }: SettingsProps) => {
         </div>
 
         <div className="grid grid-cols-1 gap-7 lg:grid-cols-[300px_1fr] lg:grid-rows-[auto_auto]">
-          <div className="h-full rounded-3xl bg-white p-6 shadow-lg lg:col-start-1 lg:row-start-1">
-            <div className="flex h-full flex-col items-center justify-start pt-10">
-              <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-green-600 text-4xl font-bold text-white">
-                {profile.profilePicture ? (
-                  <img
-                    src={profile.profilePicture}
-                    alt="Profile"
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  profile.username.charAt(0).toUpperCase()
-                )}
-              </div>
-
-              <h2 className="mt-4 text-center text-2xl font-bold text-slate-900">
-                {profile.username}
-              </h2>
-
-              <p className="mt-2 text-center text-sm text-slate-500">
-                {profile.email}
-              </p>
-
-              <p className="mt-2 flex items-center gap-1 text-center text-sm text-slate-500">
-                <MapPin size={15} />
-                {profile.city || "No city added"}
-              </p>
-            </div>
+          <div className="lg:col-start-1 lg:row-start-1">
+            <UserCard profile={profile} />
           </div>
 
           <div className="space-y-6 lg:col-start-2 lg:row-start-1">
@@ -165,7 +141,7 @@ const Settings = ({ setActivePage }: SettingsProps) => {
               </div>
 
               <div className="mt-2 flex items-center gap-2 text-slate-500">
-                <MapPin size={18} />
+                <Mail size={18} />
                 <span>{profile.city || "No city added"}</span>
               </div>
 
@@ -303,10 +279,11 @@ const Settings = ({ setActivePage }: SettingsProps) => {
               <div className="grid grid-cols-2 gap-4">
                 <button
                   onClick={() => setTheme("light")}
-                  className={`flex h-16 cursor-pointer items-center justify-center gap-2 rounded-xl border font-semibold ${theme === "light"
+                  className={`flex h-16 cursor-pointer items-center justify-center gap-2 rounded-xl border font-semibold ${
+                    theme === "light"
                       ? "border-green-600 bg-green-50 text-green-700"
                       : "border-slate-300 bg-white text-slate-700"
-                    }`}
+                  }`}
                 >
                   <Sun size={20} />
                   Light
@@ -314,10 +291,11 @@ const Settings = ({ setActivePage }: SettingsProps) => {
 
                 <button
                   onClick={() => setTheme("dark")}
-                  className={`flex h-16 cursor-pointer items-center justify-center gap-2 rounded-xl border font-semibold ${theme === "dark"
+                  className={`flex h-16 cursor-pointer items-center justify-center gap-2 rounded-xl border font-semibold ${
+                    theme === "dark"
                       ? "border-green-600 bg-green-50 text-green-700"
                       : "border-slate-300 bg-white text-slate-700"
-                    }`}
+                  }`}
                 >
                   <Moon size={20} />
                   Dark
@@ -339,33 +317,5 @@ const Settings = ({ setActivePage }: SettingsProps) => {
   );
 };
 
-type ToggleRowProps = {
-  title: string;
-  description: string;
-  checked: boolean;
-  onChange: () => void;
-};
-
-const ToggleRow = ({ title, description, checked, onChange }: ToggleRowProps) => {
-  return (
-    <div className="flex items-center justify-between rounded-xl bg-slate-50 p-4">
-      <div>
-        <h3 className="font-semibold text-slate-900">{title}</h3>
-        <p className="text-sm text-slate-500">{description}</p>
-      </div>
-
-      <button
-        onClick={onChange}
-        className={`relative h-7 w-14 cursor-pointer rounded-full transition ${checked ? "bg-green-600" : "bg-slate-300"
-          }`}
-      >
-        <span
-          className={`absolute top-1 h-5 w-5 rounded-full bg-white transition ${checked ? "left-8" : "left-1"
-            }`}
-        />
-      </button>
-    </div>
-  );
-};
 
 export default Settings;
