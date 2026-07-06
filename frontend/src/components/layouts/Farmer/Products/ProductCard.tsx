@@ -50,11 +50,11 @@ const ProductCard = ({ product }: ProductProps) => {
 
         <div className="flex gap-3 mt-6">
 
-          <button className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">
+          <button className="cursor-pointer flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">
             Edit
           </button>
 
-          <button className="h-10 w-10 rounded-lg bg-red-100 text-red-600 flex justify-center items-center hover:bg-red-200">
+          <button className="cursor-pointer h-10 w-10 rounded-lg bg-red-100 text-red-600 flex justify-center items-center hover:bg-red-200">
             <Trash2 size={18} />
           </button>
 

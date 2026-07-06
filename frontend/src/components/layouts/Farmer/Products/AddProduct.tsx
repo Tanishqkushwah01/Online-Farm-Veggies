@@ -34,6 +34,13 @@ const AddProduct = ({ open, onClose }: AddProductModalProps) => {
 
     if (!open) return null;
 
+    const clearError = (field: keyof ProductFormData) => {
+        setErrors((prev) => ({
+            ...prev,
+            [field]: undefined,
+        }));
+    };
+
     function resetFileInput() {
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
@@ -44,34 +51,22 @@ const AddProduct = ({ open, onClose }: AddProductModalProps) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        setErrors((prev) => ({
-            ...prev,
-            image: "",
-        }));
-
-        const imageUrl = URL.createObjectURL(file);
-        setSelectedImage(imageUrl);
+        clearError("image");
+        setSelectedImage(URL.createObjectURL(file));
     }
 
     function handleCropDone(file: File) {
         setImage(file);
         setSelectedImage(null);
-
-        setErrors((prev) => ({
-            ...prev,
-            image: "",
-        }));
+        resetFileInput();
+        clearError("image");
     }
 
     function handleRemoveImage() {
         setImage(undefined);
         setSelectedImage(null);
         resetFileInput();
-
-        setErrors((prev) => ({
-            ...prev,
-            image: "",
-        }));
+        clearError("image");
     }
 
     function resetForm() {
@@ -92,13 +87,13 @@ const AddProduct = ({ open, onClose }: AddProductModalProps) => {
         e.preventDefault();
 
         const productData = {
-            productName,
+            productName: productName.trim(),
             category,
-            price,
-            quantity,
+            price: price.trim(),
+            quantity: quantity.trim(),
             unit,
             stockStatus,
-            description: description.trim(),
+            description: description.trim() || undefined,
             image,
         };
 
@@ -114,6 +109,7 @@ const AddProduct = ({ open, onClose }: AddProductModalProps) => {
                 quantity: fieldErrors.quantity?.[0],
                 unit: fieldErrors.unit?.[0],
                 stockStatus: fieldErrors.stockStatus?.[0],
+                description: fieldErrors.description?.[0],
                 image: fieldErrors.image?.[0],
             });
 
@@ -124,7 +120,9 @@ const AddProduct = ({ open, onClose }: AddProductModalProps) => {
 
         const response = await createProduct({
             ...result.data,
-            description: result.data.description || "",
+            price: Number(result.data.price),
+            quantity: Number(result.data.quantity),
+            description: result.data.description ?? "",
         });
 
         if (response.data.success) {
@@ -132,8 +130,6 @@ const AddProduct = ({ open, onClose }: AddProductModalProps) => {
             resetForm();
             onClose();
         }
-
-
     }
 
     return (
@@ -164,7 +160,10 @@ const AddProduct = ({ open, onClose }: AddProductModalProps) => {
                                     <input
                                         type="text"
                                         value={productName}
-                                        onChange={(e) => setProductName(e.target.value)}
+                                        onChange={(e) => {
+                                            setProductName(e.target.value);
+                                            if (e.target.value.trim()) clearError("productName");
+                                        }}
                                         placeholder="Tomato"
                                         className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-green-500"
                                     />
@@ -179,7 +178,10 @@ const AddProduct = ({ open, onClose }: AddProductModalProps) => {
                                     <label className="mb-2 block font-semibold">Category</label>
                                     <select
                                         value={category}
-                                        onChange={(e) => setCategory(e.target.value)}
+                                        onChange={(e) => {
+                                            setCategory(e.target.value);
+                                            clearError("category");
+                                        }}
                                         className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-green-500"
                                     >
                                         <option>Vegetables</option>
@@ -198,7 +200,10 @@ const AddProduct = ({ open, onClose }: AddProductModalProps) => {
                                     <input
                                         type="number"
                                         value={price}
-                                        onChange={(e) => setPrice(e.target.value)}
+                                        onChange={(e) => {
+                                            setPrice(e.target.value);
+                                            if (Number(e.target.value) > 0) clearError("price");
+                                        }}
                                         placeholder="40"
                                         className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-green-500"
                                     />
@@ -214,7 +219,10 @@ const AddProduct = ({ open, onClose }: AddProductModalProps) => {
                                     <input
                                         type="number"
                                         value={quantity}
-                                        onChange={(e) => setQuantity(e.target.value)}
+                                        onChange={(e) => {
+                                            setQuantity(e.target.value);
+                                            if (Number(e.target.value) > 0) clearError("quantity");
+                                        }}
                                         placeholder="100"
                                         className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-green-500"
                                     />
@@ -229,7 +237,10 @@ const AddProduct = ({ open, onClose }: AddProductModalProps) => {
                                     <label className="mb-2 block font-semibold">Unit</label>
                                     <select
                                         value={unit}
-                                        onChange={(e) => setUnit(e.target.value)}
+                                        onChange={(e) => {
+                                            setUnit(e.target.value);
+                                            clearError("unit");
+                                        }}
                                         className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-green-500"
                                     >
                                         <option>Kg</option>
@@ -237,7 +248,9 @@ const AddProduct = ({ open, onClose }: AddProductModalProps) => {
                                         <option>Piece</option>
                                     </select>
                                     {errors.unit && (
-                                        <p className="mt-1 text-sm text-red-500">{errors.unit}</p>
+                                        <p className="mt-1 text-sm text-red-500">
+                                            {errors.unit}
+                                        </p>
                                     )}
                                 </div>
 
@@ -247,7 +260,10 @@ const AddProduct = ({ open, onClose }: AddProductModalProps) => {
                                     </label>
                                     <select
                                         value={stockStatus}
-                                        onChange={(e) => setStockStatus(e.target.value)}
+                                        onChange={(e) => {
+                                            setStockStatus(e.target.value);
+                                            clearError("stockStatus");
+                                        }}
                                         className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-green-500"
                                     >
                                         <option>In Stock</option>
@@ -266,10 +282,18 @@ const AddProduct = ({ open, onClose }: AddProductModalProps) => {
                                 <textarea
                                     rows={3}
                                     value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
+                                    onChange={(e) => {
+                                        setDescription(e.target.value);
+                                        clearError("description");
+                                    }}
                                     placeholder="Write product description..."
                                     className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-green-500"
                                 />
+                                {errors.description && (
+                                    <p className="mt-1 text-sm text-red-500">
+                                        {errors.description}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="mt-5">
@@ -286,7 +310,9 @@ const AddProduct = ({ open, onClose }: AddProductModalProps) => {
                                 />
 
                                 {errors.image && (
-                                    <p className="mt-1 text-sm text-red-500">{errors.image}</p>
+                                    <p className="mt-1 text-sm text-red-500">
+                                        {errors.image}
+                                    </p>
                                 )}
 
                                 {image && (

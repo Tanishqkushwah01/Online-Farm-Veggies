@@ -26,7 +26,10 @@ const productSchema = new mongoose.Schema(
       enum: ["Kg", "Gram", "Piece", "Dozen", "Liter"],
       required: true,
     },
-    image: String,
+    image: {
+      type:String,
+      required:true
+    },
     isAvailable: {
       type: Boolean,
       default: true,
