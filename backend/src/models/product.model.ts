@@ -23,7 +23,7 @@ const productSchema = new mongoose.Schema(
     },
     unit: {
       type: String,
-      enum: ["kg", "gram", "dozen", "piece", "liter"],
+      enum: ["Kg", "Gram", "Piece", "Dozen", "Liter"],
       required: true,
     },
     image: String,
@@ -35,7 +35,7 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 0
     },
-     city: {
+    city: {
       type: String,
       required: true,
     },

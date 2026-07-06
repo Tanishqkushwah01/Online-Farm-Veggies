@@ -1,7 +1,7 @@
 import { Bell, Plus, Search, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import AddProductModal from "./CreateCard";
 import ProfileCard from "./ProfileCard";
+import AddProduct from "./Products/AddProduct";
 
 const Header = ({ username }: { username: string }) => {
   const [open, setOpen] = useState(false);
@@ -136,7 +136,7 @@ const Header = ({ username }: { username: string }) => {
         </div>
       </div>
 
-      <AddProductModal
+      <AddProduct
         open={open}
         onClose={() => setOpen(false)}
       />

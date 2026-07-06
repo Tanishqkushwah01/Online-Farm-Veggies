@@ -4,7 +4,7 @@ import customerModel from "../models/customer.model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import farmerModel from "../models/farmer.model";
-import ProductModel  from "../models/product.model";
+import ProductModel from "../models/product.model";
 
 /**
  * @POST Product Update Route
@@ -13,22 +13,19 @@ import ProductModel  from "../models/product.model";
  */
 
 
-export const createProduct = async (
-  req: Request,
-  res: Response
-) => {
+export const createProduct = async (req: Request, res: Response) => {
   try {
     console.log("User ID:", req.user._id);
     const UserId = req.user._id;
 
-    const farmer = await farmerModel.findOne({_id:UserId });
-// console.log(farmer)
-    if (!farmer) {
-      return res.status(404).json({
-        success: false,
-        message: "Farmer not found",
-      });
-    }
+    // const farmer = await farmerModel.findOne({ _id: UserId });
+    // console.log(farmer)
+    // if (!farmer) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     message: "Farmer not found",
+    //   });
+    // }
 
     const {
       productName,
@@ -42,7 +39,7 @@ export const createProduct = async (
     const image = req.file?.path;
 
     const product = await ProductModel.create({
-      farmerId:farmer._id,
+      farmerId: UserId,
       productName,
       description,
       category,
@@ -50,18 +47,17 @@ export const createProduct = async (
       quantity,
       unit,
       image,
-      city:farmer.city?? "",
-     
+      city: req.user.city
     });
-   
-   const totalProducts = farmer.totalProducts + 1;
 
-await farmerModel.findByIdAndUpdate(
-  farmer._id,
-  {
-    totalProducts,
-  }
-);
+    const totalProducts = req.user.totalProducts + 1;
+
+    await farmerModel.findByIdAndUpdate(
+      req.user._id,
+      {
+        totalProducts,
+      }
+    );
     return res.status(201).json({
       success: true,
       message: "Product created successfully.",
@@ -94,26 +90,25 @@ export const getFarmerProducts = async (
 
     const userId = req.user._id;
 
-    const farmer = await farmerModel.findOne({ _id:userId });
+    // const farmer = await farmerModel.findOne({ _id: userId });
 
-    if (!farmer) {
-      return res.status(404).json({
-        success: false,
-        message: "Farmer not found",
-      });
-    }
+    // if (!farmer) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     message: "Farmer not found",
+    //   });
+    // }
 
     const products = await ProductModel.find({
-      farmerId: farmer._id,
+      farmerId: req.user._id,
     });
 
     return res.status(200).json({
       success: true,
       count: products.length,
       data: products,
-      
     });
-   
+
 
   } catch (error) {
 
@@ -153,7 +148,7 @@ export const updateProduct = async (
       productId,
       updates,
       {
-        returnDocument:'after',
+        returnDocument: 'after',
         runValidators: true,
       }
     );

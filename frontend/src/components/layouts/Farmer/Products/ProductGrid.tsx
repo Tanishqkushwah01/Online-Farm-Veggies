@@ -1,4 +1,4 @@
-import ProductCard from "./ProductCard";
+// import ProductCard from "./ProductCard";
 
 const products = [
   {
@@ -79,17 +79,45 @@ const products = [
   },
 ];
 
+// const ProductGrid = () => {
+//   return (
+//     <div className="grid grid-cols-4 gap-6">
+
+//       {products.map((item, index) => (
+//         <ProductCard
+//           key={index}
+//           product={item}
+//         />
+//       ))}
+
+//     </div>
+//   );
+// };
+
+// export default ProductGrid;
+import ProductCard from "./ProductCard";
+import { useProducts } from "../../../hooks/useProducts";
+import type { Product } from "../../../context/ProductContext";
+
 const ProductGrid = () => {
+  const { products, loading } = useProducts();
+
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
+
+  if (products.length === 0) {
+    return <h1>No Products Found</h1>;
+  }
+
   return (
     <div className="grid grid-cols-4 gap-6">
-
-      {products.map((item, index) => (
+      {products.map((product: Product) => (
         <ProductCard
-          key={index}
-          product={item}
+          key={product._id}
+          product={product}
         />
       ))}
-
     </div>
   );
 };

@@ -1,7 +1,11 @@
 import { Plus } from "lucide-react";
 import ProductGrid from "./ProductGrid";
+import AddProduct from "./AddProduct";
+import { useState } from "react";
 
 const Products = () => {
+  const [open, setOpen] = useState(false);
+
   return (
     <div className="bg-gray-300 rounded-md p-8 min-h-full">
 
@@ -17,7 +21,9 @@ const Products = () => {
           </p>
         </div>
 
-        <button className="bg-white text-green-700 px-6 py-3 rounded-xl font-semibold flex items-center gap-2 hover:bg-gray-100">
+        <button
+          onClick={() => setOpen(true)}
+          className="bg-white text-green-700 px-6 py-3 rounded-xl font-semibold flex items-center gap-2 hover:bg-gray-100">
           <Plus size={20} />
           Add Product
         </button>
@@ -29,7 +35,10 @@ const Products = () => {
         <ProductGrid />
 
       </div>
-
+      <AddProduct
+        open={open}
+        onClose={() => setOpen(false)}
+      />
     </div>
   );
 };

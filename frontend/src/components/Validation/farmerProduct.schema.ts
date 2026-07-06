@@ -8,7 +8,7 @@ export const productSchema = z.object({
   quantity: z.coerce.number().min(1, "Quantity is required"),
   unit: z.string().min(1, "Unit is required"),
   stockStatus: z.enum(["In Stock", "Out of Stock"]),
-  description: z.string().min(1, "Description is required"),
+  description: z.string().min(1, "Description is required").optional(),
   image: z.instanceof(File).optional(),
 });
 

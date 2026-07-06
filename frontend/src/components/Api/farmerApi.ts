@@ -19,6 +19,7 @@ export type ProductRequest = {
 };
 
 export const createProduct = async (data: ProductRequest) => {
+    console.log("data===",data);
     const formData = new FormData();
 
     formData.append("productName", data.productName);
@@ -32,12 +33,28 @@ export const createProduct = async (data: ProductRequest) => {
     if (data.image) {
         formData.append("image", data.image);
     }
-    console.log("forma data ====", formData);
+    // console.log("forma data ====", formData);
+//   console.log([...data.entries()]);
+
     return await api.post("/products", formData, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
     });
+};
+
+export const getFarmerProducts = async () => {
+  const token = localStorage.getItem("token");
+
+  return await api.get(
+    "/products",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
 };
 
 

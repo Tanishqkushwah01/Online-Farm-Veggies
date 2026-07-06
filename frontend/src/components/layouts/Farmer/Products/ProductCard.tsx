@@ -1,4 +1,4 @@
-import { Pencil, Trash2, Star } from "lucide-react";
+import {  Trash2, Star } from "lucide-react";
 
 type ProductProps = {
   product: {

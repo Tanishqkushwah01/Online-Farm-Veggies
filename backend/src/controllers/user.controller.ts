@@ -870,27 +870,27 @@ export const requestChangePassword = async (
   res: Response
 ) => {
   try {
-    const userId = req.user._id;
+    // const userId = req.user._id;
     const { password } = req.body;
 
     // Find Customer
-    let user: any = await customerModel.findById(userId);
+    // let user: any = await customerModel.findById(userId);
 
     // If not found, find Farmer
-    if (!user) {
-      user = await farmerModel.findById(userId);
-    }
+    // if (!user) {
+    //   user = await farmerModel.findById(userId);
+    // }
 
     // User not found
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
+    // if (!user) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     message: "User not found",
+    //   });
+    // }
 
     // Verify current password
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, req.user.password);
 
     if (!isMatch) {
       return res.status(400).json({
@@ -902,16 +902,16 @@ export const requestChangePassword = async (
     // Generate reset token
     const resetToken = crypto.randomBytes(32).toString("hex");
 
-    user.resetPasswordToken = resetToken;
-    user.resetPasswordExpires = new Date(
+    req.user.resetPasswordToken = resetToken;
+    req.user.resetPasswordExpires = new Date(
       Date.now() + 15 * 60 * 1000
     );
 
-    await user.save();
+    await req.user.save();
 
     // Send change password email
     await sendChangePasswordEmail(
-      user.email,
+      req.user.email,
       resetToken
     );
 

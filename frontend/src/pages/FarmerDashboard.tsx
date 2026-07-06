@@ -11,6 +11,8 @@ import Products from "../components/layouts/Farmer/Products/Products";
 import Orders from "../components/layouts/Farmer/Orders/Orders";
 import Reviews from "../components/layouts/Farmer/Reviews/Reviews";
 
+import { ProductProvider } from "../components/context/ProductContext";
+
 const FarmerDashboard = () => {
   const [activePage, setActivePage] = useState("dashboard");
 
@@ -39,26 +41,29 @@ const FarmerDashboard = () => {
           setActivePage={setActivePage}
         />
 
-        <div className="flex-1 flex flex-col">
+        <ProductProvider>
+          <div className="flex-1 flex flex-col">
 
-          <Header username="Tanishq kushwah" />
+            <Header username="Tanishq kushwah" />
 
-          <main className="flex-1 bg-gray-300 p-6 overflow-auto rounded-md no-scrollbar">
+            <main className="flex-1 bg-gray-300 p-6 overflow-auto rounded-md no-scrollbar">
 
-            {activePage === "dashboard" && <Dashboard />}
+              {activePage === "dashboard" && <Dashboard />}
 
-            {activePage === "products" && <Products />}
+              {activePage === "products" && <Products />}
 
-            {activePage === "orders" && <Orders />}
+              {activePage === "orders" && <Orders />}
 
-            {activePage === "reviews" && <Reviews />}
+              {activePage === "reviews" && <Reviews />}
 
-            {activePage === "settings" && <Settings setActivePage={setActivePage} />
-            }
+              {activePage === "settings" && (
+                <Settings setActivePage={setActivePage} />
+              )}
 
-          </main>
+            </main>
 
-        </div>
+          </div>
+        </ProductProvider>
 
       </div>
     </div>

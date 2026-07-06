@@ -25,7 +25,7 @@ app.use("/api/auth",userRouter);
 // Farmer Routes
 app.use("/api",farmerRoute)
 app.use("/api",customerRoute)
-console.log(process.env.PORT)
+// console.log(process.env.PORT)
 app.listen(process.env.PORT,()=>{
 console.log("server running at 3000");
 })

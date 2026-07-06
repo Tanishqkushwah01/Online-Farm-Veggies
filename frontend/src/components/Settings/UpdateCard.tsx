@@ -187,7 +187,7 @@ const UpdateCard = ({ profile, setProfile, onClose }: UpdateCardProps) => {
       } else if (profileFile) {
         data.append("profilePicture", profileFile);
       }
-          // console.log("data=========",formData.data)
+      // console.log("data=========",formData.data)
       const response = await updateUserProfile(data);
 
       if (response.data.success) {
@@ -435,6 +435,8 @@ const UpdateCard = ({ profile, setProfile, onClose }: UpdateCardProps) => {
           image={selectedImage}
           onClose={() => setSelectedImage(null)}
           onCropDone={handleCropDone}
+          onRemoveImage={handleRemoveImage}
+          variant="profile"
         />
       )}
     </>
