@@ -31,5 +31,5 @@ customerRouter.post("/farmer/:farmerId/reviews", authMiddleware, customerControl
 // Customer can view all reviews for a specific farmer
 customerRouter.get("/farmer/:farmerId/reviews",authMiddleware,customerController.getFarmerReviews);
 
-
+customerRouter.post("/wishlist/:productId", authMiddleware, customerController.addToWishlist);
 export default customerRouter;

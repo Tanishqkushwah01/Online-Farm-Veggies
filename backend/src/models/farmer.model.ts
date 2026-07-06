@@ -42,7 +42,10 @@ const farmerSchema= new mongoose.Schema({
         type: String,
         trim: true,
     },
-     
+     totalProducts: {
+        type: Number,
+        default: 0,
+     },
     bio:{
         type: String,
         trim: true,

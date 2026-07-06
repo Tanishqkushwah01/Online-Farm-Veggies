@@ -50,13 +50,23 @@ export const createProduct = async (
       quantity,
       unit,
       image,
-      city:farmer.city?? ""
+      city:farmer.city?? "",
+     
     });
+   
+   const totalProducts = farmer.totalProducts + 1;
 
+await farmerModel.findByIdAndUpdate(
+  farmer._id,
+  {
+    totalProducts,
+  }
+);
     return res.status(201).json({
       success: true,
       message: "Product created successfully.",
       data: product,
+      totalProducts // Increment the totalProducts count by 1
     });
 
   } catch (error) {

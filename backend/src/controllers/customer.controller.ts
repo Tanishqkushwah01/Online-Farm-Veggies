@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import productModel from "../models/product.model";
 import  farmerModel from "../models/farmer.model";
-import { populate } from "dotenv";
 import ReviewModel from "../models/ReviewModel";
+import wishlistModel from "../models/wishlist.model";
+
 
 
 
@@ -348,5 +349,118 @@ export const getFarmerReviews = async (
 };
 
 
+
+
+// Add product to wishlist
+
+
+
+export const addToWishlist = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const customerId = req.user._id;
+    const { productId } = req.params.productId as any;
+
+    // Customer Only
+    if (req.user.role !== "Customer") {
+      return res.status(403).json({ 
+        success: false,
+        message: "Only customers can use wishlist",
+      });
+    }
+
+    // Product Exists?
+    const product = await productModel.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    // Already Added?
+    const alreadyExists = await wishlistModel.findOne({
+      customerId,
+      productId,
+    });
+
+    if (alreadyExists) {
+      return res.status(400).json({
+        success: false,
+        message: "Product already exists in wishlist",
+      });
+    }
+
+    // Save
+    const wishlist = await wishlistModel.create({
+      customerId,
+      productId,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Product added to wishlist",
+      wishlist,
+    });
+
+  } catch (error: any) {
+    console.error("Add Wishlist Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+
+
+
+// Get products in wishlist
+
+
+export const getWishlist = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const customerId = req.user._id;
+
+    // Only Customer can access wishlist
+    if (req.user.role !== "Customer") {
+      return res.status(403).json({
+        success: false,
+        message: "Only customers can access wishlist",
+      });
+    }
+
+    const wishlist = await wishlistModel
+      .find({ customerId })
+      .populate({
+        path: "productId",
+        populate: {
+          path: "farmerId",
+          select: "farmName city profilePicture",
+        },
+      });
+
+    return res.status(200).json({
+      success: true,
+      totalItems: wishlist.length,
+      wishlist,
+    });
+
+  } catch (error: any) {
+    console.error("Get Wishlist Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
 
 
