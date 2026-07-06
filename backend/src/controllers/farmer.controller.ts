@@ -137,12 +137,17 @@ export const updateProduct = async (
 ) => {
   try {
     const { productId } = req.params;
+    console.log("productId::",productId);
 
     const updates = req.body;
+    console.log("updates::",updates);
+
 
     if (req.file) {
       updates.image = req.file.path;
     }
+    console.log("req.file.path::",req.file?.path);
+
 
     const product = await ProductModel.findByIdAndUpdate(
       productId,

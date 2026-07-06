@@ -57,13 +57,25 @@ export const getFarmerProducts = async () => {
 
 };
 
-export const deleteProduct = (id: string) => {
+export const updateProduct = (productId: string, data: any) => {
   const token = localStorage.getItem("token");
 
-  return api.delete(`/products/${id}`, {
+  return api.put(`/products/${productId}`, data, {
     headers: {
       Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
     },
   });
+};
+
+
+export const deleteProduct = (id: string) => {
+    const token = localStorage.getItem("token");
+
+    return api.delete(`/products/${id}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
 };
 

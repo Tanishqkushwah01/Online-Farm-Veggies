@@ -11,12 +11,16 @@ type ProductProps = {
     image: string;
   };
   onDelete: (id: string) => void;
+  onEdit: (product: any) => void;
 };
 
-const ProductCard = ({ product, onDelete }: ProductProps) => {
+const ProductCard = ({
+  product,
+  onDelete,
+  onEdit,
+}: ProductProps) => {
   return (
-    <div className="bg-white rounded-xl shadow hover:shadow-xl duration-300 overflow-hidden border border-gray-200">
-
+    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow duration-300 hover:shadow-xl">
       <img
         src={product.image}
         alt={product.productName}
@@ -24,16 +28,15 @@ const ProductCard = ({ product, onDelete }: ProductProps) => {
       />
 
       <div className="p-5">
-
         <h2 className="text-xl font-bold">{product.productName}</h2>
 
-        <p className="text-gray-500 mt-1">{product.category}</p>
+        <p className="mt-1 text-gray-500">{product.category}</p>
 
-        <h1 className="text-green-600 text-2xl font-bold mt-4">
+        <h1 className="mt-4 text-2xl font-bold text-green-600">
           ₹{product.price}
         </h1>
 
-        <div className="flex justify-between mt-4">
+        <div className="mt-4 flex justify-between">
           <span className="text-gray-600">
             {product.quantity} Kg
           </span>
@@ -44,21 +47,21 @@ const ProductCard = ({ product, onDelete }: ProductProps) => {
           </span>
         </div>
 
-        <div className="flex gap-3 mt-6">
-
-          <button className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">
+        <div className="mt-6 flex gap-3">
+          <button
+            onClick={() => onEdit(product)}
+            className="flex-1 cursor-pointer rounded-lg bg-green-600 py-2 text-white hover:bg-green-700"
+          >
             Edit
           </button>
 
           <button
             onClick={() => onDelete(product._id)}
-            className="h-10 w-10 rounded-lg bg-red-100 text-red-600 flex justify-center items-center hover:bg-red-200"
+            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-red-100 text-red-600 hover:bg-red-200"
           >
             <Trash2 size={18} />
           </button>
-
         </div>
-
       </div>
     </div>
   );

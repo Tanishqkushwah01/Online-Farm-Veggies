@@ -1,107 +1,24 @@
-// import ProductCard from "./ProductCard";
-
-const products = [
-  {
-    productName: "Tomato",
-    category: "Vegetables",
-    price: 30,
-    quantity: 120,
-    review: 4.8,
-    image:
-      "https://images.unsplash.com/photo-1546094096-0df4bcaaa337",
-  }, {
-    productName: "Tomato",
-    category: "Vegetables",
-    price: 30,
-    quantity: 120,
-    review: 4.8,
-    image:
-      "https://images.unsplash.com/photo-1546094096-0df4bcaaa337",
-  }, {
-    productName: "Tomato",
-    category: "Vegetables",
-    price: 30,
-    quantity: 120,
-    review: 4.8,
-    image:
-      "https://images.unsplash.com/photo-1546094096-0df4bcaaa337",
-  }, {
-    productName: "Tomato",
-    category: "Vegetables",
-    price: 30,
-    quantity: 120,
-    review: 4.8,
-    image:
-      "https://images.unsplash.com/photo-1546094096-0df4bcaaa337",
-  }, {
-    productName: "Tomato",
-    category: "Vegetables",
-    price: 30,
-    quantity: 120,
-    review: 4.8,
-    image:
-      "https://images.unsplash.com/photo-1546094096-0df4bcaaa337",
-  }, {
-    productName: "Tomato",
-    category: "Vegetables",
-    price: 30,
-    quantity: 120,
-    review: 4.8,
-    image:
-      "https://images.unsplash.com/photo-1546094096-0df4bcaaa337",
-  },
-  {
-    productName: "Potato",
-    category: "Vegetables",
-    price: 25,
-    quantity: 200,
-    review: 4.7,
-    image:
-      "https://images.unsplash.com/photo-1518977676601-b53f82aba655",
-  },
-  {
-    productName: "Onion",
-    category: "Vegetables",
-    price: 35,
-    quantity: 90,
-    review: 4.9,
-    image:
-      "https://images.unsplash.com/photo-1508747703725-719777637510",
-  },
-  {
-    productName: "Spinach",
-    category: "Leafy",
-    price: 20,
-    quantity: 65,
-    review: 4.5,
-    image:
-      "https://images.unsplash.com/photo-1576045057995-568f588f82fb",
-  },
-];
-
-// const ProductGrid = () => {
-//   return (
-//     <div className="grid grid-cols-4 gap-6">
-
-//       {products.map((item, index) => (
-//         <ProductCard
-//           key={index}
-//           product={item}
-//         />
-//       ))}
-
-//     </div>
-//   );
-// };
-
-// export default ProductGrid;
+import { useState } from "react";
 import ProductCard from "./ProductCard";
+import AddProduct from "./AddProduct";
 import { useProducts } from "../../../hooks/useProducts";
-import type { Product } from "../../../context/ProductContext";
 import { deleteProduct } from "../../../Api/farmerApi";
 
 const ProductGrid = () => {
   const { products, loading, fetchProducts } = useProducts();
+
+  const [openProduct, setOpenProduct] = useState(false);
+  const [editProduct, setEditProduct] = useState<any | null>(null);
+
+  const handleEdit = (product: any) => {
+    setEditProduct(product);
+    setOpenProduct(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenProduct(false);
+    setEditProduct(null);
+  };
 
   const handleDelete = async (id: string) => {
     try {
@@ -124,15 +41,24 @@ const ProductGrid = () => {
   }
 
   return (
-    <div className="grid grid-cols-4 gap-6">
-      {products.map((product) => (
-        <ProductCard
-          key={product._id}
-          product={product}
-          onDelete={handleDelete}
-        />
-      ))}
-    </div>
+    <>
+      <div className="grid grid-cols-4 gap-6">
+        {products.map((product) => (
+          <ProductCard
+            key={product._id}
+            product={product}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+          />
+        ))}
+      </div>
+
+      <AddProduct
+        open={openProduct}
+        onClose={handleCloseModal}
+        editProduct={editProduct}
+      />
+    </>
   );
 };
 
