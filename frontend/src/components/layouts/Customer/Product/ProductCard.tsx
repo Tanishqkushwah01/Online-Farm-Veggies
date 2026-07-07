@@ -1,7 +1,7 @@
 import { ArrowRight, Heart, Star } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { addToWishlist } from "../../../Api/customerApi";
+import { addToWishlist, getProductById } from "../../../Api/customerApi";
 import useWebNavigate from "../../../hooks/useWebNavigate";
 
 type ProductCardProps = {
@@ -20,6 +20,30 @@ export default function ProductCard({ product }: ProductCardProps) {
     product.isWishlisted ?? false
   );
   const { gotoProductDetails } = useWebNavigate();
+  const [loadingDetails, setLoadingDetails] = useState(false);
+
+  const handleViewMore = async () => {
+    try {
+      setLoadingDetails(true);
+
+      const response = await getProductById(product._id);
+      console.log("res=====",response.data);
+
+      if (response.data.success) {
+        gotoProductDetails(
+          product._id,
+          response.data.product,
+          response.data.farmerDetails
+        );
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "Something went wrong"
+      );
+    } finally {
+      setLoadingDetails(false);
+    }
+  };
 
   const handleWishlist = async () => {
     try {
@@ -81,20 +105,19 @@ export default function ProductCard({ product }: ProductCardProps) {
           </span>
         </div>
 
-        {/* <button
-          onClick={() => gotoProductDetails(product._id)}
-          className="mt-4 w-full flex items-center justify-center gap-2 bg-green-600 text-white py-2.5 rounded-xl hover:bg-green-700 transition cursor-pointer">
-          <ShoppingCart size={17} />
-          View More
-        </button> */}
+
         <button
-          onClick={() => gotoProductDetails(product._id)}
+          // onClick={() => gotoProductDetails(product._id)}
+          onClick={handleViewMore}
+          disabled={loadingDetails}
           className="mt-4 w-full flex items-center justify-center gap-2 bg-green-600 text-white py-2.5 rounded-xl hover:bg-green-700 transition cursor-pointer"
         >
           <ArrowRight size={17} />
-          {/* <Eye size={17} /> */}
-          View More
+
+          {loadingDetails ? "Loading..." : "View More"}
+
         </button>
+
       </div>
     </div>
   );

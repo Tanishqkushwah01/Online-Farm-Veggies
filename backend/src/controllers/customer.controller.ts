@@ -447,82 +447,80 @@ export const getWishlist = async (req: Request, res: Response) => {
   }
 };
 
-
-
-
-// export const getWishlist = async (
-//   req: Request,
-//   res: Response
-// ) => {
+// export const getProductById = async (req: Request, res: Response) => {
 //   try {
-//     const customerId = req.user._id;
+//     const { productId } = req.params;
 
-//     // Only Customer can access wishlist
-//     if (req.user.role !== "Customer") {
-//       return res.status(403).json({
+//     const product = await productModel
+//       .findById(productId)
+//       .populate(
+//         "farmerId",
+//         "username farmName city farmAddress phoneNumber email profilePicture bio"
+//       );
+
+//     if (!product) {
+//       return res.status(404).json({
 //         success: false,
-//         message: "Only customers can access wishlist",
+//         message: "Product not found.",
 //       });
 //     }
 
-//     const wishlist = await wishlistModel
-//       .find({ customerId })
-//       .populate({
-//         path: "productId",
-//         populate: {
-//           path: "farmerId",
-//           select: "farmName city profilePicture",
-//         },
-//       });
-
+//     const farmerDetails = product.farmerId;
+//     console.log("hiiiiiiiii====",product);
 //     return res.status(200).json({
 //       success: true,
-//       totalItems: wishlist.length,
-//       wishlist,
-//     });
-
-//   } catch (error: any) {
-//     console.error("Get Wishlist Error:", error);
-
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//     });
-//   }
-// };
-
-
-
-
-// export const getTenProducts  = async (req: Request, res: Response) => {
-//  try {
-//     const products = await productModel.aggregate([
-//       {
-//         $match: {
-//           quantity: { $gt: 0 }, // sirf available products
-//         },
-//       },
-//       {
-//         $sample: {
-//           size: 10,
-//         },
-//       },
-//     ]);
-
-//     return res.status(200).json({
-//       success: true,
-//       products,
+//       product,
+//       farmerDetails,
 //     });
 //   } catch (error) {
 //     console.log(error);
 
 //     return res.status(500).json({
 //       success: false,
-//       message: "Internal Server Error",
+//       message: "Internal Server Error.",
 //     });
 //   }
 // };
 
+
+export const getProductById = async (req: Request, res: Response) => {
+  try {
+    const { productId } = req.params;
+
+    const product = await productModel
+      .findById(productId)
+      .populate(
+        "farmerId",
+        "username farmName city farmAddress phoneNumber email profilePicture bio"
+      );
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found.",
+      });
+    }
+
+    // Mongoose document -> Plain Object
+    const productData = product.toObject();
+
+    // farmerDetails alag nikalo aur product me se farmerId hata do
+    const { farmerId: farmerDetails, ...productWithoutFarmer } = productData;
+
+    return res.status(200).json({
+      success: true,
+      product: productWithoutFarmer,
+      farmerDetails,
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error.",
+    });
+  }
+};
 
 export const getTenProducts = async (req: Request, res: Response) => {
   try {

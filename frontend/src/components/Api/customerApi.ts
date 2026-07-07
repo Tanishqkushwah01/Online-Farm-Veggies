@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_CUSTOMER_URL
+  baseURL: import.meta.env.VITE_CUSTOMER_URL
 })
 
 
@@ -13,7 +13,7 @@ type FilterData = {
 };
 
 export const filterProducts = (data: FilterData) => {
-    console.log("data --",data);
+  console.log("data --", data);
   return api.get("/products", {
     params: {
       location: data.location,
@@ -42,8 +42,8 @@ export const getTenProducts = () => {
 export const addToWishlist = async (productId: string) => {
   const token = localStorage.getItem("token");
 
-  return api.post(`/wishlist/toggle/${productId}`,{},
-        {
+  return api.post(`/wishlist/toggle/${productId}`, {},
+    {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -51,13 +51,13 @@ export const addToWishlist = async (productId: string) => {
   );
 };
 
- 
+
 
 export const getWishlist = async () => {
   const token = localStorage.getItem("token");
 
   return api.get("/wishlist",
-        {
+    {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -77,4 +77,20 @@ export const addReview = (data: {
       Authorization: `Bearer ${token}`,
     },
   });
+};
+
+
+
+
+export const getProductById = async (productId: string) => {
+
+  const token = localStorage.getItem("token");
+
+  return await api.get(`/products/${productId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };

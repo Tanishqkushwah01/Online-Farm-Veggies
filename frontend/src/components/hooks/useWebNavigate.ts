@@ -14,7 +14,19 @@ const useWebNavigate = () => {
   const gotoAdmin = () => navigate("/admin");
 
 
-  const gotoProductDetails = (productId: string) => navigate(`/customer/product/${productId}`);
+  // const gotoProductDetails = (productId: string) => navigate(`/customer/product/${productId}`);
+  const gotoProductDetails = (
+    productId: string,
+    product: any,
+    farmerDetails: any
+  ) => {
+    navigate(`/customer/product/${productId}`, {
+      state: {
+        product,
+        farmerDetails,
+      },
+    });
+  };
 
   const gotoCustomer = () => navigate("/customer");
 

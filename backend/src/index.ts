@@ -16,15 +16,15 @@ app.use(cors({
 // User
 import userRouter from "./routes/user.router"
 import connectToDB from "./utilities/database";
-import farmerRoute from "./routes/farmer.router";
-import customerRoute from "./routes/customer.route";
+import farmerRouter from "./routes/farmer.router";
+import customerRouter from "./routes/customer.route";
 connectToDB();
 
 // Auth Routes
 app.use("/api/auth",userRouter);
 // Farmer Routes
-app.use("/farmer",farmerRoute)
-app.use("/customer",customerRoute)
+app.use("/farmer",farmerRouter)
+app.use("/customer",customerRouter)
 // console.log(process.env.PORT)
 app.listen(process.env.PORT,()=>{
 console.log("server running at 3000");
