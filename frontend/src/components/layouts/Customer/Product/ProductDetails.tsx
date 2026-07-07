@@ -55,7 +55,7 @@ const ProductDetails = () => {
         <div className="mx-auto rounded-[28px]">
           <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
             <div className="space-y-5">
-              <div className="relative h-72 overflow-hidden rounded-[24px] border border-gray-200 bg-gray-50 shadow-sm md:h-96">
+              <div className="relative h-72 overflow-hidden rounded-3xl border border-gray-200 bg-gray-50 shadow-sm md:h-96">
                 <img
                   src={product.image}
                   alt={product.productName}
@@ -71,7 +71,7 @@ const ProductDetails = () => {
                 </span> */}
               </div>
 
-              <div className="rounded-[24px] border border-gray-200 bg-white p-5 shadow-sm">
+              <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
                 <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                   <div>
                     <h1 className="text-3xl font-bold text-gray-900">
@@ -150,12 +150,14 @@ const ProductDetails = () => {
           </div>
 
           <div className="mt-7">
-            <ProductReviewSection />
+            <SimilarProducts />
           </div>
 
           <div className="mt-7">
-            <SimilarProducts />
+            <ProductReviewSection />
           </div>
+
+
 
           <div className="mt-7">
             <Footer />

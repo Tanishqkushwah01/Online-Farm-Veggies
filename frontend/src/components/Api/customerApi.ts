@@ -64,3 +64,17 @@ export const getWishlist = async () => {
     }
   );
 };
+
+export const addReview = (data: {
+  productId: string;
+  rating: number;
+  review: string;
+}) => {
+  const token = localStorage.getItem("token");
+
+  return api.post("/review", data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

@@ -7,6 +7,8 @@ const SimilarProducts = () => {
   const { products, loading } = useCustomerProducts();
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const isResetting = useRef(false);
+  const autoScrollRef = useRef<number | null>(null);
+  const resumeTimerRef = useRef<number | null>(null);
 
   const repeatedProducts = [...products, ...products, ...products];
 
@@ -20,19 +22,8 @@ const SimilarProducts = () => {
     const slider = sliderRef.current;
     if (!slider || products.length === 0) return;
 
-    const oneSetWidth = getOneSetWidth();
-    slider.scrollLeft = oneSetWidth;
+    slider.scrollLeft = getOneSetWidth();
   };
-
-  useEffect(() => {
-    const timer = setTimeout(moveToMiddle, 100);
-    window.addEventListener("resize", moveToMiddle);
-
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener("resize", moveToMiddle);
-    };
-  }, [products.length]);
 
   const fixInfiniteScroll = () => {
     const slider = sliderRef.current;
@@ -57,9 +48,63 @@ const SimilarProducts = () => {
     }
   };
 
+  const stopAutoScroll = () => {
+    if (autoScrollRef.current) {
+      cancelAnimationFrame(autoScrollRef.current);
+      autoScrollRef.current = null;
+    }
+
+    if (resumeTimerRef.current) {
+      clearTimeout(resumeTimerRef.current);
+      resumeTimerRef.current = null;
+    }
+  };
+
+  const startAutoScroll = () => {
+    stopAutoScroll();
+
+    const autoScroll = () => {
+      const slider = sliderRef.current;
+
+      if (slider && products.length > 0) {
+        slider.scrollLeft += 0.6;
+        fixInfiniteScroll();
+      }
+
+      autoScrollRef.current = requestAnimationFrame(autoScroll);
+    };
+
+    autoScrollRef.current = requestAnimationFrame(autoScroll);
+  };
+
+  const pauseThenResumeAutoScroll = () => {
+    stopAutoScroll();
+
+    resumeTimerRef.current = window.setTimeout(() => {
+      startAutoScroll();
+    }, 1500);
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      moveToMiddle();
+      startAutoScroll();
+    }, 100);
+
+    window.addEventListener("resize", moveToMiddle);
+
+    return () => {
+      clearTimeout(timer);
+      stopAutoScroll();
+      window.removeEventListener("resize", moveToMiddle);
+    };
+  }, [products.length]);
+
   const scrollSlider = (direction: "left" | "right") => {
     const slider = sliderRef.current;
     if (!slider) return;
+
+    pauseThenResumeAutoScroll();
 
     const gap = 20;
     const cardWidth = (slider.clientWidth - gap * 4) / 5;
@@ -80,6 +125,8 @@ const SimilarProducts = () => {
 
     const slider = sliderRef.current;
     if (!slider) return;
+
+    pauseThenResumeAutoScroll();
 
     slider.scrollLeft += e.deltaY;
     fixInfiniteScroll();
@@ -119,6 +166,8 @@ const SimilarProducts = () => {
         ref={sliderRef}
         onScroll={handleScroll}
         onWheel={handleWheel}
+        onMouseDown={pauseThenResumeAutoScroll}
+        onTouchStart={pauseThenResumeAutoScroll}
         className="no-scrollbar w-full overflow-x-auto scroll-smooth"
       >
         <div className="flex gap-5">

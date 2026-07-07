@@ -12,7 +12,7 @@ const FarmerInfoCard = ({
   city = "Indore, Madhya Pradesh",
 }: FarmerInfoCardProps) => {
   return (
-    <div className="rounded-[24px] border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
       <div className="flex flex-col items-center text-center">
         <div className="flex h-24 w-24 items-center justify-center rounded-full bg-green-100">
           <User size={42} className="text-green-600" />
