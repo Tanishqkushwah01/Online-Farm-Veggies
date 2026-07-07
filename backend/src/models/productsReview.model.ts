@@ -4,19 +4,14 @@ const reviewSchema = new mongoose.Schema(
   {
     customerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Customer",
       required: true,
     },
 
     productId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "ProductModel",
-      // required: true,
-    },
-    farmerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Farmer",
-      // required: true,
+      ref: "Product",
+      required: true,
     },
 
     rating: {
@@ -33,23 +28,13 @@ const reviewSchema = new mongoose.Schema(
       default: "",
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-/**
- * Prevent one customer from reviewing
- * the same product multiple times.
- */
 reviewSchema.index(
-  {
-    customerId: 1,
-    productId: 1,
-  },
-  {
-    unique: true,
-  }
+  { customerId: 1, productId: 1 },
+  { unique: true }
 );
 
-export default mongoose.model("ReviewModel", reviewSchema);
+const reviewModel = mongoose.model("ProductsReview", reviewSchema);
+export default reviewModel;

@@ -18,12 +18,14 @@ const useWebNavigate = () => {
   const gotoProductDetails = (
     productId: string,
     product: any,
-    farmerDetails: any
+    farmerDetails: any,
+    review: any
   ) => {
     navigate(`/customer/product/${productId}`, {
       state: {
         product,
         farmerDetails,
+        review,
       },
     });
   };
