@@ -1,65 +1,31 @@
-import { Star, Heart, ShoppingCart } from "lucide-react";
+// import ProductCard from "../ProductsCard";
+import ProductCard from "./ProductCard";
+import { useEffect, useState } from "react";
+import { getTenProducts } from "../../../Api/customerApi";
 
-const bestProducts = [
-  {
-    name: "Fresh Tomato",
-    price: 40,
-    oldPrice: 55,
-    image: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500",
-    rating: 4.8,
-  },
-  {
-    name: "Green Capsicum",
-    price: 60,
-    oldPrice: 75,
-    image: "https://images.unsplash.com/photo-1525607551316-4a8e16d1f9ba?w=500",
-    rating: 4.7,
-  },
-  {
-    name: "Fresh Carrot",
-    price: 45,
-    oldPrice: 65,
-    image: "https://images.unsplash.com/photo-1445282768818-728615cc910a?w=500",
-    rating: 4.9,
-  },
-  {
-    name: "Red Apple",
-    price: 120,
-    oldPrice: 150,
-    image: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=500",
-    rating: 4.8,
-  },
-  {
-    name: "Fresh Potato",
-    price: 35,
-    oldPrice: 50,
-    image: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=500",
-    rating: 4.6,
-  },
-  {
-    name: "Fresh Banana",
-    price: 70,
-    oldPrice: 90,
-    image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=500",
-    rating: 4.7,
-  },
-  {
-    name: "Green Broccoli",
-    price: 85,
-    oldPrice: 110,
-    image: "https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?w=500",
-    rating: 4.9,
-  },
-  {
-    name: "Fresh Orange",
-    price: 95,
-    oldPrice: 120,
-    image: "https://images.unsplash.com/photo-1547514701-42782101795e?w=500",
-    rating: 4.8,
-  },
-];
 
-export default function BestProducts() {
+function BestProducts() {
+  const [products, setProducts] = useState<any[]>([]);
+  console.log("products:",products);
+  const [loading, setLoading] = useState(true);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await getTenProducts();
+
+      if (response.data.success) {
+        setProducts(response.data.products);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
   return (
     <section className="w-full bg-white rounded-3xl border border-gray-200 shadow-sm p-6 md:p-8">
       <div className="text-center mb-8">
@@ -71,7 +37,7 @@ export default function BestProducts() {
         </h2>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+      {/* <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
         {bestProducts.map((product, index) => (
           <div
             key={index}
@@ -116,12 +82,27 @@ export default function BestProducts() {
 
               <button className="mt-4 w-full flex items-center justify-center gap-2 bg-green-600 text-white py-2.5 rounded-xl hover:bg-green-700 transition cursor-pointer">
                 <ShoppingCart size={17} />
-                Add
+                View More
               </button>
             </div>
           </div>
         ))}
+      </div> */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+        {loading ? (
+          <h1>Loading...</h1>
+        ) : (
+          products.map((product: any) => (
+            <ProductCard
+              key={product._id}
+              product={product}
+            />
+          ))
+        )}
       </div>
     </section>
   );
 }
+
+
+export default BestProducts;

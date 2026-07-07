@@ -30,4 +30,5 @@ wishlistSchema.index(
   }
 );
 
-export default mongoose.model("Wishlist", wishlistSchema);
+const wishlistModel = mongoose.model("Wishlist", wishlistSchema);
+export default wishlistModel;

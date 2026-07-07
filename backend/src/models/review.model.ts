@@ -3,17 +3,18 @@ const reviewSchema = new mongoose.Schema({
     productId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
-        required:true
+        required: true
     },
 
     customerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required:true
+        required: true
     },
 
     rating: Number,
     review: String
 });
 
-export default mongoose.model("ReviewModel", reviewSchema);
+const reviewModel = mongoose.model("Review", reviewSchema);
+export default reviewModel;

@@ -4,7 +4,7 @@ import customerModel from "../models/customer.model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import farmerModel from "../models/farmer.model";
-import ProductModel from "../models/product.model";
+import productModel from "../models/product.model";
 
 /**
  * @POST Product Update Route
@@ -38,7 +38,7 @@ export const createProduct = async (req: Request, res: Response) => {
 
     const image = req.file?.path;
 
-    const product = await ProductModel.create({
+    const product = await productModel.create({
       farmerId: UserId,
       productName,
       description,
@@ -99,7 +99,7 @@ export const getFarmerProducts = async (
     //   });
     // }
 
-    const products = await ProductModel.find({
+    const products = await productModel.find({
       farmerId: req.user._id,
     });
 
@@ -149,7 +149,7 @@ export const updateProduct = async (
     console.log("req.file.path::",req.file?.path);
 
 
-    const product = await ProductModel.findByIdAndUpdate(
+    const product = await productModel.findByIdAndUpdate(
       productId,
       updates,
       {
@@ -196,7 +196,7 @@ export const deleteProduct = async (req: Request, res: Response) => {
     const farmerId = req.user._id;
     const { productId } = req.params;
 
-    const product = await ProductModel.findOneAndDelete({
+    const product = await productModel.findOneAndDelete({
       _id: productId,
       farmerId,
     });
@@ -227,12 +227,12 @@ export const getFarmerProductStats = async (req: Request, res: Response) => {
   try {
     const farmerId = req.user._id;
 
-    const totalProducts = await ProductModel.countDocuments({ farmerId });
+    const totalProducts = await productModel.countDocuments({ farmerId });
 
     const weekStart = new Date();
     weekStart.setDate(weekStart.getDate() - 7);
 
-    const newThisWeek = await ProductModel.countDocuments({
+    const newThisWeek = await productModel.countDocuments({
       farmerId,
       createdAt: { $gte: weekStart },
     });

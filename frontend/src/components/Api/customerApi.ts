@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_FARMER_URL
+    baseURL: import.meta.env.VITE_CUSTOMER_URL
 })
 
 
@@ -25,4 +25,42 @@ export const filterProducts = (data: FilterData) => {
       token: `Bearer ${localStorage.getItem("token")}`,
     },
   });
+};
+
+export const getTenProducts = () => {
+  const token = localStorage.getItem("token");
+
+  return api.get("/products/random", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+
+
+export const addToWishlist = async (productId: string) => {
+  const token = localStorage.getItem("token");
+
+  return api.post(`/wishlist/toggle/${productId}`,{},
+        {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+ 
+
+export const getWishlist = async () => {
+  const token = localStorage.getItem("token");
+
+  return api.get("/wishlist",
+        {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
