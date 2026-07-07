@@ -6,7 +6,7 @@ import {
 } from "../../../Validation/farmerProduct.schema";
 import { createProduct, updateProduct } from "../../../Api/farmerApi";
 import ImageCropModal from "../../../Settings/ImageCropModal";
-import { useProducts } from "../../../hooks/useFarmerProducts";
+import { useFarmerProducts } from "../../../hooks/useFarmerProducts";
 
 interface AddProductModalProps {
   open: boolean;
@@ -33,7 +33,7 @@ const AddProduct = ({ open, onClose, editProduct }: AddProductModalProps) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const [errors, setErrors] = useState<FormErrors>({});
-  const { fetchProducts } = useProducts();
+  const { fetchProducts } = useFarmerProducts();
 
   useEffect(() => {
     if (open && editProduct) {

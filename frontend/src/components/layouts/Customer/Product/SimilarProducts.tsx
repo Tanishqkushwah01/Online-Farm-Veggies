@@ -1,31 +1,135 @@
+import { useEffect, useRef } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import ProductCard from "./ProductCard";
-import { useProducts } from "../../../hooks/useFarmerProducts";
+import { useCustomerProducts } from "../../../hooks/useCustomerProducts";
 
 const SimilarProducts = () => {
-  const { products, loading } = useProducts();
+  const { products, loading } = useCustomerProducts();
+  const sliderRef = useRef<HTMLDivElement | null>(null);
+  const isResetting = useRef(false);
+
+  const repeatedProducts = [...products, ...products, ...products];
+
+  const getOneSetWidth = () => {
+    const slider = sliderRef.current;
+    if (!slider) return 0;
+    return slider.scrollWidth / 3;
+  };
+
+  const moveToMiddle = () => {
+    const slider = sliderRef.current;
+    if (!slider || products.length === 0) return;
+
+    const oneSetWidth = getOneSetWidth();
+    slider.scrollLeft = oneSetWidth;
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(moveToMiddle, 100);
+    window.addEventListener("resize", moveToMiddle);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", moveToMiddle);
+    };
+  }, [products.length]);
+
+  const fixInfiniteScroll = () => {
+    const slider = sliderRef.current;
+    if (!slider || products.length === 0 || isResetting.current) return;
+
+    const oneSetWidth = getOneSetWidth();
+
+    if (slider.scrollLeft <= oneSetWidth * 0.5) {
+      isResetting.current = true;
+      slider.style.scrollBehavior = "auto";
+      slider.scrollLeft += oneSetWidth;
+      slider.style.scrollBehavior = "smooth";
+      isResetting.current = false;
+    }
+
+    if (slider.scrollLeft >= oneSetWidth * 1.5) {
+      isResetting.current = true;
+      slider.style.scrollBehavior = "auto";
+      slider.scrollLeft -= oneSetWidth;
+      slider.style.scrollBehavior = "smooth";
+      isResetting.current = false;
+    }
+  };
+
+  const scrollSlider = (direction: "left" | "right") => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    const gap = 20;
+    const cardWidth = (slider.clientWidth - gap * 4) / 5;
+    const scrollAmount = cardWidth + gap;
+
+    slider.scrollBy({
+      left: direction === "right" ? scrollAmount : -scrollAmount,
+      behavior: "smooth",
+    });
+  };
+
+  const handleScroll = () => {
+    requestAnimationFrame(fixInfiniteScroll);
+  };
+
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    e.preventDefault();
+
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    slider.scrollLeft += e.deltaY;
+    fixInfiniteScroll();
+  };
 
   if (loading) {
-    return (
-      <div>
-        <h2 className="mb-5 text-2xl font-bold text-gray-900">
-          Similar Products
-        </h2>
+    return <p className="py-8 text-center text-gray-500">Loading products...</p>;
+  }
 
-        <p className="text-gray-500">Loading products...</p>
-      </div>
-    );
+  if (products.length === 0) {
+    return <p className="py-8 text-center text-gray-500">No products found.</p>;
   }
 
   return (
-    <div>
-      <h2 className="mb-5 text-2xl font-bold text-gray-900">
-        Similar Products
-      </h2>
+    <div className="w-full overflow-hidden">
+      <div className="mb-5 flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-900">Similar Products</h2>
 
-      <div className="overflow-x-auto pb-4">
-        <div className="flex min-w-max gap-5">
-          {products.slice(0, 10).map((product) => (
-            <div key={product._id} className="w-65 shrink-0">
+        <div className="flex gap-2">
+          <button
+            onClick={() => scrollSlider("left")}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm transition hover:bg-gray-50"
+          >
+            <ChevronLeft size={20} />
+          </button>
+
+          <button
+            onClick={() => scrollSlider("right")}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm transition hover:bg-gray-50"
+          >
+            <ChevronRight size={20} />
+          </button>
+        </div>
+      </div>
+
+      <div
+        ref={sliderRef}
+        onScroll={handleScroll}
+        onWheel={handleWheel}
+        className="no-scrollbar w-full overflow-x-auto scroll-smooth"
+      >
+        <div className="flex gap-5">
+          {repeatedProducts.map((product, index) => (
+            <div
+              key={`${product._id}-${index}`}
+              className="shrink-0"
+              style={{
+                width: "calc((100% - 80px) / 5)",
+              }}
+            >
               <ProductCard product={product} />
             </div>
           ))}
