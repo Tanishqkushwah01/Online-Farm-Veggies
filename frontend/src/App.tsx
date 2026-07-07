@@ -17,6 +17,9 @@ import TermsGuard from "./components/Guards/TermsGuard";
 import Terms from "./pages/Terms";
 import VerifyEmailGuard from "./components/Guards/VerifyEmailGuard";
 import PageNotFound from "./pages/PageNotFound";
+import ProductDetails from "./components/layouts/Customer/Product/ProductDetails";
+import { ProductProvider } from "./components/context/FarmerProductContext";
+import CustomerLayout from "./components/layouts/Customer/CustomerLayout";
 
 const App = () => {
   return (
@@ -47,7 +50,11 @@ const App = () => {
 
       {/* Protected routes */}
       <Route element={<ProtectedRoute />}>
-        <Route path="/customer" element={<CustomerDashboard />} />
+        <Route element={<CustomerLayout />}>
+          <Route path="/customer" element={<CustomerDashboard />} />
+          <Route path="/customer/product/:id" element={<ProductDetails />} />
+        </Route>
+
         <Route path="/farmer" element={<FarmerDashboard />} />
         <Route path="/admin" element={<AdminDashboard />} />
       </Route>

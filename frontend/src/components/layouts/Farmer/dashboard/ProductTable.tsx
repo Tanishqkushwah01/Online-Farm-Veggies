@@ -252,7 +252,7 @@
 import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import AddProduct from "../Products/AddProduct";
-import { useProducts } from "../../../hooks/useProducts";
+import { useFarmerProducts } from "../../../hooks/useFarmerProducts";
 import { deleteProduct } from "../../../Api/farmerApi";
 
 type ProductTableProps = {
@@ -260,7 +260,7 @@ type ProductTableProps = {
 };
 
 const ProductTable = ({ setActivePage }: ProductTableProps) => {
-  const { products, loading, fetchProducts } = useProducts();
+  const { products, loading, fetchProducts } = useFarmerProducts();
 
   const [openProduct, setOpenProduct] = useState(false);
   const [editProduct, setEditProduct] = useState<any | null>(null);

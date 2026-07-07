@@ -46,8 +46,7 @@ export const createProduct = async (data: ProductRequest) => {
 export const getFarmerProducts = async () => {
     const token = localStorage.getItem("token");
 
-    return await api.get(
-        "/products",
+    return await api.get("/products",
         {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -58,14 +57,14 @@ export const getFarmerProducts = async () => {
 };
 
 export const updateProduct = (productId: string, data: any) => {
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  return api.put(`/products/${productId}`, data, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
-  });
+    return api.put(`/products/${productId}`, data, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+        },
+    });
 };
 
 
@@ -80,9 +79,9 @@ export const deleteProduct = (id: string) => {
 };
 
 export const getProductStats = () => {
-  return api.get("/products/stats", {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
+    return api.get("/products/stats", {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+    });
 };

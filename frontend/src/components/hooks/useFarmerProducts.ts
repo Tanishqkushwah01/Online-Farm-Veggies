@@ -1,7 +1,7 @@
 import { useContext } from "react";
-import { ProductContext } from "../context/ProductContext";
+import { ProductContext } from "../context/FarmerProductContext";
 
-export const useProducts = () => {
+export const useFarmerProducts = () => {
   const context = useContext(ProductContext);
 
   if (!context) {

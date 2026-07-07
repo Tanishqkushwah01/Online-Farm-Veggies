@@ -1,11 +1,11 @@
 import { useState } from "react";
 import ProductCard from "./ProductCard";
 import AddProduct from "./AddProduct";
-import { useProducts } from "../../../hooks/useProducts";
+import { useFarmerProducts } from "../../../hooks/useFarmerProducts";
 import { deleteProduct } from "../../../Api/farmerApi";
 
 const ProductGrid = () => {
-  const { products, loading, fetchProducts } = useProducts();
+  const { products, loading, fetchProducts } = useFarmerProducts();
 
   const [openProduct, setOpenProduct] = useState(false);
   const [editProduct, setEditProduct] = useState<any | null>(null);

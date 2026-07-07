@@ -96,9 +96,24 @@ const Header = ({ setActivePage, onFilterClick }: HeaderProps) => {
           </button>
 
           {/* Filter */}
-          <button
+          {/* <button
             onClick={onFilterClick}
             className="flex flex-col items-center text-gray-700 hover:text-green-600 transition cursor-pointer">
+            <div className="h-10 w-10 flex items-center justify-center">
+              <SlidersHorizontal
+                size={24}
+                className="text-gray-700 group-hover:text-green-600 transition"
+              />
+            </div>
+
+            <span className="text-xs mt-1 text-gray-700 group-hover:text-green-600 transition">
+              Filter
+            </span>
+          </button> */}
+          <button
+            onClick={onFilterClick}
+            className="group flex flex-col items-center text-gray-700 hover:text-green-600 transition cursor-pointer"
+          >
             <div className="h-10 w-10 flex items-center justify-center">
               <SlidersHorizontal
                 size={24}
@@ -128,9 +143,9 @@ const Header = ({ setActivePage, onFilterClick }: HeaderProps) => {
                 className="text-gray-700 group-hover:text-red-500 transition"
               />
 
-              <span className="absolute top-0 right-0 translate-x-1 -translate-y-1 h-5 w-5 rounded-full bg-red-500 text-white text-[10px] font-semibold flex items-center justify-center">
+              {/* <span className="absolute top-0 right-0 translate-x-1 -translate-y-1 h-5 w-5 rounded-full bg-red-500 text-white text-[10px] font-semibold flex items-center justify-center">
                 3
-              </span>
+              </span> */}
             </div>
 
             <span className="text-xs mt-1 text-gray-700 group-hover:text-red-500 transition">

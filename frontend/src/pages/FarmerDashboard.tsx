@@ -11,7 +11,7 @@ import Products from "../components/layouts/Farmer/Products/Products";
 import Orders from "../components/layouts/Farmer/Orders/Orders";
 import Reviews from "../components/layouts/Farmer/Reviews/Reviews";
 
-import { ProductProvider } from "../components/context/ProductContext";
+import { ProductProvider } from "../components/context/FarmerProductContext";
 
 const FarmerDashboard = () => {
   const [activePage, setActivePage] = useState("dashboard");

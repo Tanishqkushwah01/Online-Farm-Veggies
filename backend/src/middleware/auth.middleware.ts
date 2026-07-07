@@ -62,7 +62,7 @@ const authMiddleware = async (
     // 6. Attach user to request
     req.user = user;
 
-    console.log("Middleware user-->", req.user)
+    // console.log("Middleware user-->", req.user)
     next();
 
   } catch (error) {

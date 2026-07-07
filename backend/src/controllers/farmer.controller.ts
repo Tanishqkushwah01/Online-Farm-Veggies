@@ -18,15 +18,6 @@ export const createProduct = async (req: Request, res: Response) => {
     console.log("User ID:", req.user._id);
     const UserId = req.user._id;
 
-    // const farmer = await farmerModel.findOne({ _id: UserId });
-    // console.log(farmer)
-    // if (!farmer) {
-    //   return res.status(404).json({
-    //     success: false,
-    //     message: "Farmer not found",
-    //   });
-    // }
-
     const {
       productName,
       description,

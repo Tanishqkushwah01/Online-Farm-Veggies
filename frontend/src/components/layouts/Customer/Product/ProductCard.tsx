@@ -1,7 +1,8 @@
-import { Heart, ShoppingCart, Star } from "lucide-react";
+import { ArrowRight, Heart, Star } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { addToWishlist } from "../../../Api/customerApi";
+import useWebNavigate from "../../../hooks/useWebNavigate";
 
 type ProductCardProps = {
   product: {
@@ -18,6 +19,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(
     product.isWishlisted ?? false
   );
+  const { gotoProductDetails } = useWebNavigate();
 
   const handleWishlist = async () => {
     try {
@@ -56,9 +58,9 @@ export default function ProductCard({ product }: ProductCardProps) {
           />
         </button>
 
-        <span className="absolute top-3 left-3 bg-green-600 text-white text-xs px-3 py-1 rounded-full">
+        {/* <span className="absolute top-3 left-3 bg-green-600 text-white text-xs px-3 py-1 rounded-full">
           Best
-        </span>
+        </span> */}
       </div>
 
       <div className="p-4">
@@ -79,8 +81,18 @@ export default function ProductCard({ product }: ProductCardProps) {
           </span>
         </div>
 
-        <button className="mt-4 w-full flex items-center justify-center gap-2 bg-green-600 text-white py-2.5 rounded-xl hover:bg-green-700 transition cursor-pointer">
+        {/* <button
+          onClick={() => gotoProductDetails(product._id)}
+          className="mt-4 w-full flex items-center justify-center gap-2 bg-green-600 text-white py-2.5 rounded-xl hover:bg-green-700 transition cursor-pointer">
           <ShoppingCart size={17} />
+          View More
+        </button> */}
+        <button
+          onClick={() => gotoProductDetails(product._id)}
+          className="mt-4 w-full flex items-center justify-center gap-2 bg-green-600 text-white py-2.5 rounded-xl hover:bg-green-700 transition cursor-pointer"
+        >
+          <ArrowRight size={17} />
+          {/* <Eye size={17} /> */}
           View More
         </button>
       </div>

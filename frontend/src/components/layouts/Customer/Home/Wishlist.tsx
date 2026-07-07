@@ -1,7 +1,7 @@
 import { ArrowLeft, Heart } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getWishlist } from "../../../Api/customerApi";
-import ProductCard from "./ProductCard";
+import ProductCard from "../Product/ProductCard";
 
 type WishlistProps = {
   setActivePage: React.Dispatch<React.SetStateAction<string>>;

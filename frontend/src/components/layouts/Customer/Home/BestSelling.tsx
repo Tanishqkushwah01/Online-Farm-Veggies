@@ -1,5 +1,5 @@
 // import ProductCard from "../ProductsCard";
-import ProductCard from "./ProductCard";
+import ProductCard from "../Product/ProductCard";
 import { useEffect, useState } from "react";
 import { getTenProducts } from "../../../Api/customerApi";
 

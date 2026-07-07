@@ -6,7 +6,7 @@ import {
 } from "../../../Validation/farmerProduct.schema";
 import { createProduct, updateProduct } from "../../../Api/farmerApi";
 import ImageCropModal from "../../../Settings/ImageCropModal";
-import { useProducts } from "../../../hooks/useProducts";
+import { useProducts } from "../../../hooks/useFarmerProducts";
 
 interface AddProductModalProps {
   open: boolean;

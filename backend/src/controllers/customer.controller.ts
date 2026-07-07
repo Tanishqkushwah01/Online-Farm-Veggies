@@ -448,6 +448,8 @@ export const getWishlist = async (req: Request, res: Response) => {
 };
 
 
+
+
 // export const getWishlist = async (
 //   req: Request,
 //   res: Response
@@ -492,12 +494,44 @@ export const getWishlist = async (req: Request, res: Response) => {
 
 
 
-export const getTenProducts  = async (req: Request, res: Response) => {
- try {
+// export const getTenProducts  = async (req: Request, res: Response) => {
+//  try {
+//     const products = await productModel.aggregate([
+//       {
+//         $match: {
+//           quantity: { $gt: 0 }, // sirf available products
+//         },
+//       },
+//       {
+//         $sample: {
+//           size: 10,
+//         },
+//       },
+//     ]);
+
+//     return res.status(200).json({
+//       success: true,
+//       products,
+//     });
+//   } catch (error) {
+//     console.log(error);
+
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal Server Error",
+//     });
+//   }
+// };
+
+
+export const getTenProducts = async (req: Request, res: Response) => {
+  try {
+    const customerId = req.user._id;
+
     const products = await productModel.aggregate([
       {
         $match: {
-          quantity: { $gt: 0 }, // sirf available products
+          quantity: { $gt: 0 },
         },
       },
       {
@@ -507,9 +541,22 @@ export const getTenProducts  = async (req: Request, res: Response) => {
       },
     ]);
 
+    const wishlist = await wishlistModel
+      .find({ customerId })
+      .select("productId");
+
+    const wishlistIds = wishlist.map((item) =>
+      item.productId.toString()
+    );
+
+    const updatedProducts = products.map((product: any) => ({
+      ...product,
+      isWishlisted: wishlistIds.includes(product._id.toString()),
+    }));
+
     return res.status(200).json({
       success: true,
-      products,
+      products: updatedProducts,
     });
   } catch (error) {
     console.log(error);

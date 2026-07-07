@@ -63,7 +63,7 @@ const CustomerHome = () => {
 
       {activePage === "settings" && <Settings setActivePage={setActivePage} />}
       {activePage === "orders" && <Orders setActivePage={setActivePage} />}
-      {activePage === "wishlist" && <Wishlist setActivePage={setActivePage} />}
+      {activePage === "wishlist" && <Wishlist />}
       {activePage === "notifications" && <Notifications setActivePage={setActivePage} />}
       {activePage === "privacy" && <PrivacyPolicy setActivePage={setActivePage} />}
       {activePage === "help" && <HelpSupport setActivePage={setActivePage} />}

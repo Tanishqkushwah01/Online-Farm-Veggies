@@ -12,6 +12,10 @@ const useWebNavigate = () => {
   const gotoVerifySuccess = () => navigate("/verify-success");
   const gotoVerifyFailed = () => navigate("/verify-failed");
   const gotoAdmin = () => navigate("/admin");
+
+
+  const gotoProductDetails = (productId: string) => navigate(`/customer/product/${productId}`);
+
   const gotoCustomer = () => navigate("/customer");
 
   // const gotoFarmer = (activePage = "dashboard") => {
@@ -19,7 +23,7 @@ const useWebNavigate = () => {
   //     state: { activePage },
   //   });
   // };
-  const gotoFarmer =()=> navigate("/farmer");
+  const gotoFarmer = () => navigate("/farmer");
 
   const gotoForgotPassword = () =>
     navigate("/forgot-password", {
@@ -51,7 +55,8 @@ const useWebNavigate = () => {
     gotoVerifyFailed,
     gotoFarmer,
     gotoAdmin,
-    gotoCustomer
+    gotoCustomer,
+    gotoProductDetails
   };
 };
 

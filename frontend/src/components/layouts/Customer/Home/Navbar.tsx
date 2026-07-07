@@ -60,7 +60,7 @@ const categoryOptions: Option[] = [
   { value: "", label: "Category" },
   { value: "Vegetables", label: "Vegetables" },
   { value: "Fruits", label: "Fruits" },
-  { value: "Organic", label: "Organic" },
+  { value: "Grains", label: "Grains" },
 ];
 
 const priceOptions: Option[] = [
