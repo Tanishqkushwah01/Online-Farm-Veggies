@@ -23,4 +23,16 @@ router.get("/review-stats", authMiddleware, farmerController.getFarmerReviewStat
 router.get("/rating-distribution", authMiddleware, farmerController.getRatingDistribution);
 router.get("/highest-rated-products", authMiddleware, farmerController.getHighestRatedProducts);
 
+
+router.get("/orders",authMiddleware,farmerController.getFarmerOrders);
+
+// Get a particular order
+router.get("/orders/:orderId",authMiddleware,farmerController.getFarmerParticularOrder);
+
+// Update order status
+router.patch("/orders/:orderId/status",authMiddleware,farmerController.updateOrderStatus);
+
+// Get orders by status
+router.get("/orders/status/:status",authMiddleware,farmerController.getOrdersByStatus);
+
 export default router;

@@ -54,4 +54,10 @@ router.delete("/review/:productId", authMiddleware, customerController.deleteRev
 
 // Order routes
 router.post("/orders", authMiddleware, customerController.createOrder);
+router.patch("/orders/:orderId/cancel", authMiddleware, customerController.cancelOrder);
+router.get("/orders", authMiddleware, customerController.getMyOrders);
+router.get("/orders/:orderId", authMiddleware, customerController.getParticularOrder);
+
+
+
 export default router;

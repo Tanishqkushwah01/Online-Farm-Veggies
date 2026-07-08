@@ -658,6 +658,7 @@ export const createOrder = async (
       quantity,
       shippingAddress,
       paymentMethod,
+
     } = req.body;
 
     // Validate request
@@ -710,7 +711,6 @@ export const createOrder = async (
       quantity,
       totalAmount,
       shippingAddress,
-      paymentMethod,
     });
 
     // Reduce stock
@@ -737,3 +737,226 @@ export const createOrder = async (
     });
   }
 };
+
+
+export const getMyOrders = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const customerId = req.user._id;
+
+    const orders = await orderModel
+      .find({ customerId })
+
+      // Product Details
+      .populate({
+        path: "productId",
+        select: `
+          productName
+          image
+          description
+          category
+          price
+          quantity
+          unit
+          city
+          averageRating
+          isAvailable
+        `,
+      })
+
+      // Farmer Details
+      .populate({
+        path: "farmerId",
+        select: `
+          username
+          profilePicture
+          city
+          farmName
+          review
+        `,
+      })
+
+      .sort({ createdAt: -1 });
+
+    if (!orders.length) {
+      return res.status(200).json({
+        success: true,
+        totalOrders: 0,
+        orders: [],
+        message: "No orders found.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      totalOrders: orders.length,
+      orders,
+    });
+
+  } catch (error: any) {
+    console.error("Get My Orders Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
+
+export const cancelOrder = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const customerId = req.user._id;
+    const { orderId } = req.params;
+
+    // Find Order
+    const order = await orderModel.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Check Ownership
+    if (order.customerId.toString() !== customerId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to cancel this order",
+      });
+    }
+
+    // Already Cancelled
+    if (order.orderStatus === "Cancelled") {
+      return res.status(400).json({
+        success: false,
+        message: "Order is already cancelled",
+      });
+    }
+
+    // Check if order can be cancelled
+    const allowedStatus = [
+      "Pending",
+      "Accepted",
+      "Preparing",
+    ];
+
+    if (!allowedStatus.includes(order.orderStatus)) {
+      return res.status(400).json({
+        success: false,
+        message: `Order cannot be cancelled because it is ${order.orderStatus}`,
+      });
+    }
+
+    // Restore Product Quantity
+    const product = await productModel.findById(order.productId);
+
+    if (product) {
+      product.quantity += order.quantity;
+      product.isAvailable = true;
+
+      await product.save();
+    }
+
+    // Update Order Status
+    order.orderStatus = "Cancelled";
+
+    await order.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Order cancelled successfully",
+      order,
+    });
+
+  } catch (error: any) {
+    console.error("Cancel Order Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+
+export const getParticularOrder = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const customerId = req.user._id;
+    const { orderId } = req.params;
+
+    // Find Order
+    const order = await orderModel
+      .findById(orderId)
+
+      // Product Details
+      .populate({
+        path: "productId",
+        select: `
+          productName
+          description
+          category
+          image
+          price
+          quantity
+          unit
+          city
+          averageRating
+          totalReviews
+        `,
+      })
+
+      // Farmer Details
+      .populate({
+        path: "farmerId",
+        select: `
+          username
+          farmName
+          profilePicture
+          city
+          review
+        `,
+      });
+
+    // Order not found
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Check Ownership
+    if (order.customerId.toString() !== customerId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to view this order",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      order,
+    });
+
+  } catch (error: any) {
+    console.error("Get Order Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+

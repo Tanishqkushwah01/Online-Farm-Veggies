@@ -8,6 +8,7 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
 
+    
     farmerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Farmer",
@@ -20,6 +21,7 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
 
+  
     quantity: {
       type: Number,
       required: true,
@@ -53,9 +55,6 @@ const orderSchema = new mongoose.Schema(
       enum: [
         "Pending",
         "Accepted",
-        "Preparing",
-        "Packed",
-        "Shipped",
         "Delivered",
         "Cancelled",
       ],

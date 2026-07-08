@@ -7,6 +7,7 @@ import productModel from "../models/product.model";
 import productsReviewModel from "../models/productsReview.model";
 import farmerReviewModel from "../models/farmerReview.model";
 import mongoose from "mongoose";
+import orderModel from "../models/order.model";
 
 /**
  * @POST Product Update Route
@@ -490,6 +491,228 @@ export const getHighestRatedProducts = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+
+
+
+/*
+ *@ name: updateOrderStatus
+ *@ description: This API changes the status of their order which is handled by Farmer.
+ *@ route: 
+ */
+export const updateOrderStatus = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const farmerId = req.user._id;
+    const { orderId } = req.params;
+    const { orderStatus } = req.body;
+
+    const allowedStatus = [
+      "Accepted",
+      "Cancelled",
+      "Delivered",
+      "Pending",
+    ];
+
+    if (!allowedStatus.includes(orderStatus)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid order status",
+      });
+    }
+
+    const order = await orderModel.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    if (order.farmerId.toString() !== farmerId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    if (order.orderStatus === "Cancelled") {
+      return res.status(400).json({
+        success: false,
+        message: "Cancelled orders cannot be updated",
+      });
+    }
+
+    if (order.orderStatus === "Delivered") {
+      return res.status(400).json({
+        success: false,
+        message: "Order already delivered",
+      });
+    }
+
+    order.orderStatus = orderStatus;
+
+    await order.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Order status updated successfully",
+      order,
+    });
+
+  } catch (error: any) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+
+
+export const getFarmerParticularOrder = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const farmerId = req.user._id;
+    const { orderId } = req.params;
+
+    const order = await orderModel
+      .findById(orderId)
+      .populate({
+        path: "customerId",
+        select: "username email phoneNumber profilePicture address city",
+      })
+      .populate({
+        path: "productId",
+        select: `
+          productName
+          description
+          image
+          category
+          price
+          quantity
+          unit
+          averageRating
+          totalReviews
+        `,
+      });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    if (order.farmerId.toString() !== farmerId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      order,
+    });
+
+  } catch (error: any) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+
+export const getFarmerOrders = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const farmerId = req.user._id;
+
+    const orders = await orderModel
+      .find({ farmerId })
+      .populate({
+        path: "customerId",
+        select: "username email phoneNumber profilePicture address city",
+      })
+      .populate({
+        path: "productId",
+        select: `
+          productName
+          image
+          price
+          quantity
+          unit
+          category
+          averageRating
+          totalReviews
+        `,
+      })
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      totalOrders: orders.length,
+      orders,
+    });
+
+  } catch (error: any) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+
+export const getOrdersByStatus = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+   const farmerId = new mongoose.Types.ObjectId(req.user._id);
+    const { status } = req.params;
+
+    const orders = await orderModel.find({
+        farmerId,
+         orderStatus: req.params.status as
+    | "Pending"
+    | "Accepted"
+    | "Delivered"
+    | "Cancelled",
+      })
+      .populate("customerId", "username profilePicture")
+      .populate("productId", "productName image price");
+
+    return res.status(200).json({
+      success: true,
+      totalOrders: orders.length,
+      orders,
+    });
+
+  } catch (error: any) {
+    console.error(error);
 
     return res.status(500).json({
       success: false,
