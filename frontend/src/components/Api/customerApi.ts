@@ -71,8 +71,19 @@ export const addReview = (data: {
   review: string;
 }) => {
   const token = localStorage.getItem("token");
+  console.log("data===",data);
 
   return api.post("/review", data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const getMyReview = (productId: string) => {
+  const token = localStorage.getItem("token");
+
+  return api.get(`/review/${productId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -93,4 +104,31 @@ export const getProductById = async (productId: string) => {
       },
     }
   );
+};
+
+export const deleteReview = (productId: string) => {
+  const token = localStorage.getItem("token");
+
+  return api.delete(`/review/${productId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const createOrder = async (data: {
+  productId: string;
+  quantity: number;
+  requiredDate: string;
+  city: string;
+  totalPrice: number;
+}) => {
+  const token = localStorage.getItem("token");
+  console.log("kana = ",data);
+
+  return await api.post("/orders", data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };

@@ -85,3 +85,47 @@ export const getProductStats = () => {
         },
     });
 };
+
+export const getFarmerReviews = async (reviewType: "customer" | "product") => {
+    const token = localStorage.getItem("token");
+
+    return await api.get(`/reviews?type=${reviewType}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+};
+
+
+export const getFarmerReviewStats = async (type: "product" | "customer") => {
+    const token = localStorage.getItem("token");
+
+    return await api.get(`/review-stats?type=${type}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+};
+
+
+export const getRatingDistribution = async (reviewType: "customer" | "product") => {
+    const token = localStorage.getItem("token");
+
+    return await api.get(`/rating-distribution?type=${reviewType}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+};
+
+export const getHighestRatedProducts = async () => {
+  const token = localStorage.getItem("token");
+
+  return await api.get("/highest-rated-products", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

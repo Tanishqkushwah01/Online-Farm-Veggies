@@ -16,7 +16,7 @@ app.use(cors({
 // User
 import userRouter from "./routes/user.router"
 import connectToDB from "./utilities/database";
-import farmerRouter from "./routes/farmer.router";
+import farmerRouter from "./routes/farmer.route";
 import customerRouter from "./routes/customer.route";
 connectToDB();
 

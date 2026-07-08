@@ -1,6 +1,7 @@
 import authMiddleware from "../middleware/auth.middleware";
 import express from "express";
 import * as customerController from "../controllers/customer.controller";
+import reviewModel from "../models/productsReview.model";
 const router = express.Router();
 
 // Customer can view all products
@@ -45,17 +46,12 @@ router.get("/wishlist", authMiddleware, customerController.getWishlist);
 // get one products by ID
 router.get("/products/:productId", authMiddleware, customerController.getProductById);
 
+// create a  product review 
+router.post("/review", authMiddleware, customerController.addReview);
 
+// delete my review 
+router.delete("/review/:productId", authMiddleware, customerController.deleteReview);
 
-
-
-router.post(
-  "/orders",
-  authMiddleware,customerController.createOrder
-);
-
-
-
-
-
+// Order routes
+router.post("/orders", authMiddleware, customerController.createOrder);
 export default router;

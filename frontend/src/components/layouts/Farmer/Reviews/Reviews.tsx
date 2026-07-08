@@ -2,8 +2,17 @@ import ReviewStats from "./ReviewStats";
 import RatingSummary from "./RatingSummary";
 import ReviewFilters from "./ReviewFilters";
 import ReviewList from "./ReviewList";
+import { useState } from "react";
+import useWebNavigate from "../../../hooks/useWebNavigate";
 
-const Reviews = () => {
+type ReviewsProps = {
+  onProductClick: (productId: string) => void;
+};
+
+const Reviews = ({ onProductClick }: ReviewsProps) => {
+  const [reviewType, setReviewType] = useState<"customer" | "product">("product");
+  const { gotoFarmerProduct } = useWebNavigate();
+
   return (
     <div className="bg-gray-300 rounded-md p-8 min-h-full">
       <div>
@@ -13,10 +22,17 @@ const Reviews = () => {
         </p>
       </div>
 
-      <ReviewStats />
-      <RatingSummary />
-      <ReviewFilters />
-      <ReviewList />
+      <ReviewStats reviewType={reviewType} />
+      <RatingSummary reviewType={reviewType} />
+      <ReviewFilters
+        reviewType={reviewType}
+        setReviewType={setReviewType}
+      />
+      {/* <ReviewList onProductClick={onProductClick} reviewType={reviewType}  /> */}
+      <ReviewList
+        reviewType={reviewType}
+        onProductClick={onProductClick}
+      />
     </div>
   );
 };

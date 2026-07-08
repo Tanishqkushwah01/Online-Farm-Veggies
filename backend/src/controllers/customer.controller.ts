@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import productModel from "../models/product.model";
-import  farmerModel from "../models/farmer.model";
-import reviewModel from "../models/ReviewModel";
+import farmerModel from "../models/farmer.model";
 import wishlistModel from "../models/wishlist.model";
+import orderModel from "../models/order.model";
 import mongoose from "mongoose";
+import productsReviewModel from "../models/productsReview.model";
 
 
 
@@ -353,6 +354,8 @@ import mongoose from "mongoose";
 
 
 // // Add product to wishlist
+
+
 export const toggleWishlist = async (req: Request, res: Response) => {
   try {
     const customerId = req.user._id;
@@ -447,43 +450,7 @@ export const getWishlist = async (req: Request, res: Response) => {
   }
 };
 
-// export const getProductById = async (req: Request, res: Response) => {
-//   try {
-//     const { productId } = req.params;
-
-//     const product = await productModel
-//       .findById(productId)
-//       .populate(
-//         "farmerId",
-//         "username farmName city farmAddress phoneNumber email profilePicture bio"
-//       );
-
-//     if (!product) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Product not found.",
-//       });
-//     }
-
-//     const farmerDetails = product.farmerId;
-//     console.log("hiiiiiiiii====",product);
-//     return res.status(200).json({
-//       success: true,
-//       product,
-//       farmerDetails,
-//     });
-//   } catch (error) {
-//     console.log(error);
-
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error.",
-//     });
-//   }
-// };
-
-
-export const getProductById = async (req: Request, res: Response) => {
+export const getProductById = async (req: any, res: Response) => {
   try {
     const { productId } = req.params;
 
@@ -501,16 +468,29 @@ export const getProductById = async (req: Request, res: Response) => {
       });
     }
 
-    // Mongoose document -> Plain Object
+    const myReview = await productsReviewModel.findOne({
+      productId,
+      customerId: req.user._id,
+    });
+
     const productData = product.toObject();
 
-    // farmerDetails alag nikalo aur product me se farmerId hata do
     const { farmerId: farmerDetails, ...productWithoutFarmer } = productData;
 
     return res.status(200).json({
       success: true,
       product: productWithoutFarmer,
       farmerDetails,
+
+      review: myReview
+        ? {
+            _id: myReview._id,
+            rating: myReview.rating,
+            review: myReview.review,
+            createdAt: myReview.createdAt,
+            username: req.user.username,
+          }
+        : null,
     });
   } catch (error) {
     console.log(error);
@@ -566,10 +546,106 @@ export const getTenProducts = async (req: Request, res: Response) => {
   }
 };
 
+export const addReview = async (req: Request, res: Response) => {
+  try {
+    const { productId, rating, review } = req.body;
+
+    const customerId = req.user._id;
+
+    if (!productId || !rating) {
+      return res.status(400).json({
+        success: false,
+        message: "Product id and rating are required.",
+      });
+    }
+
+    const product = await productModel.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found.",
+      });
+    }
+
+    const alreadyReviewed = await productsReviewModel.findOne({
+      customerId,
+      productId,
+    });
+
+    if (alreadyReviewed) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already reviewed this product.",
+      });
+    }
+
+    const newReview = await productsReviewModel.create({
+      customerId,
+      productId,
+      rating,
+      review,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Review added successfully.",
+      review: newReview,
+      username:req.user.username
+    });
+    
+  } catch (error: any) {
+    console.log(error);
+
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already reviewed this product.",
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error.",
+    });
+  }
+};
+
+export const deleteReview = async (req: any, res: Response) => {
+  try {
+    const { productId } = req.params;
+
+    const customerId = req.user._id;
+
+    const review = await productsReviewModel.findOneAndDelete({
+      customerId,
+      productId,
+    });
+
+    if (!review) {
+      return res.status(404).json({
+        success: false,
+        message: "Review not found.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Review deleted successfully.",
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error.",
+    });
+  }
+};
 
 
-import orderModel from "../models/order.model";
 
+// Create Order 
 export const createOrder = async (
   req: Request,
   res: Response

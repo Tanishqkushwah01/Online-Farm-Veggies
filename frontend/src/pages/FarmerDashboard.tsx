@@ -15,7 +15,23 @@ import { ProductProvider } from "../components/context/FarmerProductContext";
 
 const FarmerDashboard = () => {
   const [activePage, setActivePage] = useState("dashboard");
+  const [highlightProductId, setHighlightProductId] = useState<string | null>(null);
 
+  const handleProductClick = (productId: string) => {
+    setActivePage("products");
+    setHighlightProductId(productId);
+
+    setTimeout(() => {
+      document.getElementById("product-section")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 100);
+
+    setTimeout(() => {
+      setHighlightProductId(null);
+    }, 2500);
+  };
   useEffect(() => {
     const info = JSON.parse(localStorage.getItem("userInfo") || "{}");
 
@@ -48,13 +64,20 @@ const FarmerDashboard = () => {
 
             <main className="flex-1 bg-gray-300 p-6 overflow-auto rounded-md no-scrollbar">
 
-              {activePage === "dashboard" && <Dashboard setActivePage={setActivePage}/>}
+              {activePage === "dashboard" && <Dashboard setActivePage={setActivePage} />}
 
-              {activePage === "products" && <Products />}
+              {/* {activePage === "products" && <Products />} */}
+              {activePage === "products" && (
+                <Products highlightProductId={highlightProductId} />
+              )}
+
+              {activePage === "reviews" && (
+                <Reviews onProductClick={handleProductClick} />
+              )}
 
               {activePage === "orders" && <Orders />}
 
-              {activePage === "reviews" && <Reviews />}
+              {/* {activePage === "reviews" && <Reviews />} */}
 
               {activePage === "settings" && (
                 <Settings setActivePage={setActivePage} />

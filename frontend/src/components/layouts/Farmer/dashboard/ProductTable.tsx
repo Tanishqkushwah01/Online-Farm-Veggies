@@ -299,7 +299,7 @@ const ProductTable = ({ setActivePage }: ProductTableProps) => {
 
           <button
             onClick={() => setActivePage("products")}
-            className="text-green-600 cursor-pointer font-semibold"
+            className="hover:text-green-600 text-gray-600 cursor-pointer font-semibold"
           >
             View All
           </button>
@@ -396,7 +396,7 @@ const ProductTable = ({ setActivePage }: ProductTableProps) => {
         <div className="text-center mt-6">
           <button
             onClick={() => setActivePage("products")}
-            className="text-green-600 cursor-pointer font-semibold"
+            className="hover:text-green-600 text-gray-600 cursor-pointer font-semibold"
           >
             View all products →
           </button>

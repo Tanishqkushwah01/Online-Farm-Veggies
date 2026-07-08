@@ -18,12 +18,14 @@ const useWebNavigate = () => {
   const gotoProductDetails = (
     productId: string,
     product: any,
-    farmerDetails: any
+    farmerDetails: any,
+    review: any
   ) => {
     navigate(`/customer/product/${productId}`, {
       state: {
         product,
         farmerDetails,
+        review,
       },
     });
   };
@@ -55,6 +57,14 @@ const useWebNavigate = () => {
   const gotoResetPassword = (token: string) =>
     navigate(`/reset-password/${token}`);
 
+  const gotoFarmerProduct = (productId: string) =>
+  navigate("/farmer", {
+    state: {
+      activePage: "products",
+      highlightProductId: productId,
+    },
+  });
+
   return {
     gotoRegister,
     gotoLogin,
@@ -68,7 +78,8 @@ const useWebNavigate = () => {
     gotoFarmer,
     gotoAdmin,
     gotoCustomer,
-    gotoProductDetails
+    gotoProductDetails,
+    gotoFarmerProduct
   };
 };
 

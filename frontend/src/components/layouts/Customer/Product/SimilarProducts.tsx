@@ -21,7 +21,6 @@ const SimilarProducts = () => {
   const moveToMiddle = () => {
     const slider = sliderRef.current;
     if (!slider || products.length === 0) return;
-
     slider.scrollLeft = getOneSetWidth();
   };
 
@@ -53,7 +52,6 @@ const SimilarProducts = () => {
       cancelAnimationFrame(autoScrollRef.current);
       autoScrollRef.current = null;
     }
-
     if (resumeTimerRef.current) {
       clearTimeout(resumeTimerRef.current);
       resumeTimerRef.current = null;
@@ -65,12 +63,10 @@ const SimilarProducts = () => {
 
     const autoScroll = () => {
       const slider = sliderRef.current;
-
       if (slider && products.length > 0) {
         slider.scrollLeft += 0.6;
         fixInfiniteScroll();
       }
-
       autoScrollRef.current = requestAnimationFrame(autoScroll);
     };
 
@@ -79,7 +75,6 @@ const SimilarProducts = () => {
 
   const pauseThenResumeAutoScroll = () => {
     stopAutoScroll();
-
     resumeTimerRef.current = window.setTimeout(() => {
       startAutoScroll();
     }, 1500);
@@ -120,25 +115,18 @@ const SimilarProducts = () => {
     requestAnimationFrame(fixInfiniteScroll);
   };
 
+  // preventDefault removed to avoid passive listener error
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    e.preventDefault();
-
     const slider = sliderRef.current;
     if (!slider) return;
 
     pauseThenResumeAutoScroll();
-
     slider.scrollLeft += e.deltaY;
     fixInfiniteScroll();
   };
 
-  if (loading) {
-    return <p className="py-8 text-center text-gray-500">Loading products...</p>;
-  }
-
-  if (products.length === 0) {
-    return <p className="py-8 text-center text-gray-500">No products found.</p>;
-  }
+  if (loading) return <p className="py-8 text-center text-gray-500">Loading products...</p>;
+  if (products.length === 0) return <p className="py-8 text-center text-gray-500">No products found.</p>;
 
   return (
     <div className="w-full overflow-hidden">
@@ -146,17 +134,11 @@ const SimilarProducts = () => {
         <h2 className="text-2xl font-bold text-gray-900">Similar Products</h2>
 
         <div className="flex gap-2">
-          <button
-            onClick={() => scrollSlider("left")}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm transition hover:bg-gray-50"
-          >
+          <button onClick={() => scrollSlider("left")} className="flex cursor-pointer h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm transition hover:bg-gray-50">
             <ChevronLeft size={20} />
           </button>
 
-          <button
-            onClick={() => scrollSlider("right")}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm transition hover:bg-gray-50"
-          >
+          <button onClick={() => scrollSlider("right")} className="flex cursor-pointer h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm transition hover:bg-gray-50">
             <ChevronRight size={20} />
           </button>
         </div>
@@ -175,9 +157,7 @@ const SimilarProducts = () => {
             <div
               key={`${product._id}-${index}`}
               className="shrink-0"
-              style={{
-                width: "calc((100% - 80px) / 5)",
-              }}
+              style={{ width: "calc((100% - 80px) / 5)" }}
             >
               <ProductCard product={product} />
             </div>

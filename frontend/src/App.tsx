@@ -18,11 +18,13 @@ import Terms from "./pages/Terms";
 import VerifyEmailGuard from "./components/Guards/VerifyEmailGuard";
 import PageNotFound from "./pages/PageNotFound";
 import ProductDetails from "./components/layouts/Customer/Product/ProductDetails";
-import { ProductProvider } from "./components/context/FarmerProductContext";
 import CustomerLayout from "./components/layouts/Customer/CustomerLayout";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   return (
+    <>
+      <Toaster position="top-center" />
     <Routes>
       {/* Public routes */}
       <Route path="/" element={<Home />} />
@@ -59,6 +61,7 @@ const App = () => {
         <Route path="/admin" element={<AdminDashboard />} />
       </Route>
     </Routes>
+    </>
   );
 };
 
