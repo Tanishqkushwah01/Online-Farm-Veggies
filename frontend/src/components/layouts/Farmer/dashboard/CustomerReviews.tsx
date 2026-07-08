@@ -1,6 +1,11 @@
 import { Star } from "lucide-react";
 
-const CustomerReviews = () => {
+
+type CustomerReviewsProps = {
+  setActivePage: React.Dispatch<React.SetStateAction<string>>;
+};
+
+const CustomerReviews = ({ setActivePage }: CustomerReviewsProps) => {
   const reviews = [
     {
       name: "Ramesh Patel",
@@ -23,7 +28,9 @@ const CustomerReviews = () => {
     <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-bold text-slate-900">Customer Reviews</h2>
-        <button className="text-green-600 font-semibold">View All</button>
+        <button
+            onClick={() => setActivePage("reviews")}
+        className="text-gray-600 hover:text-green-600 font-semibold cursor-pointer">View All</button>
       </div>
 
       <div className="grid grid-cols-3 gap-5">

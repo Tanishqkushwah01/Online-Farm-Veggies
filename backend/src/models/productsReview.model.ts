@@ -36,5 +36,5 @@ reviewSchema.index(
   { unique: true }
 );
 
-const reviewModel = mongoose.model("ProductsReview", reviewSchema);
-export default reviewModel;
+const productsReviewModel = mongoose.model("ProductsReview", reviewSchema);
+export default productsReviewModel;

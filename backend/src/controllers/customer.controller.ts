@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import productModel from "../models/product.model";
 import farmerModel from "../models/farmer.model";
-import reviewModel from "../models/productsReview.model";
 import wishlistModel from "../models/wishlist.model";
 import mongoose from "mongoose";
+import productsReviewModel from "../models/productsReview.model";
 
 
 
@@ -465,7 +465,7 @@ export const getProductById = async (req: any, res: Response) => {
       });
     }
 
-    const myReview = await reviewModel.findOne({
+    const myReview = await productsReviewModel.findOne({
       productId,
       customerId: req.user._id,
     });
@@ -565,7 +565,7 @@ export const addReview = async (req: Request, res: Response) => {
       });
     }
 
-    const alreadyReviewed = await reviewModel.findOne({
+    const alreadyReviewed = await productsReviewModel.findOne({
       customerId,
       productId,
     });
@@ -577,7 +577,7 @@ export const addReview = async (req: Request, res: Response) => {
       });
     }
 
-    const newReview = await reviewModel.create({
+    const newReview = await productsReviewModel.create({
       customerId,
       productId,
       rating,
@@ -614,7 +614,7 @@ export const deleteReview = async (req: any, res: Response) => {
 
     const customerId = req.user._id;
 
-    const review = await reviewModel.findOneAndDelete({
+    const review = await productsReviewModel.findOneAndDelete({
       customerId,
       productId,
     });

@@ -57,6 +57,14 @@ const useWebNavigate = () => {
   const gotoResetPassword = (token: string) =>
     navigate(`/reset-password/${token}`);
 
+  const gotoFarmerProduct = (productId: string) =>
+  navigate("/farmer", {
+    state: {
+      activePage: "products",
+      highlightProductId: productId,
+    },
+  });
+
   return {
     gotoRegister,
     gotoLogin,
@@ -70,7 +78,8 @@ const useWebNavigate = () => {
     gotoFarmer,
     gotoAdmin,
     gotoCustomer,
-    gotoProductDetails
+    gotoProductDetails,
+    gotoFarmerProduct
   };
 };
 

@@ -324,7 +324,6 @@
 
 import { Heart, ShoppingBag, Star } from "lucide-react";
 import { useWishlist } from "../../../hooks/useWishlist";
-import { useState } from "react";
 
 type Props = {
     product: any;

@@ -1,6 +1,6 @@
 import StatsCards from "./StatsCards";
 import RecentOrders from "./RecentOrders";
-import TopSellingProducts from "./TopSellingProducts";
+import HighestRatedProducts from "./HighestRatedProducts";
 import AddProductBanner from "./AddProductBanner";
 import ProductTable from "./ProductTable";
 import CustomerReviews from "./CustomerReviews";
@@ -24,7 +24,7 @@ const Dashboard = ({ setActivePage }: DashboardProps) => {
 
       <div className="grid grid-cols-2 gap-5 mt-5">
         <RecentOrders />
-        <TopSellingProducts />
+        <HighestRatedProducts />
       </div>
 
       <div className="mt-5">
@@ -36,7 +36,7 @@ const Dashboard = ({ setActivePage }: DashboardProps) => {
       </div>
 
       <div className="mt-5">
-        <CustomerReviews />
+        <CustomerReviews setActivePage={setActivePage}/>
       </div>
     </div>
   );
