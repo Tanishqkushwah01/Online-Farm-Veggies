@@ -565,3 +565,99 @@ export const getTenProducts = async (req: Request, res: Response) => {
     });
   }
 };
+
+
+
+import orderModel from "../models/order.model";
+
+export const createOrder = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const customerId = req.user._id;
+
+    const {
+      productId,
+      quantity,
+      shippingAddress,
+      paymentMethod,
+    } = req.body;
+
+    // Validate request
+    if (
+      !productId ||
+      !quantity ||
+      !shippingAddress ||
+      !paymentMethod
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // Find product
+    const product = await productModel.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    // Product available?
+    if (!product.isAvailable) {
+      return res.status(400).json({
+        success: false,
+        message: "Product is unavailable",
+      });
+    }
+
+    // Stock check
+    if (quantity > product.quantity) {
+      return res.status(400).json({
+        success: false,
+        message: "Insufficient stock available",
+      });
+    }
+
+    // Calculate total
+    const totalAmount = quantity * product.price;
+
+    // Create order
+    const order = await orderModel.create({
+      customerId,
+      farmerId: product.farmerId,
+      productId,
+      quantity,
+      totalAmount,
+      shippingAddress,
+      paymentMethod,
+    });
+
+    // Reduce stock
+    product.quantity -= quantity;
+
+    if (product.quantity === 0) {
+      product.isAvailable = false;
+    }
+
+    await product.save();
+
+    return res.status(201).json({
+      success: true,
+      message: "Order placed successfully",
+      order,
+    });
+
+  } catch (error: any) {
+    console.error("Create Order Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};

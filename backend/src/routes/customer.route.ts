@@ -45,4 +45,17 @@ router.get("/wishlist", authMiddleware, customerController.getWishlist);
 // get one products by ID
 router.get("/products/:productId", authMiddleware, customerController.getProductById);
 
+
+
+
+
+router.post(
+  "/orders",
+  authMiddleware,customerController.createOrder
+);
+
+
+
+
+
 export default router;

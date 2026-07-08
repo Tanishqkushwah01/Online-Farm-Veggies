@@ -1,5 +1,5 @@
-// import { MapPin, Phone, Star, User } from "lucide-react";
-
+import { MapPin, Phone, Star, User,Home,LocateFixed, Mail } from "lucide-react";
+import { Link } from "react-router-dom";
 // type FarmerInfoCardProps = {
 //   farmerName?: string;
 //   farmName?: string;
@@ -61,50 +61,108 @@ const FarmerDetailsCard = ({ farmerDetails }: FarmerDetailsCardProps) => {
   }
 
   return (
-    <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
-      <h2 className="mb-4 text-2xl font-bold text-gray-900">
-        Farmer Details
-      </h2>
+   <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
 
-      <div className="grid gap-3 text-sm text-gray-700 sm:grid-cols-2">
-        <p>
-          <span className="font-semibold">Name:</span>{" "}
-          {farmerDetails.username}
-        </p>
+  {/* Header */}
+  <div className="mx-auto flex w-full max-w-md items-center justify-center rounded-full bg-gradient-to-r from-green-100 to-emerald-100 py-3">
+    <h2 className="text-3xl font-bold text-emerald-900">
+      Farmer Details
+    </h2>
+  </div>
 
-        <p>
-          <span className="font-semibold">Farm Name:</span>{" "}
-          {farmerDetails.farmName}
-        </p>
-
-        <p>
-          <span className="font-semibold">City:</span>{" "}
-          {farmerDetails.city}
-        </p>
-
-        <p>
-          <span className="font-semibold">Address:</span>{" "}
-          {farmerDetails.farmAddress}
-        </p>
-
-        <p>
-          <span className="font-semibold">Email:</span>{" "}
-          {farmerDetails.email}
-        </p>
-
-        <p>
-          <span className="font-semibold">Phone:</span>{" "}
-          {farmerDetails.phoneNumber}
-        </p>
-      </div>
-
-      {farmerDetails.bio && (
-        <p className="mt-4 text-sm leading-6 text-gray-600">
-          {farmerDetails.bio}
-        </p>
+  {/* Profile */}
+  <div className="mt-6 flex justify-center">
+    <div className="h-28 w-28 overflow-hidden rounded-full border-4 border-green-200 shadow-lg">
+      {farmerDetails.profilePicture ? (
+        <img
+          src={farmerDetails.profilePicture}
+          alt={farmerDetails.username}
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center bg-green-100">
+          <User size={50} className="text-green-600" />
+        </div>
       )}
     </div>
-  );
-};
+  </div>
 
-export default FarmerDetailsCard;
+  {/* Divider */}
+  <div className="mx-auto mt-6 mb-6 w-11/12 border-t border-gray-200" />
+
+  {/* Details */}
+  <div className="mx-auto grid max-w-2xl gap-5 sm:grid-cols-2">
+
+    <div className="flex items-start gap-3">
+      <User className="mt-1 text-green-600" size={20} />
+      <div>
+        <p className="font-semibold">Name</p>
+        <p className="text-gray-600">{farmerDetails.username}</p>
+      </div>
+    </div>
+
+    <div className="flex items-start gap-3">
+      <Home className="mt-1 text-green-600" size={20} />
+      <div>
+        <p className="font-semibold">Farm Name</p>
+        <p className="text-gray-600">{farmerDetails.farmName}</p>
+      </div>
+    </div>
+
+    <div className="flex items-start gap-3">
+      <MapPin className="mt-1 text-green-600" size={20} />
+      <div>
+        <p className="font-semibold">City</p>
+        <p className="text-gray-600">{farmerDetails.city}</p>
+      </div>
+    </div>
+
+    <div className="flex items-start gap-3">
+      <LocateFixed className="mt-1 text-green-600" size={20} />
+      <div>
+        <p className="font-semibold">Address</p>
+        <p className="text-gray-600">{farmerDetails.farmAddress}</p>
+      </div>
+    </div>
+
+    <div className="flex items-start gap-3">
+      <Mail className="mt-1 text-green-600" size={20} />
+      <div>
+        <p className="font-semibold">Email</p>
+        <p className="break-all text-gray-600">
+          {farmerDetails.email}
+        </p>
+      </div>
+    </div>
+
+    <div className="flex items-start gap-3">
+      <Phone className="mt-1 text-green-600" size={20} />
+      <div>
+        <p className="font-semibold">Phone</p>
+        <p className="text-gray-600">{farmerDetails.phoneNumber}</p>
+      </div>
+    </div>
+
+  </div>
+
+  {/* Bio */}
+  {farmerDetails.bio && (
+    <div className="mx-auto mt-8 max-w-2xl rounded-2xl bg-green-50 p-5 text-center">
+      <p className="italic leading-7 text-gray-700">
+        "{farmerDetails.bio}"
+      </p>
+    </div>
+  )}
+  {/* divider */}
+  <div className="mx-auto mt-6 w-11/12 border-t border-gray-200" />
+  {/*post review button */}
+  <div className="mt-6 flex justify-center">
+    
+    <button className="w-full rounded-2xl bg-green-600 px-6 py-3 font-semibold text-white transition hover:bg-green-700">
+      Post Review
+    </button>    
+  </div>
+</div>
+  )}
+
+export default FarmerDetailsCard; 
