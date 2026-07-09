@@ -1,4 +1,3 @@
-// import { Link } from "react-router-dom";
 import "./VerifySuccess.css";
 import useWebNavigate from "../components/hooks/useWebNavigate";
 import { useEffect } from "react";
@@ -15,7 +14,7 @@ const VerifySuccess = () => {
         gotoCustomer();
       } else if (info.role === "Admin") {
         gotoAdmin();
-      } else if (info.role === "Farmer" ) {
+      } else if (info.role === "Farmer") {
         gotoFarmer();
       }
     }, 1500);
@@ -52,13 +51,6 @@ const VerifySuccess = () => {
         <p className="text-gray-500 mt-3">
           Your email has been verified successfully. Now you can login.
         </p>
-
-        {/* <Link
-          to="/login"
-          className="block w-full mt-6 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition"
-        >
-          Go to Login
-        </Link> */}
       </div>
     </div>
   );

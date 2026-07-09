@@ -56,7 +56,7 @@ const Terms = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#F4F9EE] via-[#EEF3EC] to-[#E5F0DE] py-10 px-6 relative overflow-hidden">
+        <div className="min-h-screen bg-linear-to-br from-[#F4F9EE] via-[#EEF3EC] to-[#E5F0DE] py-10 px-6 relative overflow-hidden">
             {/* decorative background blobs */}
             <div className="absolute -top-24 -left-24 w-72 h-72 bg-green-200/40 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute top-1/3 -right-24 w-72 h-72 bg-yellow-200/40 rounded-full blur-3xl pointer-events-none" />
@@ -102,7 +102,7 @@ const Terms = () => {
                         Terms & Conditions
                     </h1>
                 </div>
-                <p className="h-1 w-24 bg-gradient-to-r from-green-500 to-yellow-400 rounded-full mb-6" />
+                <p className="h-1 w-24 bg-linear-to-r from-green-500 to-yellow-400 rounded-full mb-6" />
 
                 <p className="mb-8 text-gray-600 leading-relaxed">
                     Welcome to our Agri Marketplace. By creating an account or using
@@ -120,7 +120,7 @@ const Terms = () => {
                                 mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                             }`}
                         >
-                            <div className="flex-shrink-0 h-11 w-11 flex items-center justify-center rounded-full bg-green-100 text-green-700
+                            <div className="shrink-0 h-11 w-11 flex items-center justify-center rounded-full bg-green-100 text-green-700
                                 group-hover:bg-green-600 group-hover:text-white group-hover:rotate-6 transition-all duration-300">
                                 <Icon size={20} />
                             </div>
@@ -142,7 +142,7 @@ const Terms = () => {
                             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                         }`}
                     >
-                        <div className="flex-shrink-0 h-11 w-11 flex items-center justify-center rounded-full bg-red-100 text-red-600
+                        <div className="shrink-0 h-11 w-11 flex items-center justify-center rounded-full bg-red-100 text-red-600
                             group-hover:bg-red-600 group-hover:text-white group-hover:rotate-6 transition-all duration-300">
                             <Ban size={20} />
                         </div>
@@ -156,7 +156,7 @@ const Terms = () => {
                                         key={item}
                                         className="flex items-start gap-2 text-gray-600 hover:text-red-600 hover:translate-x-1 transition-all duration-200"
                                     >
-                                        <AlertTriangle size={15} className="mt-1 flex-shrink-0 text-red-400" />
+                                        <AlertTriangle size={15} className="mt-1 shrink-0 text-red-400" />
                                         {item}
                                     </li>
                                 ))}
@@ -173,7 +173,7 @@ const Terms = () => {
                             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                         }`}
                     >
-                        <div className="flex-shrink-0 h-11 w-11 flex items-center justify-center rounded-full bg-orange-100 text-orange-600
+                        <div className="shrink-0 h-11 w-11 flex items-center justify-center rounded-full bg-orange-100 text-orange-600
                             group-hover:bg-orange-600 group-hover:text-white group-hover:rotate-6 transition-all duration-300">
                             <ShieldCheck size={20} />
                         </div>
@@ -191,12 +191,12 @@ const Terms = () => {
                     {/* contact */}
                     <div
                         style={{ transitionDelay: "630ms" }}
-                        className={`group flex gap-4 p-5 rounded-xl bg-gradient-to-r from-green-600 to-green-700 text-white
+                        className={`group flex gap-4 p-5 rounded-xl bg-linear-to-r from-green-600 to-green-700 text-white
                         hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ${
                             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                         }`}
                     >
-                        <div className="flex-shrink-0 h-11 w-11 flex items-center justify-center rounded-full bg-white/20
+                        <div className="shrink-0 h-11 w-11 flex items-center justify-center rounded-full bg-white/20
                             group-hover:bg-white/30 group-hover:rotate-6 transition-all duration-300">
                             <Mail size={20} />
                         </div>

@@ -68,7 +68,7 @@ const Home = () => {
           <img
             src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=900&q=80"
             alt="Fresh vegetables"
-            className="rounded-3xl w-full max-h-[420px] object-cover"
+            className="rounded-3xl w-full max-h-105 object-cover"
           />
         </div>
       </section>

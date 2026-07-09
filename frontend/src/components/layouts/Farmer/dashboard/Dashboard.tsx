@@ -20,11 +20,12 @@ const Dashboard = ({ setActivePage }: DashboardProps) => {
         </p>
       </div>
 
-      <StatsCards />
+      {/* <StatsCards /> */}
+      <StatsCards setActivePage={setActivePage} />
 
       <div className="grid grid-cols-2 gap-5 mt-5">
-        <RecentOrders />
-        <HighestRatedProducts />
+        <RecentOrders setActivePage={setActivePage}/>
+        <HighestRatedProducts setActivePage={setActivePage}/>
       </div>
 
       <div className="mt-5">

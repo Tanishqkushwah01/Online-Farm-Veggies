@@ -47,15 +47,31 @@ router.get("/wishlist", authMiddleware, customerController.getWishlist);
 router.get("/products/:productId", authMiddleware, customerController.getProductById);
 
 // create a  product review 
+// router.post("/review/product", authMiddleware, customerController.addProductReview);
+
+// router.post("/review/farmer", authMiddleware, customerController.addFarmerReview);
+
 router.post("/review", authMiddleware, customerController.addReview);
 
 // delete my review 
-router.delete("/review/:productId", authMiddleware, customerController.deleteReview);
+router.delete("/review/:type/:id", authMiddleware, customerController.deleteReview);
 
 // Order routes
+
+// create a order 
 router.post("/orders", authMiddleware, customerController.createOrder);
-router.patch("/orders/:orderId/cancel", authMiddleware, customerController.cancelOrder);
-router.get("/orders", authMiddleware, customerController.getMyOrders);
+
+// get my all orders 
+router.get("/orders", authMiddleware, customerController.getCustomerOrders);
+
+// deleting customer order 
+router.delete("/orders/:orderId", authMiddleware, customerController.deleteOrder);
+
+router.get("/farmer/:farmerId", authMiddleware, customerController.getFarmerProfileById);
+
+
+// router.patch("/orders/:orderId/cancel", authMiddleware, customerController.cancelOrder);
+
 router.get("/orders/:orderId", authMiddleware, customerController.getParticularOrder);
 
 

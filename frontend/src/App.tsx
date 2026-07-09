@@ -20,7 +20,13 @@ import PageNotFound from "./pages/PageNotFound";
 import ProductDetails from "./components/layouts/Customer/Product/ProductDetails";
 import CustomerLayout from "./components/layouts/Customer/CustomerLayout";
 import { Toaster } from "react-hot-toast";
+<<<<<<< HEAD
 import { GoogleOAuthProvider } from "@react-oauth/google";
+=======
+import FarmerLayout from "./components/layouts/Farmer/FarmerLayout";
+import ScrollToTop from "./components/ScrollToTop";
+import FarmerProfilePage from "./components/layouts/Customer/FarmerPages/FarmerProfilePage";
+>>>>>>> b4a111ed1e894fcbad622750d5e01d12bc2b5375
 
 const App = () => {
   const GoogleAuthWrapper = () => {
@@ -33,20 +39,28 @@ const App = () => {
 
   return (
     <>
+    <ScrollToTop />
       <Toaster position="top-center" />
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<Home />} />
+<<<<<<< HEAD
         <Route path="/login" element={<GoogleAuthWrapper />} />
+=======
+        <Route path="/login" element={<Login />} />
+>>>>>>> b4a111ed1e894fcbad622750d5e01d12bc2b5375
         <Route path="/register" element={<Register />} />
 
         {/* in dono ko guard karna hai thik hai  */}
         <Route path="/verify-success" element={<VerifySuccess />} />
         <Route path="/verify-failed" element={<VerifyFailed />} />
 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> b4a111ed1e894fcbad622750d5e01d12bc2b5375
         <Route element={<ForgotGuard />}>
           <Route path="/forgot-password" element={<ForgotPassword />} />
         </Route>
@@ -67,9 +81,20 @@ const App = () => {
           <Route element={<CustomerLayout />}>
             <Route path="/customer" element={<CustomerDashboard />} />
             <Route path="/customer/product/:id" element={<ProductDetails />} />
+<<<<<<< HEAD
           </Route>
 
           <Route path="/farmer" element={<FarmerDashboard />} />
+=======
+            <Route path="/customer/farmer/:farmerId" element={<FarmerProfilePage />} />
+            
+          </Route>
+
+          <Route element={<FarmerLayout />}>
+            <Route path="/farmer" element={<FarmerDashboard />} />
+          </Route>
+
+>>>>>>> b4a111ed1e894fcbad622750d5e01d12bc2b5375
           <Route path="/admin" element={<AdminDashboard />} />
         </Route>
       </Routes>

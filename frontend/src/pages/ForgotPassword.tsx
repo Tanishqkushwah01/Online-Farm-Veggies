@@ -38,12 +38,10 @@ const ForgotPassword = () => {
       const response = await forgotPassword(email);
       console.log(response.data)
       if (response.data.success) {
-        window.open("https://mail.google.com/mail/u/0/#spam", "_blank");
+        window.open("https://mail.google.com/mail/u/0/#inbox", "_blank");
         window.open("/page");
         window.close();
       }
-
-      // alert(response.data.message);
 
       setEmail("");
     } catch (error: any) {

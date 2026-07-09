@@ -1,77 +1,23 @@
-// import { MessageCircle, Star } from "lucide-react";
-// import { reviews } from "./dummyData";
-
-// const ReviewList = () => {
-//   return (
-//     <div className="bg-white rounded-xl shadow-sm border border-gray-200 mt-4 overflow-hidden">
-//       {reviews.map((item) => (
-//         <div
-//           key={item.id}
-//           className="p-6 border-b border-gray-200 last:border-none flex items-start gap-5"
-//         >
-//           <div className="h-14 w-14 rounded-full bg-green-100 text-green-600 flex items-center justify-center font-bold text-xl">
-//             {item.customer.charAt(0)}
-//           </div>
-
-//           <div className="flex-1">
-//             <div className="flex items-center gap-3">
-//               <h3 className="font-bold text-slate-900">{item.customer}</h3>
-
-//               {/* {item.verified && (
-//                 <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-semibold">
-//                   Verified Buyer
-//                 </span>
-//               )} */}
-//             </div>
-
-//             <p className="text-sm text-gray-500 mt-1">
-//               {item.product} • {item.date}
-//             </p>
-
-//             <div className="flex items-center gap-1 text-yellow-500 mt-3">
-//               {Array.from({ length: 5 }).map((_, index) => (
-//                 <Star
-//                   key={index}
-//                   size={18}
-//                   fill={index < item.rating ? "currentColor" : "none"}
-//                 />
-//               ))}
-//             </div>
-
-//             <p className="text-gray-700 mt-3">{item.review}</p>
-//           </div>
-
-//           <button className="border border-gray-300 px-5 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-100">
-//             <MessageCircle size={18} />
-//             Reply
-//           </button>
-//         </div>
-//       ))}
-
-//       <div className="p-5 flex items-center justify-between">
-//         <p className="text-gray-500">Showing 1 to 3 of 248 reviews</p>
-
-//         <div className="flex gap-2">
-//           <button className="h-10 w-10 rounded-lg bg-green-600 text-white">1</button>
-//           <button className="h-10 w-10 rounded-lg border border-gray-300">2</button>
-//           <button className="h-10 w-10 rounded-lg border border-gray-300">3</button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ReviewList;
-import { MessageCircle, Star } from "lucide-react";
+import { BadgeCheck, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getFarmerReviews } from "../../../Api/farmerApi";
+import { useProductHighlight } from "../../../hooks/useProductHighlight";
 
 type ReviewType = {
   _id: string;
-  customerName: string;
+  customerName?: string;
   customerImage?: string;
-  productId: string;
-  productName: string;
+  customerId?: {
+    username?: string;
+    profilePicture?: string;
+  };
+  productId:
+  | string
+  | {
+    _id: string;
+    productName: string;
+  };
+  productName?: string;
   rating: number;
   review: string;
   createdAt: string;
@@ -79,102 +25,146 @@ type ReviewType = {
 
 type ReviewListProps = {
   reviewType: "customer" | "product";
-  onProductClick: (productId: string) => void;
+  search: string;
+  setActivePage: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const ReviewList = ({ reviewType, onProductClick }: ReviewListProps) => {
+const ReviewList = ({ reviewType, search, setActivePage }: ReviewListProps) => {
   const [reviews, setReviews] = useState<ReviewType[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const { highlightProduct } = useProductHighlight();
 
   const fetchReviews = async () => {
     try {
       setLoading(true);
 
-      const response = await getFarmerReviews(reviewType);
-      console.log(response.data.reviews)
+      const response = await getFarmerReviews(reviewType, search);
 
       if (response.data.success) {
-        setReviews(response.data.reviews);
+        setReviews(response.data.reviews || []);
+      } else {
+        setReviews([]);
       }
     } catch (error) {
       console.log(error);
+      setReviews([]);
     } finally {
       setLoading(false);
     }
   };
 
+  const getCustomerName = (item: ReviewType) => {
+    return item.customerName || item.customerId?.username || "Unknown Customer";
+  };
+
+  const getCustomerImage = (item: ReviewType) => {
+    return item.customerImage || item.customerId?.profilePicture;
+  };
+
+  const getProductId = (item: ReviewType) => {
+    return typeof item.productId === "string"
+      ? item.productId
+      : item.productId?._id;
+  };
+
+  const getProductName = (item: ReviewType) => {
+    return (
+      item.productName ||
+      (typeof item.productId !== "string" ? item.productId?.productName : "")
+    );
+  };
+
+  const handleProductClick = (productId: string) => {
+    setActivePage("products");
+
+    setTimeout(() => {
+      highlightProduct(productId);
+    }, 100);
+  };
+
   useEffect(() => {
     fetchReviews();
-  }, [reviewType]);
-
-  if (loading) {
-    return <p className="mt-4 text-gray-500">Loading reviews...</p>;
-  }
-
-  if (reviews.length === 0) {
-    return <p className="mt-4 text-gray-500">No Reviews Found</p>;
-  }
+  }, [reviewType, search]);
 
   return (
-    <div className="mt-4 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-      {reviews.map((item) => (
-        <div
-          key={item._id}
-          className="flex items-start gap-5 border-b border-gray-200 p-6 last:border-none"
-        >
-          <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-green-100">
-            {item.customerImage ? (
-              <img
-                src={item.customerImage}
-                alt={item.customerName}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <span className="text-xl font-bold text-green-600">
-                {item.customerName.charAt(0).toUpperCase()}
-              </span>
-            )}
-          </div>
+    <div className="mt-4 min-h-80 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      {loading && (
+        <div className="border-b border-gray-100 px-6 py-3 text-sm text-gray-500">
+          Searching reviews...
+        </div>
+      )}
 
-          <div className="flex-1">
-            <h3 className="font-bold text-slate-900">
-              {item.customerName}
-            </h3>
+      {!loading && reviews.length === 0 && (
+        <div className="flex min-h-75 items-center justify-center text-gray-500">
+          No Reviews Found
+        </div>
+      )}
 
-            <button
-              // onClick={() => onProductClick(item.productId)}
-              onClick={() => {
-                console.log("clicked productId:", item.productId);
-                onProductClick(item.productId);
-              }}
-              className="mt-1 text-sm cursor-pointer font-semibold text-green-600 hover:underline"
-            >
-              {item.productName}
-            </button>
+      {reviews.map((item) => {
+        const customerName = getCustomerName(item);
+        const customerImage = getCustomerImage(item);
+        const productId = getProductId(item);
+        const productName = getProductName(item);
 
-            <p className="mt-1 text-sm text-gray-500">
-              {new Date(item.createdAt).toLocaleDateString()}
-            </p>
-
-            <div className="mt-3 flex items-center gap-1 text-yellow-500">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <Star
-                  key={index}
-                  size={18}
-                  fill={index < item.rating ? "currentColor" : "none"}
+        return (
+          <div
+            key={item._id}
+            className="flex items-start gap-5 border-b border-gray-200 p-6 last:border-none"
+          >
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-green-100">
+              {customerImage ? (
+                <img
+                  src={customerImage}
+                  alt={customerName}
+                  className="h-full w-full object-cover"
                 />
-              ))}
+              ) : (
+                <span className="text-xl font-bold text-green-600">
+                  {customerName.charAt(0).toUpperCase()}
+                </span>
+              )}
             </div>
 
-            <p className="mt-3 text-gray-700">{item.review}</p>
-          </div>
+            <div className="min-w-0 flex-1">
+              <h3 className="font-bold text-slate-900">{customerName}</h3>
 
-          <button className="flex items-center gap-2 rounded-lg border border-gray-300 px-5 py-2 hover:bg-gray-100">
-            <MessageCircle size={18} />
-            Reply
-          </button>
-        </div>
-      ))}
+              {reviewType === "product" && productId && (
+                <button
+                  onClick={() => handleProductClick(productId)}
+                  className="mt-1 cursor-pointer text-sm font-semibold text-green-600 hover:underline"
+                >
+                  {productName}
+                </button>
+              )}
+
+              <p className="mt-1 text-sm text-gray-500">
+                {new Date(item.createdAt).toLocaleDateString("en-IN")}
+              </p>
+
+              <div className="mt-3 flex items-center gap-1 text-yellow-500">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Star
+                    key={index}
+                    size={18}
+                    fill={index < item.rating ? "currentColor" : "none"}
+                  />
+                ))}
+              </div>
+
+              <p className="review-text mt-3 leading-7 text-gray-700">
+                {item.review}
+              </p>
+            </div>
+
+
+            <div className="flex items-center gap-2 rounded-xl border border-gray-200 px-5 py-3 text-gray-600">
+              <BadgeCheck size={18} />
+              <span>Verified Purchase</span>
+            </div>
+
+          </div>
+        );
+      })}
     </div>
   );
 };

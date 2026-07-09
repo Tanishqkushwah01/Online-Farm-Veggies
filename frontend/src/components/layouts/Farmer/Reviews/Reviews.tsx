@@ -3,35 +3,41 @@ import RatingSummary from "./RatingSummary";
 import ReviewFilters from "./ReviewFilters";
 import ReviewList from "./ReviewList";
 import { useState } from "react";
-import useWebNavigate from "../../../hooks/useWebNavigate";
 
 type ReviewsProps = {
-  onProductClick: (productId: string) => void;
+  setActivePage: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const Reviews = ({ onProductClick }: ReviewsProps) => {
-  const [reviewType, setReviewType] = useState<"customer" | "product">("product");
-  const { gotoFarmerProduct } = useWebNavigate();
+const Reviews = ({ setActivePage }: ReviewsProps) => {
+  const [reviewType, setReviewType] = useState<"customer" | "product">(
+    "product"
+  );
+
+  const [search, setSearch] = useState("");
 
   return (
-    <div className="bg-gray-300 rounded-md p-8 min-h-full">
+    <div className="min-h-full rounded-md bg-gray-300 p-8">
       <div>
         <h1 className="text-4xl font-bold text-slate-900">Reviews</h1>
-        <p className="text-gray-600 mt-2 text-lg">
+        <p className="mt-2 text-lg text-gray-600">
           Manage and respond to your customer reviews.
         </p>
       </div>
 
       <ReviewStats reviewType={reviewType} />
       <RatingSummary reviewType={reviewType} />
+
       <ReviewFilters
         reviewType={reviewType}
         setReviewType={setReviewType}
+        search={search}
+        setSearch={setSearch}
       />
-      {/* <ReviewList onProductClick={onProductClick} reviewType={reviewType}  /> */}
+
       <ReviewList
         reviewType={reviewType}
-        onProductClick={onProductClick}
+        search={search}
+        setActivePage={setActivePage}
       />
     </div>
   );

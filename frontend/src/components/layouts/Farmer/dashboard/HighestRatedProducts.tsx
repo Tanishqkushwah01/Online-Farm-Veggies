@@ -9,8 +9,11 @@ type ProductType = {
   averageRating: number;
   totalReviews: number;
 };
+type HighestRatedProductsProps = {
+  setActivePage: React.Dispatch<React.SetStateAction<string>>;
+};
 
-const HighestRatedProducts = () => {
+const HighestRatedProducts = ({ setActivePage }: HighestRatedProductsProps) => {
   const [products, setProducts] = useState<ProductType[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -63,7 +66,9 @@ const HighestRatedProducts = () => {
           Highest Rated Products
         </h2>
 
-        <button className="font-semibold text-green-600 hover:text-green-700">
+        <button
+        onClick={() => setActivePage("reviews")}
+        className="font-semibold text-green-400 cursor-pointer hover:text-green-600">
           View All
         </button>
       </div>

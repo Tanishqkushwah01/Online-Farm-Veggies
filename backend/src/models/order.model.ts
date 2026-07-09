@@ -8,7 +8,7 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
 
-    
+
     farmerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Farmer",
@@ -21,7 +21,7 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
 
-  
+
     quantity: {
       type: Number,
       required: true,
@@ -38,16 +38,15 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
 
-    paymentMethod: {
-      type: String,
-      enum: ["COD", "ONLINE"],
-      default: "COD",
+    neededBy: {
+      type: Date,
+      required: true,
     },
-
-    paymentStatus: {
+    
+    orderCode: {
       type: String,
-      enum: ["Pending", "Paid", "Failed"],
-      default: "Pending",
+      unique: true,
+      required: true,
     },
 
     orderStatus: {
@@ -66,4 +65,5 @@ const orderSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model("Order", orderSchema);
+const orderModel = mongoose.model("Order", orderSchema);
+export default orderModel;

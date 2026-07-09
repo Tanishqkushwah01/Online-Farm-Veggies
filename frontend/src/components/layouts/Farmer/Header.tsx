@@ -56,17 +56,9 @@ const Header = ({ username }: { username: string }) => {
         </div>
 
         {/* Create */}
-        {/* <button
-          onClick={() => setOpen(true)}
-          className="h-12 px-7 rounded-2xl border border-slate-300 bg-white text-slate-700 font-medium transition hover:bg-gray-300 cursor-pointer"
-        >
-           Create 
-          <Plus size={20} />
-          Add Product
-        </button> */}
         <button
-        onClick={() => setOpen(true)}
-        className="bg-white h-12 px-7 border border-slate-300 text-slate-700 rounded-2xl font-medium flex items-center gap-2 transition hover:bg-gray-300 cursor-pointer">
+          onClick={() => setOpen(true)}
+          className="bg-white h-12 px-7 border border-slate-300 text-slate-700 rounded-2xl font-medium flex items-center gap-2 transition hover:bg-gray-300 cursor-pointer">
           <Plus size={20} />
           Add Product
         </button>
@@ -77,39 +69,6 @@ const Header = ({ username }: { username: string }) => {
         </button>
 
         {/* Profile */}
-        {/* <div ref={profileRef} className="relative">
-          <button
-            onClick={() => setProfileOpen(!profileOpen)}
-            className="h-11 w-11 rounded-full bg-slate-300 hover:ring-2 hover:ring-green-500 transition cursor-pointer overflow-hidden"
-          >
-             Uncomment when image is available 
-
-             <img
-              src={userInfo.profilePicture}
-              alt=""
-              className="h-full w-full object-cover"
-            /> 
-
-            <div className="h-24 w-24 rounded-full bg-[#D7E3F2] flex items-center justify-center overflow-hidden">
-              {userInfo.profilePicture ? (
-                <img
-                  src={userInfo.profilePicture}
-                  alt="Profile"
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <User size={12} className="text-gray-600" />
-              )}
-            </div>
-
-          </button>
-
-          {profileOpen && (
-            <ProfileCard
-              onClose={() => setProfileOpen(false)}
-            />
-          )}
-        </div> */}
         <div ref={profileRef} className="relative">
           <button
             onClick={() => setProfileOpen(!profileOpen)}

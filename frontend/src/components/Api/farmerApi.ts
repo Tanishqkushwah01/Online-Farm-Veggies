@@ -86,15 +86,23 @@ export const getProductStats = () => {
     });
 };
 
-export const getFarmerReviews = async (reviewType: "customer" | "product") => {
+export const getFarmerReviews = async (
+    reviewType: "customer" | "product",
+    search: string = ""
+) => {
     const token = localStorage.getItem("token");
 
-    return await api.get(`/reviews?type=${reviewType}`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
+    return await api.get(
+        `/reviews?type=${reviewType}&search=${encodeURIComponent(search)}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
 };
+
+
 
 
 export const getFarmerReviewStats = async (type: "product" | "customer") => {
@@ -121,9 +129,75 @@ export const getRatingDistribution = async (reviewType: "customer" | "product") 
 };
 
 export const getHighestRatedProducts = async () => {
+    const token = localStorage.getItem("token");
+
+    return await api.get("/highest-rated-products", {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+};
+
+
+export const getFarmerOrders = async () => {
+    const token = localStorage.getItem("token");
+
+    return await api.get("/orders", {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+};
+
+export const getOrderStats = async () => {
+    const token = localStorage.getItem("token");
+
+    return await api.get("/orders/stats", {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+};
+
+export const updateOrderStatus = async (orderId: string, status: string) => {
   const token = localStorage.getItem("token");
 
-  return await api.get("/highest-rated-products", {
+  return await api.patch(
+    `/orders/${orderId}/status`,
+    { status },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+export const getDashboardStats = async () => {
+  const token = localStorage.getItem("token");
+
+  return await api.get("/dashboard/stats", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+
+export const getRecentCustomerReviews = async () => {
+  const token = localStorage.getItem("token");
+
+  return await api.get("/dashboard/recent-reviews", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const removeOrder = async (orderId: string) => {
+  const token = localStorage.getItem("token");
+
+  return await api.delete(`/orders/${orderId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
