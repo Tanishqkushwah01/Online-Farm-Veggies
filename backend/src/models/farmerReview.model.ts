@@ -1,20 +1,44 @@
-import mongoose from "mongoose"
-const reviewSchema = new mongoose.Schema({
-    productId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
-        required: true
+import mongoose from "mongoose";
+
+const farmerReviewSchema = new mongoose.Schema(
+  {
+    farmerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Farmer",
+      required: true,
     },
 
     customerId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Customer",
+      required: true,
     },
 
-    rating: Number,
-    review: String
-});
+    rating: {
+      type: Number,
+      required: true,
+      min: 1,
+      max: 5,
+    },
 
-const farmerReviewModel = mongoose.model("FarmerReview", reviewSchema);
+    review: {
+      type: String,
+      trim: true,
+      maxlength: 500,
+      default: "",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+// One customer can review one farmer only once
+farmerReviewSchema.index(
+  { customerId: 1, farmerId: 1 },
+  { unique: true }
+);
+
+
+const farmerReviewModel = mongoose.model("FarmerReview", farmerReviewSchema);
 export default farmerReviewModel;

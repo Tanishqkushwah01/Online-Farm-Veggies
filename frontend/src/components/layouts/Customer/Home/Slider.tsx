@@ -1,22 +1,29 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import sliderImage1 from "../../../../assets/images/sliderImage1.jpeg";
+import sliderImage2 from "../../../../assets/images/sliderImage2.jpeg";
+import sliderImage3 from "../../../../assets/images/sliderImage3.jpeg";
+
+
+      // "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1600",
+      // "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=1600",
+      // "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=1600",
+
+
 
 const slides = [
   {
-    image:
-      "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1600",
+    image:sliderImage1,
     title: "Fresh Vegetables",
     subtitle: "Farm fresh vegetables delivered to your doorstep.",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=1600",
+    image:sliderImage2,
     title: "Organic Fruits",
     subtitle: "Healthy, juicy and naturally grown fruits.",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=1600",
+    image:sliderImage3,
     title: "Direct From Farmers",
     subtitle: "Support local farmers with every purchase.",
   },

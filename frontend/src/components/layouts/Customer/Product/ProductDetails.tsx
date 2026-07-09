@@ -5,12 +5,12 @@ import Header from "../Home/CustomerHeader";
 import Navbar from "../Home/Navbar";
 import Footer from "../Home/Footer";
 
-import ProductReviewSection from "./ProductReviewSection";
+import ReviewSection from "../Review/ReviewSection";
 import SimilarProducts from "./SimilarProducts";
 import useWebNavigate from "../../../hooks/useWebNavigate";
 import ProductDetailsCard from "./ProductDetailsCard";
 import FarmerDetailsCard from "./FarmerInfoCard";
-import OrderCard from "./OrderCard";
+import OrderCard from "../Orders/OrderCard";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -36,7 +36,7 @@ const ProductDetails = () => {
     return <h1 className="p-6 text-xl font-bold">Product not found</h1>;
   }
 
-  return  (
+  return (
     <div className="min-h-screen bg-[#F5F7F5]">
       <Header
         setActivePage={handleActivePage}
@@ -58,7 +58,7 @@ const ProductDetails = () => {
 
             <FarmerDetailsCard farmerDetails={farmerDetails} />
 
-            
+
           </div>
 
           <div className="mt-7">
@@ -66,9 +66,11 @@ const ProductDetails = () => {
           </div>
 
           <div className="mt-7">
-            <ProductReviewSection
-              productId={id!}
+            <ReviewSection
+              id={id!}
+              type="product"
               reviews={review}
+              onReviewAdded={() => {}}
             />
           </div>
 
@@ -79,18 +81,18 @@ const ProductDetails = () => {
           </div>
         </div>
       </div>
-      {showOrderCard&& (
+      {showOrderCard && (
         <OrderCard
-                productId={product._id}
-                price={product.price}
-                availableQuantity={product.quantity}
-                city={farmerDetails.city}
-                onClose={()=>{setShowOrderCard(false)}}
-              />
+          productId={product._id}
+          price={product.price}
+          availableQuantity={product.quantity}
+          city={farmerDetails.city}
+          onClose={() => { setShowOrderCard(false) }}
+        />
 
       )}
     </div>)
-  
+
 };
 
 export default ProductDetails;

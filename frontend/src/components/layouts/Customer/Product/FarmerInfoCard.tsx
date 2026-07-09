@@ -1,168 +1,322 @@
-import { MapPin, Phone, Star, User,Home,LocateFixed, Mail } from "lucide-react";
-import { Link } from "react-router-dom";
-// type FarmerInfoCardProps = {
-//   farmerName?: string;
-//   farmName?: string;
-//   city?: string;
+// import {
+//   ArrowRight,
+//   Home,
+//   Mail,
+//   MapPin,
+//   Phone,
+//   Sprout,
+//   User,
+// } from "lucide-react";
+// import useWebNavigate from "../../../hooks/useWebNavigate";
+// import toast from "react-hot-toast";
+// import { useState } from "react";
+// import { getFarmerProfileById } from "../../../Api/customerApi";
+
+// type FarmerDetailsCardProps = {
+//   farmerDetails: any;
 // };
 
-// const FarmerInfoCard = ({
-//   farmerName = "Kushwah Farms",
-//   farmName = "Organic Farmer",
-//   city = "Indore, Madhya Pradesh",
-// }: FarmerInfoCardProps) => {
+// const FarmerDetailsCard = ({ farmerDetails }: FarmerDetailsCardProps) => {
+//   if (!farmerDetails) return null;
+//   const { gotoFarmerProfile } = useWebNavigate();
+//   const [loadingDetails, setLoadingDetails] = useState(false);
+
+
+//   const handleViewMore = async () => {
+//     try {
+//       setLoadingDetails(true);
+
+//       const response = await getFarmerProfileById(farmerDetails._id);
+
+//       if (response.data.success) {
+//         gotoFarmerProfile(
+//           farmerDetails._id,
+//           response.data.product,
+//           response.data.farmerDetails,
+//           response.data.review
+//         );
+//       }
+//     } catch (error: any) {
+//       toast.error(error?.response?.data?.message || "Something went wrong");
+//     } finally {
+//       setLoadingDetails(false);
+//     }
+//   };
+
 //   return (
-//     <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-//       <div className="flex flex-col items-center text-center">
-//         <div className="flex h-24 w-24 items-center justify-center rounded-full bg-green-100">
-//           <User size={42} className="text-green-600" />
+//     <aside className="flex h-full min-h-[520px] flex-col overflow-hidden rounded-[30px] border border-green-100 bg-white shadow-sm">
+//       <div className="relative shrink-0 bg-gradient-to-br from-green-600 to-emerald-500 px-6 py-7 text-white">
+//         <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/10" />
+//         <div className="absolute -bottom-12 -left-8 h-32 w-32 rounded-full bg-white/10" />
+
+//         <div className="relative flex flex-col items-center text-center">
+//           <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-white bg-green-100 shadow-lg">
+//             {farmerDetails.profilePicture ? (
+//               <img
+//                 src={farmerDetails.profilePicture}
+//                 alt={farmerDetails.username}
+//                 className="h-full w-full object-cover"
+//               />
+//             ) : (
+//               <div className="flex h-full w-full items-center justify-center">
+//                 <User size={44} className="text-green-700" />
+//               </div>
+//             )}
+//           </div>
+
+//           <h2 className="mt-3 text-xl font-bold">
+//             {farmerDetails.username || "Farmer"}
+//           </h2>
+
+//           {/* <p className="mt-1 text-sm text-white/80">
+//             {farmerDetails.farmName || "Farm Owner"}
+//           </p> */}
+//         </div>
+//       </div>
+
+//       <div className="flex flex-1 flex-col justify-between p-5">
+//         <div className="space-y-3">
+//           <InfoRow
+//             icon={<Home size={18} />}
+//             label="Farm"
+//             value={farmerDetails.farmName || "Not added"}
+//           />
+
+//           <InfoRow
+//             icon={<MapPin size={18} />}
+//             label="Location"
+//             value={
+//               farmerDetails.city || farmerDetails.farmAddress || "Not added"
+//             }
+//           />
+
+//           <InfoRow
+//             icon={<Phone size={18} />}
+//             label="Phone"
+//             value={farmerDetails.phoneNumber || "Not added"}
+//           />
+
+//           <InfoRow
+//             icon={<Mail size={18} />}
+//             label="Email"
+//             value={farmerDetails.email || "Not added"}
+//           />
+
+//           {farmerDetails.bio && (
+//             <div className="rounded-2xl bg-green-50 p-4">
+//               <div className="mb-2 flex items-center gap-2 font-semibold text-green-700">
+//                 <Sprout size={18} />
+//                 About Farmer
+//               </div>
+
+//               <p className="line-clamp-3 text-sm leading-6 text-gray-600">
+//                 {farmerDetails.bio}
+//               </p>
+//             </div>
+//           )}
 //         </div>
 
-//         <h2 className="mt-4 text-2xl font-bold text-gray-900">
-//           {farmerName}
-//         </h2>
-
-//         <p className="mt-1 text-sm text-gray-500">{farmName}</p>
-
-//         <div className="mt-3 flex items-center gap-1 text-sm">
-//           <Star size={16} className="fill-yellow-400 text-yellow-400" />
-//           <span className="font-semibold">4.9</span>
-//           <span className="text-gray-500">(320 Orders)</span>
-//         </div>
-
-//         <div className="mt-6 w-full space-y-3 text-left text-sm text-gray-600">
-//           <p className="flex items-center gap-2">
-//             <MapPin size={17} className="text-green-600" />
-//             {city}
-//           </p>
-
-//           <p className="flex items-center gap-2">
-//             <Phone size={17} className="text-green-600" />
-//             Contact visible after order
-//           </p>
-//         </div>
-
-//         <button className="mt-6 w-full rounded-2xl border border-green-600 px-5 py-3 font-semibold text-green-600 transition hover:bg-green-50">
+//         <button
+//           onClick={handleViewMore}
+//           disabled={loadingDetails}
+//           className="group mt-4 flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-green-600 px-5 py-3 font-semibold text-white transition hover:bg-green-700"
+//         >
 //           View Farmer Profile
+//           <ArrowRight
+//             size={18}
+//             className="transition group-hover:translate-x-1"
+//           />
 //         </button>
+//       </div>
+//     </aside>
+//   );
+// };
+
+// const InfoRow = ({
+//   icon,
+//   label,
+//   value,
+// }: {
+//   icon: React.ReactNode;
+//   label: string;
+//   value: string;
+// }) => {
+//   return (
+//     <div className="flex items-start gap-3 rounded-2xl border border-gray-100 bg-gray-50 p-3">
+//       <div className="shrink-0 rounded-xl bg-green-100 p-2 text-green-700">
+//         {icon}
+//       </div>
+
+//       <div className="min-w-0">
+//         <p className="text-xs font-semibold uppercase text-gray-400">
+//           {label}
+//         </p>
+//         <p className="mt-1 break-words text-sm font-semibold text-gray-800">
+//           {value}
+//         </p>
 //       </div>
 //     </div>
 //   );
 // };
 
-// export default FarmerInfoCard;
+// export default FarmerDetailsCard;
+
+import {
+  ArrowRight,
+  Home,
+  Mail,
+  MapPin,
+  Phone,
+  Sprout,
+  User,
+} from "lucide-react";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { getFarmerProfileById } from "../../../Api/customerApi";
+import useWebNavigate from "../../../hooks/useWebNavigate";
+
 type FarmerDetailsCardProps = {
   farmerDetails: any;
 };
 
 const FarmerDetailsCard = ({ farmerDetails }: FarmerDetailsCardProps) => {
-  if (!farmerDetails) {
-    return null;
-  }
+  const { gotoFarmerProfile } = useWebNavigate();
+  const [loadingProfile, setLoadingProfile] = useState(false);
+
+  if (!farmerDetails) return null;
+
+  const handleFarmerProfile = async () => {
+    try {
+      setLoadingProfile(true);
+
+      const response = await getFarmerProfileById(farmerDetails._id);
+      console.log("luka==",response.data);
+
+      if (response.data.success) {
+        gotoFarmerProfile(
+          farmerDetails._id,
+          response.data.farmer,
+          response.data.products,
+          response.data.review
+        );
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoadingProfile(false);
+    }
+  };
 
   return (
-   <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+    <aside className="flex h-full min-h-130 flex-col overflow-hidden rounded-[30px] border border-green-100 bg-white shadow-sm">
+      <div className="relative shrink-0 bg-linear-to-br from-green-600 to-emerald-500 px-6 py-7 text-white">
+        <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/10" />
+        <div className="absolute -bottom-12 -left-8 h-32 w-32 rounded-full bg-white/10" />
 
-  {/* Header */}
-  <div className="mx-auto flex w-full max-w-md items-center justify-center rounded-full bg-gradient-to-r from-green-100 to-emerald-100 py-3">
-    <h2 className="text-3xl font-bold text-emerald-900">
-      Farmer Details
-    </h2>
-  </div>
+        <div className="relative flex flex-col items-center text-center">
+          <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-white bg-green-100 shadow-lg">
+            {farmerDetails.profilePicture ? (
+              <img
+                src={farmerDetails.profilePicture}
+                alt={farmerDetails.username}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center">
+                <User size={44} className="text-green-700" />
+              </div>
+            )}
+          </div>
 
-  {/* Profile */}
-  <div className="mt-6 flex justify-center">
-    <div className="h-28 w-28 overflow-hidden rounded-full border-4 border-green-200 shadow-lg">
-      {farmerDetails.profilePicture ? (
-        <img
-          src={farmerDetails.profilePicture}
-          alt={farmerDetails.username}
-          className="h-full w-full object-cover"
-        />
-      ) : (
-        <div className="flex h-full w-full items-center justify-center bg-green-100">
-          <User size={50} className="text-green-600" />
+          <h2 className="mt-3 text-xl font-bold">
+            {farmerDetails.username || "Farmer"}
+          </h2>
         </div>
-      )}
-    </div>
-  </div>
-
-  {/* Divider */}
-  <div className="mx-auto mt-6 mb-6 w-11/12 border-t border-gray-200" />
-
-  {/* Details */}
-  <div className="mx-auto grid max-w-2xl gap-5 sm:grid-cols-2">
-
-    <div className="flex items-start gap-3">
-      <User className="mt-1 text-green-600" size={20} />
-      <div>
-        <p className="font-semibold">Name</p>
-        <p className="text-gray-600">{farmerDetails.username}</p>
       </div>
-    </div>
 
-    <div className="flex items-start gap-3">
-      <Home className="mt-1 text-green-600" size={20} />
-      <div>
-        <p className="font-semibold">Farm Name</p>
-        <p className="text-gray-600">{farmerDetails.farmName}</p>
+      <div className="flex flex-1 flex-col justify-between p-5">
+        <div className="space-y-3">
+          <InfoRow
+            icon={<Home size={18} />}
+            label="Farm"
+            value={farmerDetails.farmName || "Not added"}
+          />
+
+          <InfoRow
+            icon={<MapPin size={18} />}
+            label="Location"
+            value={
+              farmerDetails.city || farmerDetails.farmAddress || "Not added"
+            }
+          />
+
+          <InfoRow
+            icon={<Phone size={18} />}
+            label="Phone"
+            value={farmerDetails.phoneNumber || "Not added"}
+          />
+
+          <InfoRow
+            icon={<Mail size={18} />}
+            label="Email"
+            value={farmerDetails.email || "Not added"}
+          />
+
+          {farmerDetails.bio && (
+            <div className="rounded-2xl bg-green-50 p-4">
+              <div className="mb-2 flex items-center gap-2 font-semibold text-green-700">
+                <Sprout size={18} />
+                About Farmer
+              </div>
+
+              <p className="line-clamp-3 text-sm leading-6 text-gray-600">
+                {farmerDetails.bio}
+              </p>
+            </div>
+          )}
+        </div>
+
+        <button
+          onClick={handleFarmerProfile}
+          disabled={loadingProfile}
+          className="group mt-4 flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-green-600 px-5 py-3 font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {loadingProfile ? "Loading..." : "View Farmer Profile"}
+          <ArrowRight
+            size={18}
+            className="transition group-hover:translate-x-1"
+          />
+        </button>
       </div>
-    </div>
+    </aside>
+  );
+};
 
-    <div className="flex items-start gap-3">
-      <MapPin className="mt-1 text-green-600" size={20} />
-      <div>
-        <p className="font-semibold">City</p>
-        <p className="text-gray-600">{farmerDetails.city}</p>
+const InfoRow = ({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}) => {
+  return (
+    <div className="flex items-start gap-3 rounded-2xl border border-gray-100 bg-gray-50 p-3">
+      <div className="shrink-0 rounded-xl bg-green-100 p-2 text-green-700">
+        {icon}
       </div>
-    </div>
 
-    <div className="flex items-start gap-3">
-      <LocateFixed className="mt-1 text-green-600" size={20} />
-      <div>
-        <p className="font-semibold">Address</p>
-        <p className="text-gray-600">{farmerDetails.farmAddress}</p>
-      </div>
-    </div>
-
-    <div className="flex items-start gap-3">
-      <Mail className="mt-1 text-green-600" size={20} />
-      <div>
-        <p className="font-semibold">Email</p>
-        <p className="break-all text-gray-600">
-          {farmerDetails.email}
+      <div className="min-w-0">
+        <p className="text-xs font-semibold uppercase text-gray-400">
+          {label}
+        </p>
+        <p className="mt-1 wrap-break-word text-sm font-semibold text-gray-800">
+          {value}
         </p>
       </div>
     </div>
+  );
+};
 
-    <div className="flex items-start gap-3">
-      <Phone className="mt-1 text-green-600" size={20} />
-      <div>
-        <p className="font-semibold">Phone</p>
-        <p className="text-gray-600">{farmerDetails.phoneNumber}</p>
-      </div>
-    </div>
-
-  </div>
-
-  {/* Bio */}
-  {farmerDetails.bio && (
-    <div className="mx-auto mt-8 max-w-2xl rounded-2xl bg-green-50 p-5 text-center">
-      <p className="italic leading-7 text-gray-700">
-        "{farmerDetails.bio}"
-      </p>
-    </div>
-  )}
-  {/* divider */}
-  <div className="mx-auto mt-6 w-11/12 border-t border-gray-200" />
-  {/*post review button */}
-  <div className="mt-6 flex justify-center">
-    
-    <button className="w-full rounded-2xl bg-green-600 px-6 py-3 font-semibold text-white transition hover:bg-green-700">
-      Post Review
-    </button>    
-  </div>
-</div>
-  )}
-
-export default FarmerDetailsCard; 
+export default FarmerDetailsCard;

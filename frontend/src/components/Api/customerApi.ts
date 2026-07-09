@@ -65,15 +65,17 @@ export const getWishlist = async () => {
   );
 };
 
-export const addReview = (data: {
-  productId: string;
-  rating: number;
-  review: string;
-}) => {
+export const addReview = (
+  type: "product" | "farmer",
+  data: {
+    id: string;
+    rating: number;
+    review: string;
+  }
+) => {
   const token = localStorage.getItem("token");
-  console.log("data===",data);
 
-  return api.post("/review", data, {
+  return api.post(`/review?type=${type}`, data, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -106,10 +108,12 @@ export const getProductById = async (productId: string) => {
   );
 };
 
-export const deleteReview = (productId: string) => {
+
+export const deleteReview =async (type: string, id: string) => {
   const token = localStorage.getItem("token");
 
-  return api.delete(`/review/${productId}`, {
+  return await api.delete(`/review/${type}/${id}`, {
+
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -124,11 +128,49 @@ export const createOrder = async (data: {
   totalPrice: number;
 }) => {
   const token = localStorage.getItem("token");
-  console.log("kana = ",data);
+  console.log("kana = ", data);
 
   return await api.post("/orders", data, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
+};
+
+export const getCustomerOrders = async () => {
+  const token = localStorage.getItem("token");
+
+  return await api.get("/orders", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+
+export const cancelOrder = async (orderId: string) => {
+  const token = localStorage.getItem("token");
+
+  return await api.delete(
+    `/orders/${orderId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+
+
+export const getFarmerProfileById = async (farmerId: string) => {
+  const token = localStorage.getItem("token");
+  return await api.get(
+    `/farmer/${farmerId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };

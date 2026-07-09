@@ -24,15 +24,25 @@ router.get("/rating-distribution", authMiddleware, farmerController.getRatingDis
 router.get("/highest-rated-products", authMiddleware, farmerController.getHighestRatedProducts);
 
 
-router.get("/orders",authMiddleware,farmerController.getFarmerOrders);
+router.get("/orders", authMiddleware, farmerController.getFarmerOrders);
+
+router.get("/orders/stats", authMiddleware, farmerController.getOrderStats);
+
+router.patch("/orders/:orderId/status", authMiddleware, farmerController.updateOrderStatus);
+
+router.get("/dashboard/stats", authMiddleware, farmerController.getDashboardStats);
+
+router.get("/dashboard/recent-reviews", authMiddleware, farmerController.getRecentCustomerReviews);
+
+router.delete("/orders/:orderId", authMiddleware, farmerController.removeOrder);
 
 // Get a particular order
-router.get("/orders/:orderId",authMiddleware,farmerController.getFarmerParticularOrder);
+// router.get("/orders/:orderId",authMiddleware,farmerController.getFarmerParticularOrder);
 
 // Update order status
-router.patch("/orders/:orderId/status",authMiddleware,farmerController.updateOrderStatus);
+// router.patch("/orders/:orderId/status",authMiddleware,farmerController.updateOrderStatus);
 
 // Get orders by status
-router.get("/orders/status/:status",authMiddleware,farmerController.getOrdersByStatus);
+// router.get("/orders/status/:status",authMiddleware,farmerController.getOrdersByStatus);
 
 export default router;

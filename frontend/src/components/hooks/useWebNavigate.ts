@@ -1,3 +1,90 @@
+// import { useNavigate } from "react-router-dom";
+
+// const useWebNavigate = () => {
+//   const navigate = useNavigate();
+
+//   const gotoRegister = () => navigate("/register");
+
+//   const gotoLogin = () => navigate("/login");
+
+//   const goBack = () => navigate(-1);
+
+//   const gotoVerifySuccess = () => navigate("/verify-success");
+//   const gotoVerifyFailed = () => navigate("/verify-failed");
+//   const gotoAdmin = () => navigate("/admin");
+
+
+//   // const gotoProductDetails = (productId: string) => navigate(`/customer/product/${productId}`);
+//   const gotoProductDetails = (
+//     productId: string,
+//     product: any,
+//     farmerDetails: any,
+//     review: any
+//   ) => {
+//     navigate(`/customer/product/${productId}`, {
+//       state: {
+//         product,
+//         farmerDetails,
+//         review,
+//       },
+//     });
+//   };
+
+//   const gotoCustomer = () => navigate("/customer");
+
+//   // const gotoFarmer = (activePage = "dashboard") => {
+//   //   navigate("/farmer", {
+//   //     state: { activePage },
+//   //   });
+//   // };
+//   const gotoFarmer = () => navigate("/farmer");
+
+//   const gotoForgotPassword = () =>
+//     navigate("/forgot-password", {
+//       state: { fromLogin: true },
+//     });
+
+//   const gotoTerms = () =>
+//     navigate("/terms", {
+//       state: { fromRegister: true },
+//     });
+
+//   const gotoVerifyEmail = () =>
+//     navigate("/verify-email", {
+//       state: { fromRegister: true },
+//     });
+
+//   const gotoResetPassword = (token: string) =>
+//     navigate(`/reset-password/${token}`);
+
+//   const gotoFarmerProduct = (productId: string) =>
+//   navigate("/farmer", {
+//     state: {
+//       activePage: "products",
+//       highlightProductId: productId,
+//     },
+//   });
+
+//   return {
+//     gotoRegister,
+//     gotoLogin,
+//     goBack,
+//     gotoTerms,
+//     gotoVerifyEmail,
+//     gotoForgotPassword,
+//     gotoResetPassword,
+//     gotoVerifySuccess,
+//     gotoVerifyFailed,
+//     gotoFarmer,
+//     gotoAdmin,
+//     gotoCustomer,
+//     gotoProductDetails,
+//     gotoFarmerProduct
+//   };
+// };
+
+// export default useWebNavigate;
+
 import { useNavigate } from "react-router-dom";
 
 const useWebNavigate = () => {
@@ -10,11 +97,11 @@ const useWebNavigate = () => {
   const goBack = () => navigate(-1);
 
   const gotoVerifySuccess = () => navigate("/verify-success");
+
   const gotoVerifyFailed = () => navigate("/verify-failed");
+
   const gotoAdmin = () => navigate("/admin");
 
-
-  // const gotoProductDetails = (productId: string) => navigate(`/customer/product/${productId}`);
   const gotoProductDetails = (
     productId: string,
     product: any,
@@ -30,14 +117,31 @@ const useWebNavigate = () => {
     });
   };
 
-  const gotoCustomer = () => navigate("/customer");
+  const gotoFarmerProfile = (
+  farmerId: string,
+  farmer: any,
+  products: any[],
+  review: any
+) => {
+  navigate(`/customer/farmer/${farmerId}`, {
+    state: {
+      farmer,
+      products,
+      review,
+    },
+  });
+};
+  // ✅ Updated
+  const gotoCustomer = (activePage = "home") => {
+    navigate("/customer", {
+      state: {
+        activePage,
+      },
+    });
+  };
 
-  // const gotoFarmer = (activePage = "dashboard") => {
-  //   navigate("/farmer", {
-  //     state: { activePage },
-  //   });
-  // };
   const gotoFarmer = () => navigate("/farmer");
+
 
   const gotoForgotPassword = () =>
     navigate("/forgot-password", {
@@ -58,12 +162,12 @@ const useWebNavigate = () => {
     navigate(`/reset-password/${token}`);
 
   const gotoFarmerProduct = (productId: string) =>
-  navigate("/farmer", {
-    state: {
-      activePage: "products",
-      highlightProductId: productId,
-    },
-  });
+    navigate("/farmer", {
+      state: {
+        activePage: "products",
+        highlightProductId: productId,
+      },
+    });
 
   return {
     gotoRegister,
@@ -79,7 +183,8 @@ const useWebNavigate = () => {
     gotoAdmin,
     gotoCustomer,
     gotoProductDetails,
-    gotoFarmerProduct
+    gotoFarmerProduct,
+    gotoFarmerProfile,
   };
 };
 

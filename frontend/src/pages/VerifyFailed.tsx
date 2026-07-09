@@ -1,6 +1,5 @@
 import { XCircle } from "lucide-react";
 import { useEffect } from "react";
-// import { Link } from "react-router-dom";
 import useWebNavigate from "../components/hooks/useWebNavigate";
 
 const VerifyFailed = () => {
@@ -24,13 +23,6 @@ const VerifyFailed = () => {
         <p className="text-gray-500 mt-3">
           Verification link is invalid or expired.
         </p>
-
-        {/* <Link
-          to="/signup"
-          className="block w-full mt-6 bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition"
-        >
-          Try Again
-        </Link> */}
       </div>
     </div>
   );

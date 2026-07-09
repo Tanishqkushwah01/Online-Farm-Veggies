@@ -1,102 +1,30 @@
-// import { Package, ShoppingBag, Clock, Users } from "lucide-react";
-// import StatCard from "./StatCard";
-
-// const StatsCards = () => {
-//   const stats = [
-//     {
-//       title: "Total Products",
-//       value: 32,
-//       subtitle: "+5 new this week",
-//       icon: <Package size={30} />,
-//     },
-//     {
-//       title: "Total Orders",
-//       value: 128,
-//       subtitle: "+18 this week",
-//       icon: <ShoppingBag size={30} />,
-//     },
-//     {
-//       title: "Pending Orders",
-//       value: 14,
-//       subtitle: "View and manage",
-//       icon: <Clock size={30} />,
-//     },
-//     {
-//       title: "Total Customers",
-//       value: 86,
-//       subtitle: "+7 this week",
-//       icon: <Users size={30} />,
-//     },
-//   ];
-
-//   return (
-//     <div className="grid grid-cols-4 gap-4 mt-6">
-//       {stats.map((item) => (
-//         <StatCard
-//           key={item.title}
-//           title={item.title}
-//           value={item.value}
-//           subtitle={item.subtitle}
-//           icon={item.icon}
-//         />
-//       ))}
-//     </div>
-//   );
-// };
-
-// export default StatsCards;
-
 import { useEffect, useState } from "react";
 import { Package, ShoppingBag, Clock, Users } from "lucide-react";
 import StatCard from "./StatCard";
-import { getProductStats } from "../../../Api/farmerApi";
+import { getDashboardStats } from "../../../Api/farmerApi";
 
-const StatsCards = () => {
-  const [stats, setStats] = useState([
-    {
-      title: "Total Products",
-      value: 0,
-      subtitle: "+0 new this week",
-      icon: <Package size={30} />,
-    },
-    {
-      title: "Total Orders",
-      value: 128,
-      subtitle: "+18 this week",
-      icon: <ShoppingBag size={30} />,
-    },
-    {
-      title: "Pending Orders",
-      value: 14,
-      subtitle: "View and manage",
-      icon: <Clock size={30} />,
-    },
-    {
-      title: "Total Customers",
-      value: 86,
-      subtitle: "+7 this week",
-      icon: <Users size={30} />,
-    },
-  ]);
+type Props = {
+  setActivePage: React.Dispatch<React.SetStateAction<string>>;
+};
+
+const StatsCards = ({ setActivePage }: Props) => {
+  const [stats, setStats] = useState({
+    totalProducts: 0,
+    newProductsThisWeek: 0,
+    totalOrders: 0,
+    ordersThisWeek: 0,
+    pendingOrders: 0,
+    totalCustomers: 0,
+    customersThisWeek: 0,
+  });
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await getProductStats();
-        console.log("PRODUCT STATS ===>", res.data);
+        const res = await getDashboardStats();
 
         if (res.data.success) {
-          setStats((prev) => {
-            const updated = [...prev];
-
-            updated[0] = {
-              ...updated[0],
-              value: res.data.totalProducts,
-              subtitle: `+${res.data.newThisWeek} new this week`,
-            };
-
-            return updated;
-          });
+          setStats(res.data.stats);
         }
       } catch (err) {
         console.log(err);
@@ -106,15 +34,44 @@ const StatsCards = () => {
     fetchStats();
   }, []);
 
+  const cards = [
+    {
+      title: "Total Products",
+      value: stats.totalProducts,
+      subtitle: `+${stats.newProductsThisWeek} new this week`,
+      icon: <Package size={30} />,
+    },
+    {
+      title: "Total Orders",
+      value: stats.totalOrders,
+      subtitle: `+${stats.ordersThisWeek} this week`,
+      icon: <ShoppingBag size={30} />,
+    },
+    {
+      title: "Pending Orders",
+      value: stats.pendingOrders,
+      subtitle: "View and manage",
+      icon: <Clock size={30} />,
+      onClick: () => setActivePage("orders"),
+    },
+    {
+      title: "Total Customers",
+      value: stats.totalCustomers,
+      subtitle: `+${stats.customersThisWeek} this week`,
+      icon: <Users size={30} />,
+    },
+  ];
+
   return (
     <div className="grid grid-cols-4 gap-4 mt-6">
-      {stats.map((item) => (
+      {cards.map((item) => (
         <StatCard
           key={item.title}
           title={item.title}
           value={item.value}
           subtitle={item.subtitle}
           icon={item.icon}
+          onClick={item.onClick}
         />
       ))}
     </div>

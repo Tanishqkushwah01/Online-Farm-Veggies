@@ -20,47 +20,56 @@ import PageNotFound from "./pages/PageNotFound";
 import ProductDetails from "./components/layouts/Customer/Product/ProductDetails";
 import CustomerLayout from "./components/layouts/Customer/CustomerLayout";
 import { Toaster } from "react-hot-toast";
+import FarmerLayout from "./components/layouts/Farmer/FarmerLayout";
+import ScrollToTop from "./components/ScrollToTop";
+import FarmerProfilePage from "./components/layouts/Customer/FarmerPages/FarmerProfilePage";
 
 const App = () => {
   return (
     <>
+    <ScrollToTop />
       <Toaster position="top-center" />
-    <Routes>
-      {/* Public routes */}
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Routes>
+        {/* Public routes */}
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-      {/* in dono ko guard karna hai thik hai  */}
-      <Route path="/verify-success" element={<VerifySuccess />} />
-      <Route path="/verify-failed" element={<VerifyFailed />} />
+        {/* in dono ko guard karna hai thik hai  */}
+        <Route path="/verify-success" element={<VerifySuccess />} />
+        <Route path="/verify-failed" element={<VerifyFailed />} />
 
-      <Route element={<ForgotGuard />}>
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-      </Route>
-
-      <Route element={<TermsGuard />}>
-        <Route path="/terms" element={<Terms />} />
-      </Route>
-
-      <Route element={<VerifyEmailGuard />}>
-        <Route path="/verify-email" element={<VerifyEmail />} />
-      </Route>
-
-      <Route path="/reset-password/:token" element={<ResetPassword />} />
-      <Route path="*" element={<PageNotFound />} />
-
-      {/* Protected routes */}
-      <Route element={<ProtectedRoute />}>
-        <Route element={<CustomerLayout />}>
-          <Route path="/customer" element={<CustomerDashboard />} />
-          <Route path="/customer/product/:id" element={<ProductDetails />} />
+        <Route element={<ForgotGuard />}>
+          <Route path="/forgot-password" element={<ForgotPassword />} />
         </Route>
 
-        <Route path="/farmer" element={<FarmerDashboard />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-      </Route>
-    </Routes>
+        <Route element={<TermsGuard />}>
+          <Route path="/terms" element={<Terms />} />
+        </Route>
+
+        <Route element={<VerifyEmailGuard />}>
+          <Route path="/verify-email" element={<VerifyEmail />} />
+        </Route>
+
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="*" element={<PageNotFound />} />
+
+        {/* Protected routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<CustomerLayout />}>
+            <Route path="/customer" element={<CustomerDashboard />} />
+            <Route path="/customer/product/:id" element={<ProductDetails />} />
+            <Route path="/customer/farmer/:farmerId" element={<FarmerProfilePage />} />
+            
+          </Route>
+
+          <Route element={<FarmerLayout />}>
+            <Route path="/farmer" element={<FarmerDashboard />} />
+          </Route>
+
+          <Route path="/admin" element={<AdminDashboard />} />
+        </Route>
+      </Routes>
     </>
   );
 };
