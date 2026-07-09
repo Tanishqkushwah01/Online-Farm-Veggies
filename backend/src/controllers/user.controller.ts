@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
 import customerModel from "../models/customer.model";
 import farmerModel from "../models/farmer.model";
-import productModel from "../models/product.model";
-import userValidation from "../types/farmer.validation"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
@@ -15,6 +13,8 @@ import blacklistModel from "../models/blacklist.model";
 import farmerValidation from "../types/farmer.validation";
 import customerValidation from "../types/customer.validation";
 import signinValidation from "../types/signin.validation";
+import  {googleClient}  from "../utilities/googleConfig";
+import axios from "axios";
 /**
      * Register API
      * @description: This API is used to create a new user account
@@ -300,6 +300,124 @@ export const signin = async (req: Request, res: Response) => {
     });
   }
 };
+
+
+/**
+     * Google Login API
+     * @description: This API is used to login a user with it's google credentials.
+     * @route /api/auth/`google?code=${code}`
+*/
+
+
+export const googleLogin = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { code } = req.body;
+
+    if (!code) {
+      return res.status(400).json({
+        success: false,
+        message: "Authorization code is required",
+      });
+    }
+
+    // Exchange authorization code
+    const { tokens } = await googleClient.getToken(code);
+
+    googleClient.setCredentials(tokens);
+
+    // Verify Google ID token
+    const ticket = await googleClient.verifyIdToken({
+      idToken: tokens.id_token!,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+
+    if (!payload) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid Google token",
+      });
+    }
+
+    const {
+      email,
+      name,
+      picture,
+      email_verified,
+    } = payload;
+
+    if (!email_verified) {
+      return res.status(401).json({
+        success: false,
+        message: "Email is not verified by Google",
+      });
+    }
+
+    // Search Customer
+    let user: any = await customerModel.findOne({ email });
+    let role = "Customer";
+
+    // Search Farmer
+    if (!user) {
+      user = await farmerModel.findOne({ email });
+      role = "Farmer";
+    }
+
+    // If user doesn't exist
+    if (!user) {
+      user = await customerModel.create({
+        username: name,
+        email,
+        profilePicture: picture,
+        password: "",
+        isVerified: true,
+        role: "Customer"
+      });
+
+      role = "Customer";
+    }
+
+    // Generate JWT
+    const token = jwt.sign(
+      {
+        UserId: user._id,
+        role,
+      },
+      process.env.JWT_SECRET!,
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Google login successful",
+      token,
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        profilePicture: user.profilePicture,
+        role,
+      },
+    });
+
+  } catch (error: any) {
+    console.error("Google Login Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Google Login Failed",
+    });
+  }
+};
+
+
+
 /**
      * Resend Email API
      * @description: This API is used by client to resend their email to the backend.

@@ -845,7 +845,7 @@ export const cancelOrder = async (
     const allowedStatus = [
       "Pending",
       "Accepted",
-      "Preparing",
+      "Delivered",
     ];
 
     if (!allowedStatus.includes(order.orderStatus)) {

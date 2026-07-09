@@ -184,7 +184,11 @@ export const updateProduct = async (
  */
 
 
-
+/**
+ * @DELETE Product Update Route
+ * @description This API uses to update the product by the farmer.
+ * @Route /api/product/:productId
+ */
 export const deleteProduct = async (req: Request, res: Response) => {
   try {
     const farmerId = req.user._id;
@@ -216,7 +220,11 @@ export const deleteProduct = async (req: Request, res: Response) => {
   }
 };
 
-// controller
+/**
+ * @DELETE Product Update Route
+ * @description This API uses to update the product by the farmer.
+ * @Route /api/product/:productId
+ */
 export const getFarmerProductStats = async (req: Request, res: Response) => {
   try {
     const farmerId = req.user._id;
@@ -244,7 +252,11 @@ export const getFarmerProductStats = async (req: Request, res: Response) => {
   }
 };
 
-
+/**
+ * @DELETE Product Update Route
+ * @description This API uses to update the product by the farmer.
+ * @Route /api/product/:productId
+ */
 export const getFarmerReviews = async (req: Request, res: Response) => {
   try {
     const farmerId = req.user._id;
@@ -302,7 +314,11 @@ const formattedReviews = reviews.map((item: any) => ({
     });
   }
 };
-
+/**
+ * @GET Product Update Route
+ * @description This API uses to update the product by the farmer.
+ * @Route /api/product/:productId
+ */
 export const getFarmerReviewStats = async (req: Request, res: Response) => {
   try {
     const farmerId = req.user._id;
@@ -428,7 +444,11 @@ export const getRatingDistribution = async (
   }
 };
 
-
+/*
+ *@ name: updateOrderStatus
+ *@ description: This API changes the status of their order which is handled by Farmer.
+ *@ route: /farmer/order 
+ */
 export const getHighestRatedProducts = async (req: Request, res: Response) => {
   try {
     const farmerId = req.user._id;
@@ -498,10 +518,6 @@ export const getHighestRatedProducts = async (req: Request, res: Response) => {
     });
   }
 };
-
-
-
-
 /*
  *@ name: updateOrderStatus
  *@ description: This API changes the status of their order which is handled by Farmer.
@@ -579,7 +595,6 @@ export const updateOrderStatus = async (
     });
   }
 };
-
 
 
 export const getFarmerParticularOrder = async (
@@ -720,3 +735,4 @@ export const getOrdersByStatus = async (
     });
   }
 };
+
