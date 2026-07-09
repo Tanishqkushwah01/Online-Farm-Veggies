@@ -78,7 +78,7 @@ export default function Slider() {
   };
 
   return (
-    <div className="relative w-full h-[420px] rounded-3xl overflow-hidden shadow-xl group">
+    <div className="relative w-full h-105 unded-3xl overflow-hidden shadow-xl group">
 
       <div
         onTransitionEnd={handleTransitionEnd}

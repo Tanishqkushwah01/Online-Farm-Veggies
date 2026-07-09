@@ -15,14 +15,13 @@ router.delete("/products/:productId", authMiddleware, farmerController.deletePro
 
 router.get("/products/stats", authMiddleware, farmerController.getFarmerProductStats);
 
-
 router.get("/reviews", authMiddleware, farmerController.getFarmerReviews);
 
 router.get("/review-stats", authMiddleware, farmerController.getFarmerReviewStats);
 
 router.get("/rating-distribution", authMiddleware, farmerController.getRatingDistribution);
-router.get("/highest-rated-products", authMiddleware, farmerController.getHighestRatedProducts);
 
+router.get("/highest-rated-products", authMiddleware, farmerController.getHighestRatedProducts);
 
 router.get("/orders", authMiddleware, farmerController.getFarmerOrders);
 
@@ -35,14 +34,5 @@ router.get("/dashboard/stats", authMiddleware, farmerController.getDashboardStat
 router.get("/dashboard/recent-reviews", authMiddleware, farmerController.getRecentCustomerReviews);
 
 router.delete("/orders/:orderId", authMiddleware, farmerController.removeOrder);
-
-// Get a particular order
-// router.get("/orders/:orderId",authMiddleware,farmerController.getFarmerParticularOrder);
-
-// Update order status
-// router.patch("/orders/:orderId/status",authMiddleware,farmerController.updateOrderStatus);
-
-// Get orders by status
-// router.get("/orders/status/:status",authMiddleware,farmerController.getOrdersByStatus);
 
 export default router;

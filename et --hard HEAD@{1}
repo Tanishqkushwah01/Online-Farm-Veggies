@@ -1,0 +1,91 @@
+[33m2585232[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: pull origin main: Fast-forward
+[33mb4a111e[m HEAD@{1}: commit: check the most of the things at the ending of the project
+[33mf5fe5a9[m HEAD@{2}: pull origin main: Fast-forward
+[33mb73528e[m HEAD@{3}: commit: added dashobard functionality in farmer
+[33mcd1f693[m HEAD@{4}: commit: completed the productDetails page
+[33m6d78b09[m HEAD@{5}: commit: added the dynamicity in the product details
+[33mc840e1a[m HEAD@{6}: commit: correct the best selling products
+[33meb06856[m HEAD@{7}: commit: added the smiilard
+[33m3dd551a[m HEAD@{8}: commit: added the productsDetails card
+[33m8c1cf78[m HEAD@{9}: commit: added the whishlist
+[33m9ffad3b[m HEAD@{10}: commit: changed the settings
+[33m3cf9658[m HEAD@{11}: commit: added some dashboard functionality
+[33mb009fdf[m HEAD@{12}: commit: add edit functionality
+[33ma20925a[m HEAD@{13}: commit: add the delete option
+[33m00a6905[m HEAD@{14}: commit: product create compeleted
+[33m561f80d[m HEAD@{15}: commit: added the context
+[33m9c47954[m HEAD@{16}: pull origin main: Fast-forward
+[33m3905315[m HEAD@{17}: reset: moving to HEAD
+[33m3905315[m HEAD@{18}: pull origin main: Fast-forward
+[33m0d0ae4c[m HEAD@{19}: reset: moving to HEAD
+[33m0d0ae4c[m HEAD@{20}: commit: compeleted the delete controller
+[33m6ff3604[m HEAD@{21}: pull origin main: Fast-forward
+[33m8bd6bd8[m HEAD@{22}: commit: login bhi ho gya
+[33m6db46cf[m HEAD@{23}: commit: hi there
+[33m0a87559[m HEAD@{24}: commit: completed register
+[33md1b693f[m HEAD@{25}: reset: moving to HEAD
+[33md1b693f[m HEAD@{26}: pull origin main: Fast-forward
+[33mbbc4a39[m HEAD@{27}: pull origin main: Fast-forward
+[33m7bce1cd[m HEAD@{28}: reset: moving to HEAD
+[33m7bce1cd[m HEAD@{29}: pull origin main: Fast-forward
+[33mcc1ce30[m HEAD@{30}: reset: moving to HEAD
+[33mcc1ce30[m HEAD@{31}: pull origin main: Fast-forward
+[33m9f7027c[m HEAD@{32}: commit: done the signup and signin
+[33mf144128[m HEAD@{33}: commit (merge): hi there
+[33mb935c31[m HEAD@{34}: reset: moving to HEAD
+[33mb935c31[m HEAD@{35}: reset: moving to HEAD
+[33mb935c31[m HEAD@{36}: commit: Updated user controller
+[33mf8d9e24[m HEAD@{37}: pull origin main: Fast-forward
+[33m8cb27c6[m HEAD@{38}: commit: adding customer pages
+[33m024e326[m HEAD@{39}: pull origin main: Fast-forward
+[33m73e9039[m HEAD@{40}: reset: moving to HEAD
+[33m73e9039[m HEAD@{41}: commit: completed the update profile
+[33m5e31430[m HEAD@{42}: commit: adding update.schema.ts
+[33me181b7b[m HEAD@{43}: commit: Resolve merge conflicts
+[33m9f4d02f[m HEAD@{44}: pull origin main: Fast-forward
+[33mb3d64dd[m HEAD@{45}: reset: moving to HEAD
+[33mb3d64dd[m HEAD@{46}: rebase (finish): returning to refs/heads/main
+[33mb3d64dd[m HEAD@{47}: commit: hello
+[33m03d8f56[m HEAD@{48}: pull origin main --rebase (start): checkout 03d8f5600ef3d26203616eb4b48c8c5df25d5277
+[33m57f993e[m HEAD@{49}: commit: My changes
+[33mbaa3907[m HEAD@{50}: pull origin main: Fast-forward
+[33ma1d872d[m HEAD@{51}: reset: moving to HEAD
+[33ma1d872d[m HEAD@{52}: commit: delete id, change password kra hai abhi
+[33m2f1b29a[m HEAD@{53}: reset: moving to origin/main
+[33m43915f5[m HEAD@{54}: pull origin main: Fast-forward
+[33md0c40c7[m HEAD@{55}: pull origin main: Fast-forward
+[33m58530de[m HEAD@{56}: commit: update
+[33ma4b727d[m HEAD@{57}: commit: add change password page
+[33ma674e0a[m HEAD@{58}: commit: logout
+[33m28c5335[m HEAD@{59}: commit: add somthing
+[33m46e10e4[m HEAD@{60}: pull origin main: Fast-forward
+[33m8da37bd[m HEAD@{61}: commit: add new guards and more
+[33m5c33b3d[m HEAD@{62}: pull --rebase origin main (finish): returning to refs/heads/main
+[33m5c33b3d[m HEAD@{63}: pull --rebase origin main (pick): new
+[33m1d99f3f[m HEAD@{64}: pull --rebase origin main (start): checkout 1d99f3f6b77920395fa8d37c90f0fa61877da5a2
+[33ma5c4b21[m HEAD@{65}: commit: new
+[33m42f9977[m HEAD@{66}: commit: add the new ui and more featueres
+[33m57bbfe6[m HEAD@{67}: pull origin main: Fast-forward
+[33mbaa4d03[m HEAD@{68}: commit: change the name of the folder
+[33m8503ed5[m HEAD@{69}: commit (merge): thanks
+[33m25ed30d[m HEAD@{70}: commit: pages created
+[33m03add6a[m HEAD@{71}: commit: all things
+[33md0f68ac[m HEAD@{72}: commit: adding all things
+[33m4038396[m HEAD@{73}: commit (merge): fix the gmail
+[33m37ecf2a[m HEAD@{74}: commit (merge): Resolve merge conflicts
+[33md34fb29[m HEAD@{75}: commit (merge): changes
+[33m5737790[m[33m ([m[1;32mfrontend[m[33m)[m HEAD@{76}: merge frontend: Fast-forward
+[33m44adcae[m HEAD@{77}: checkout: moving from frontend to main
+[33m5737790[m[33m ([m[1;32mfrontend[m[33m)[m HEAD@{78}: commit: adding to the main
+[33m0a17e5d[m HEAD@{79}: checkout: moving from main to frontend
+[33m44adcae[m HEAD@{80}: checkout: moving from frontend to main
+[33m0a17e5d[m HEAD@{81}: checkout: moving from main to frontend
+[33m44adcae[m HEAD@{82}: checkout: moving from frontend to main
+[33m0a17e5d[m HEAD@{83}: pull origin main: Fast-forward
+[33mc8ec6de[m HEAD@{84}: commit: make two pages 404 and verifyEmail
+[33m9847629[m HEAD@{85}: pull origin main: Fast-forward
+[33md9bc4f2[m HEAD@{86}: commit: done the register and login
+[33md351bb6[m HEAD@{87}: commit: initize the frontend
+[33m44adcae[m HEAD@{88}: checkout: moving from main to frontend
+[33m44adcae[m HEAD@{89}: commit: delete the readme
+[33m6254812[m HEAD@{90}: clone: from https://github.com/Tanishqkushwah01/Online-Farm-Veggies.git

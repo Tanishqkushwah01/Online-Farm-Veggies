@@ -1,19 +1,13 @@
 import { Request, Response } from "express";
 import customerModel from "../models/customer.model";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+// import jwt from "jsonwebtoken";
 import farmerModel from "../models/farmer.model";
 import productModel from "../models/product.model";
 import productsReviewModel from "../models/productsReview.model";
 import farmerReviewModel from "../models/farmerReview.model";
 import mongoose from "mongoose";
 import orderModel from "../models/order.model";
-
-/**
- * @POST Product Update Route
- * @description This API uses to update the product by the farmer.
- * @Route /api/product/:productId
- */
 
 
 export const createProduct = async (req: Request, res: Response) => {
@@ -69,29 +63,10 @@ export const createProduct = async (req: Request, res: Response) => {
   }
 };
 
-
-/**
- * @GET Product Update Route
- * @description This API uses to update the product by the farmer.
- * @Route /api/product/products
- */
-
-export const getFarmerProducts = async (
-  req: Request,
-  res: Response
-) => {
+export const getFarmerProducts = async (  req: Request,  res: Response) => {
   try {
 
     const userId = req.user._id;
-
-    // const farmer = await farmerModel.findOne({ _id: userId });
-
-    // if (!farmer) {
-    //   return res.status(404).json({
-    //     success: false,
-    //     message: "Farmer not found",
-    //   });
-    // }
 
     const products = await productModel.find({
       farmerId: req.user._id,
@@ -116,19 +91,7 @@ export const getFarmerProducts = async (
   }
 };
 
-
-
-/**
- * @PUT Product Update Route
- * @description This API uses to update the product by the farmer.
- * @Route /api/product/:productId
- */
-
-
-export const updateProduct = async (
-  req: Request,
-  res: Response
-) => {
+export const updateProduct = async (  req: Request,  res: Response) => {
   try {
     const { productId } = req.params;
     console.log("productId::",productId);
@@ -177,18 +140,6 @@ export const updateProduct = async (
   }
 };
 
-/**
- * @DELETE Product Update Route
- * @description This API uses to update the product by the farmer.
- * @Route /api/product/:productId
- */
-
-
-/**
- * @DELETE Product Update Route
- * @description This API uses to update the product by the farmer.
- * @Route /api/product/:productId
- */
 export const deleteProduct = async (req: Request, res: Response) => {
   try {
     const farmerId = req.user._id;
@@ -220,11 +171,6 @@ export const deleteProduct = async (req: Request, res: Response) => {
   }
 };
 
-/**
- * @DELETE Product Update Route
- * @description This API uses to update the product by the farmer.
- * @Route /api/product/:productId
- */
 export const getFarmerProductStats = async (req: Request, res: Response) => {
   try {
     const farmerId = req.user._id;
@@ -252,225 +198,6 @@ export const getFarmerProductStats = async (req: Request, res: Response) => {
   }
 };
 
-<<<<<<< HEAD
-/**
- * @DELETE Product Update Route
- * @description This API uses to update the product by the farmer.
- * @Route /api/product/:productId
- */
-=======
-
-// export const getFarmerReviews = async (req: Request, res: Response) => {
-//   try {
-//     const farmerId = req.user._id;
-//     const { type } = req.query;
-
-//     let reviews: any[] = [];
-
-//     if (type === "product") {
-//       const farmerProducts = await productModel
-//         .find({ farmerId })
-//         .select("_id");
-
-//       const productIds = farmerProducts.map((product) => product._id);
-
-//       reviews = await productsReviewModel
-//         .find({ productId: { $in: productIds } })
-//         .populate("customerId", "username profilePicture")
-//         .populate("productId", "productName image price")
-//         .sort({ createdAt: -1 });
-//     } else if (type === "customer") {
-//       reviews = await farmerReviewModel
-//         .find({ farmerId })
-//         .populate("customerId", "username profilePicture")
-//         .sort({ createdAt: -1 });
-//     } else {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Invalid review type",
-//       });
-//     }
-// const formattedReviews = reviews.map((item: any) => ({
-//   _id: item._id,
-//   customerName: item.customerId.username,
-//   customerImage:item.customerId.profilePicture,
-//   productName: item.productId.productName,
-//   productId: item.productId._id,
-//   rating: item.rating,
-//   review: item.review,
-//   createdAt: item.createdAt,
-// }));
-// // console.log("reviews::",formattedReviews);
-
-
-//     return res.status(200).json({
-//       success: true,
-//       reviews: formattedReviews
-//     });
-
-//   } catch (error) {
-//     console.log(error);
-
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//     });
-//   }
-// };
-
-
-// export const getFarmerReviews = async (req: any, res: Response) => {
-//   try {
-//     const farmerId = req.user._id;
-//     const { type } = req.query;
-
-//     let reviews: any[] = [];
-
-//     if (type === "product") {
-//       const farmerProducts = await productModel
-//         .find({ farmerId })
-//         .select("_id");
-
-//       const productIds = farmerProducts.map((product) => product._id);
-
-//       reviews = await productsReviewModel
-//         .find({ productId: { $in: productIds } })
-//         .populate("customerId", "username profilePicture")
-//         .populate("productId", "productName image price")
-//         .sort({ createdAt: -1 });
-//     } else if (type === "customer") {
-//       reviews = await farmerReviewModel
-//         .find({ farmerId })
-//         .populate("customerId", "username profilePicture")
-//         .sort({ createdAt: -1 });
-//     } else {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Invalid review type",
-//       });
-//     }
-
-//     const formattedReviews = reviews.map((item: any) => ({
-//       _id: item._id,
-//       customerName: item.customerId?.username || "Customer",
-//       customerImage: item.customerId?.profilePicture || "",
-//       productName:
-//         type === "product" ? item.productId?.productName || "Product" : "Farmer Review",
-//       productId:
-//         type === "product" ? item.productId?._id || "" : farmerId,
-//       rating: item.rating,
-//       review: item.review,
-//       createdAt: item.createdAt,
-//     }));
-
-//     return res.status(200).json({
-//       success: true,
-//       reviews: formattedReviews,
-//     });
-//   } catch (error) {
-//     console.log(error);
-
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//     });
-//   }
-// };
-
-
-// export const getFarmerReviews = async (req: Request, res: Response) => {
-//   try {
-//     const farmerId = req.user._id;
-//     const { type, search } = req.query;
-    
-
-//     let reviews: any[] = [];
-
-//     if (type === "product") {
-//       const farmerProducts = await productModel
-//         .find({ farmerId })
-//         .select("_id productName");
-
-//       let productIds = farmerProducts.map((product) => product._id);
-
-//       if (search) {
-//         const matchedProducts = farmerProducts.filter((product: any) =>
-//           product.productName
-//             ?.toLowerCase()
-//             .includes(String(search).toLowerCase())
-//         );
-
-//         const matchedCustomers = await customerModel
-//           .find({
-//             username: { $regex: search, $options: "i" },
-//           })
-//           .select("_id");
-
-//         const customerIds = matchedCustomers.map((customer) => customer._id);
-
-//         reviews = await productsReviewModel
-//           .find({
-//             productId: { $in: productIds },
-//             $or: [
-//               { productId: { $in: matchedProducts.map((p) => p._id) } },
-//               { customerId: { $in: customerIds } },
-//             ],
-//           })
-//           .populate("customerId", "username profilePicture")
-//           .populate("productId", "productName image price")
-//           .sort({ createdAt: -1 });
-//       } else {
-//         reviews = await productsReviewModel
-//           .find({ productId: { $in: productIds } })
-//           .populate("customerId", "username profilePicture")
-//           .populate("productId", "productName image price")
-//           .sort({ createdAt: -1 });
-//       }
-//     }
-
-//     else if (type === "customer") {
-//       let query: any = { farmerId };
-
-//       if (search) {
-//         const matchedCustomers = await customerModel
-//           .find({
-//             username: { $regex: search, $options: "i" },
-//           })
-//           .select("_id");
-
-//         const customerIds = matchedCustomers.map((customer) => customer._id);
-
-//         query.customerId = { $in: customerIds };
-//       }
-
-//       reviews = await farmerReviewModel
-//         .find(query)
-//         .populate("customerId", "username profilePicture")
-//         .sort({ createdAt: -1 });
-//     }
-
-//     else {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Invalid review type",
-//       });
-//     }
-
-//     return res.status(200).json({
-//       success: true,
-//       reviews,
-//     });
-//   } catch (error) {
-//     console.log(error);
-
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//     });
-//   }
-// };
-
->>>>>>> b4a111ed1e894fcbad622750d5e01d12bc2b5375
 export const getFarmerReviews = async (req: Request, res: Response) => {
   try {
     const farmerId = req.user._id;
@@ -560,11 +287,7 @@ export const getFarmerReviews = async (req: Request, res: Response) => {
     });
   }
 };
-/**
- * @GET Product Update Route
- * @description This API uses to update the product by the farmer.
- * @Route /api/product/:productId
- */
+
 export const getFarmerReviewStats = async (req: Request, res: Response) => {
   try {
     const farmerId = req.user._id;
@@ -624,7 +347,6 @@ export const getFarmerReviewStats = async (req: Request, res: Response) => {
     });
   }
 };
-
 
 export const getRatingDistribution = async (
   req: Request,
@@ -690,11 +412,6 @@ export const getRatingDistribution = async (
   }
 };
 
-/*
- *@ name: updateOrderStatus
- *@ description: This API changes the status of their order which is handled by Farmer.
- *@ route: /farmer/order 
- */
 export const getHighestRatedProducts = async (req: Request, res: Response) => {
   try {
     const farmerId = req.user._id;
@@ -764,159 +481,8 @@ export const getHighestRatedProducts = async (req: Request, res: Response) => {
     });
   }
 };
-/*
- *@ name: updateOrderStatus
- *@ description: This API changes the status of their order which is handled by Farmer.
- *@ route: 
- */
-// export const updateOrderStatus = async (
-//   req: Request,
-//   res: Response
-// ) => {
-//   try {
-//     const farmerId = req.user._id;
-//     const { orderId } = req.params;
-//     const { orderStatus } = req.body;
 
-//     const allowedStatus = [
-//       "Accepted",
-//       "Cancelled",
-//       "Delivered",
-//       "Pending",
-//     ];
-
-//     if (!allowedStatus.includes(orderStatus)) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Invalid order status",
-//       });
-//     }
-
-//     const order = await orderModel.findById(orderId);
-
-//     if (!order) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Order not found",
-//       });
-//     }
-
-//     if (order.farmerId.toString() !== farmerId.toString()) {
-//       return res.status(403).json({
-//         success: false,
-//         message: "Unauthorized",
-//       });
-//     }
-
-//     if (order.orderStatus === "Cancelled") {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Cancelled orders cannot be updated",
-//       });
-//     }
-
-//     if (order.orderStatus === "Delivered") {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Order already delivered",
-//       });
-//     }
-
-//     order.orderStatus = orderStatus;
-
-//     await order.save();
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "Order status updated successfully",
-//       order,
-//     });
-
-//   } catch (error: any) {
-//     console.error(error);
-
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//     });
-//   }
-// };
-
-
-<<<<<<< HEAD
-export const getFarmerParticularOrder = async (
-  req: Request,
-  res: Response
-) => {
-  try {
-    const farmerId = req.user._id;
-    const { orderId } = req.params;
-=======
-
-// export const getFarmerParticularOrder = async (
-//   req: Request,
-//   res: Response
-// ) => {
-//   try {
-//     const farmerId = req.user._id;
-//     const { orderId } = req.params;
->>>>>>> b4a111ed1e894fcbad622750d5e01d12bc2b5375
-
-//     const order = await orderModel
-//       .findById(orderId)
-//       .populate({
-//         path: "customerId",
-//         select: "username email phoneNumber profilePicture address city",
-//       })
-//       .populate({
-//         path: "productId",
-//         select: `
-//           productName
-//           description
-//           image
-//           category
-//           price
-//           quantity
-//           unit
-//           averageRating
-//           totalReviews
-//         `,
-//       });
-
-//     if (!order) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Order not found",
-//       });
-//     }
-
-//     if (order.farmerId.toString() !== farmerId.toString()) {
-//       return res.status(403).json({
-//         success: false,
-//         message: "Unauthorized",
-//       });
-//     }
-
-//     return res.status(200).json({
-//       success: true,
-//       order,
-//     });
-
-//   } catch (error: any) {
-//     console.error(error);
-
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//     });
-//   }
-// };
-
-
-export const getFarmerOrders = async (
-  req: Request,
-  res: Response
-) => {
+export const getFarmerOrders = async (  req: Request,  res: Response) => {
   try {
     const farmerId = req.user._id;
 
@@ -956,7 +522,6 @@ export const getFarmerOrders = async (
     });
   }
 };
-
 
 export const getOrderStats = async (req: Request, res: Response) => {
   try {
@@ -1042,8 +607,6 @@ export const getOrderStats = async (req: Request, res: Response) => {
   }
 };
 
-<<<<<<< HEAD
-=======
 export const updateOrderStatus = async (req: Request, res: Response) => {
   try {
     const farmerId = req.user._id;
@@ -1084,7 +647,6 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
     });
   }
 };
-
 
 export const getDashboardStats = async (req: Request, res: Response) => {
   try {
@@ -1217,63 +779,3 @@ export const removeOrder = async (req: Request, res: Response) => {
     });
   }
 };
-
-// export const getRecentCustomerReviews = async (req: Request, res: Response) => {
-//   try {
-//     const farmerId = req.user._id;
-
-//     const reviews = await farmerReviewModel
-//       .find({ farmerId })
-//       .populate("customerId", "username profilePicture")
-//       .sort({ createdAt: -1 })
-//       .limit(3);
-
-//     return res.status(200).json({
-//       success: true,
-//       reviews,
-//     });
-//   } catch (error) {
-//     console.log("Recent customer reviews error:", error);
-
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//     });
-//   }
-// };
-
-// export const getOrdersByStatus = async (
-//   req: Request,
-//   res: Response
-// ) => {
-//   try {
-//    const farmerId = new mongoose.Types.ObjectId(req.user._id);
-//     const { status } = req.params;
-
-//     const orders = await orderModel.find({
-//         farmerId,
-//          orderStatus: req.params.status as
-//     | "Pending"
-//     | "Accepted"
-//     | "Delivered"
-//     | "Cancelled",
-//       })
-//       .populate("customerId", "username profilePicture")
-//       .populate("productId", "productName image price");
-
-//     return res.status(200).json({
-//       success: true,
-//       totalOrders: orders.length,
-//       orders,
-//     });
-
-//   } catch (error: any) {
-//     console.error(error);
-
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//     });
-//   }
-// };
->>>>>>> b4a111ed1e894fcbad622750d5e01d12bc2b5375

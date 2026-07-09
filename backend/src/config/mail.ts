@@ -1,4 +1,3 @@
-// console.log("mail.ts Loaded")
 import nodemailer from "nodemailer";
 
 export const transporter = nodemailer.createTransport({

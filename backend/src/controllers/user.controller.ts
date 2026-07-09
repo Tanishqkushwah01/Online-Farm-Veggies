@@ -14,7 +14,7 @@ import farmerValidation from "../types/farmer.validation";
 import customerValidation from "../types/customer.validation";
 import signinValidation from "../types/signin.validation";
 import  {googleClient}  from "../utilities/googleConfig";
-import axios from "axios";
+
 /**
      * Register API
      * @description: This API is used to create a new user account
@@ -204,6 +204,7 @@ export const signup = async (req: Request, res: Response) => {
      * @description: This API is used to login a user.
      * @route /api/auth/signup
 */
+
 export const signin = async (req: Request, res: Response) => {
   try {
     const validatedData = signinValidation.safeParse(req.body);
@@ -309,10 +310,7 @@ export const signin = async (req: Request, res: Response) => {
 */
 
 
-export const googleLogin = async (
-  req: Request,
-  res: Response
-) => {
+export const googleLogin = async (  req: Request,  res: Response) => {
   try {
     const { code } = req.body;
 
@@ -416,17 +414,13 @@ export const googleLogin = async (
   }
 };
 
-
-
 /**
      * Resend Email API
      * @description: This API is used by client to resend their email to the backend.
      * @route /api/auth/resend-email
 */
-export const resendVerificationEmail = async (
-  req: Request,
-  res: Response
-) => {
+
+export const resendVerificationEmail = async (  req: Request,  res: Response) => {
   try {
     const { email } = req.body;
 
@@ -490,6 +484,7 @@ export const resendVerificationEmail = async (
      * @description: This API is used to verify user's email.
      * @route /api/auth/verify-email/:token
 */
+
 export const verifyEmail = async (req: Request, res: Response) => {
   try {
     const { token } = req.params;
@@ -529,124 +524,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
  * @route /api/profile/updateProfile/:id
  *  */
 
-
-// export const updateUser = async (req: Request, res: Response) => {
-//   try {
-//     const userId = req.user._id;
-
-//     const {
-//       username,
-//       phoneNumber,
-//       city,
-//       farmName,
-//       farmAddress,
-//       mainCrops,
-//       bio,
-//       farmerDescription,
-//       removeProfilePicture,
-//     } = req.body;
-
-//     const profilePicture = req.file?.path;
-
-//     const userUpdates: any = {};
-
-//     if (username !== undefined) userUpdates.username = username;
-//     if (phoneNumber !== undefined) userUpdates.phoneNumber = phoneNumber;
-
-//     if (removeProfilePicture === "true") {
-//       userUpdates.profilePicture = "";
-//     } else if (profilePicture) {
-//       userUpdates.profilePicture = profilePicture;
-//     }
-
-//     const updatedUser = await customerModel.findByIdAndUpdate(
-//       userId,
-//       { $set: userUpdates },
-//       { new: true, runValidators: true }
-//     ).select("-password -verificationToken -resetPasswordToken");
-
-//     if (!updatedUser) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "User not found",
-//       });
-//     }
-
-//     const farmerUpdates: any = {};
-
-//     if (farmName !== undefined) farmerUpdates.farmName = farmName;
-//     if (farmAddress !== undefined) farmerUpdates.farmAddress = farmAddress;
-//     if (city !== undefined) farmerUpdates.city = city;
-//     if (bio !== undefined) farmerUpdates.bio = bio;
-//     if (farmerDescription !== undefined) {
-//       farmerUpdates.farmerDescription = farmerDescription;
-//     }
-
-//     if (mainCrops !== undefined) {
-//       farmerUpdates.mainCrops = Array.isArray(mainCrops)
-//         ? mainCrops
-//         : mainCrops
-//           .split(",")
-//           .map((crop: string) => crop.trim())
-//           .filter(Boolean);
-//     }
-
-//     let updatedFarmer = await farmerModel.findOneAndUpdate(
-//       { _id: userId },
-//       { $set: farmerUpdates },
-//       { new: true, runValidators: true, upsert: true }
-//     );
-
-//     updatedFarmer.isProfileCompleted = Boolean(
-//       updatedUser.username &&
-//       updatedUser.phoneNumber &&
-//       updatedFarmer.city &&
-//       updatedFarmer.farmName &&
-//       updatedFarmer.farmAddress &&
-//       updatedFarmer.mainCrops &&
-//       updatedFarmer.mainCrops.length > 0
-//     );
-
-//     await updatedFarmer.save();
-
-//     const userInfo = {
-//       _id: updatedUser._id,
-//       username: updatedUser.username,
-//       email: updatedUser.email,
-//       phoneNumber: updatedUser.phoneNumber,
-//       profilePicture: updatedUser.profilePicture,
-//       role: updatedUser.role,
-
-//       city: updatedFarmer.city,
-//       farmAddress: updatedFarmer.farmAddress,
-//       farmName: updatedFarmer.farmName,
-//       // farmerDescription: updatedFarmer.farmerDescription,
-//       bio: updatedFarmer.bio,
-//       isProfileCompleted: updatedFarmer.isProfileCompleted,
-//       mainCrops: updatedFarmer.mainCrops,
-//       review: updatedFarmer.review,
-//     };
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "Profile updated successfully.",
-//       userInfo,
-//     });
-//   } catch (error: any) {
-//     console.error("Update Profile Error:", error);
-
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//       error: error.message,
-//     });
-//   }
-// };
-
-export const updateUser = async (
-  req: Request,
-  res: Response
-) => {
+export const updateUser = async (  req: Request,  res: Response) => {
   try {
     const userId = req.user._id;
     const role = req.user.role;
@@ -807,15 +685,14 @@ export const updateUser = async (
     });
   }
 };
+
 /**
  * Forget password API
  * @description: This API is used if when user forget it's password
  * @route /api/auth/forget-password
  */
-export const forgotPassword = async (
-  req: Request,
-  res: Response
-) => {
+
+export const forgotPassword = async (  req: Request,  res: Response) => {
   try {
     const { email } = req.body;
 
@@ -878,10 +755,8 @@ export const forgotPassword = async (
  * @description: This API is used to reset the password
  * @route /api/auth/reset-password/token
  */
-export const resetPassword = async (
-  req: Request,
-  res: Response
-) => {
+
+export const resetPassword = async (  req: Request,  res: Response) => {
   try {
 
     const { token } = req.params;
@@ -942,10 +817,7 @@ export const resetPassword = async (
  * @route: api/auth/profile/:id
  */
 
-export const deleteUser = async (
-  req: Request,
-  res: Response
-) => {
+export const deleteUser = async (  req: Request,  res: Response) => {
   try {
     const userId = req.user._id;
 
@@ -978,36 +850,19 @@ export const deleteUser = async (
     });
   }
 };
+
 /**
  * Change Password API : 
  * @description: This API used to change the password of requested user.
  * @route: api/auth/change-password
  */
-export const requestChangePassword = async (
-  req: Request,
-  res: Response
-) => {
+
+export const requestChangePassword = async (  req: Request,  res: Response) => {
   try {
     // const userId = req.user._id;
     const { password } = req.body;
 
-    // Find Customer
-    // let user: any = await customerModel.findById(userId);
-
-    // If not found, find Farmer
-    // if (!user) {
-    //   user = await farmerModel.findById(userId);
-    // }
-
-    // User not found
-    // if (!user) {
-    //   return res.status(404).json({
-    //     success: false,
-    //     message: "User not found",
-    //   });
-    // }
-
-    // Verify current password
+  // Verify current password
     const isMatch = await bcrypt.compare(password, req.user.password);
 
     if (!isMatch) {
@@ -1088,33 +943,12 @@ export const logout = async (req: Request, res: Response) => {
  * Verifying Delete API : 
  * @description: This API checks the password of requested user and if pass matches then the user is deleted.
  * @route: api/auth/verify-delete-password
-
  */
-export const verifyDeletePassword = async (
-  req: Request,
-  res: Response
-) => {
+
+export const verifyDeletePassword = async (req: Request,res: Response) => {
   try {
     const { password } = req.body;
-    // const userId = req.user._id;
-    // console.log("user req==",req.user);
-
-    // Search Customer
-    // let user: any = await customerModel.findById(userId);
-
-    // If not found, search Farmer
-    // if (!user) {
-    //   user = await farmerModel.findById(userId);
-    // }
-
-    // User not found
-    // if (!user) {
-    //   return res.status(404).json({
-    //     success: false,
-    //     message: "User not found",
-    //   });
-    // }
-
+  
     // Compare Password
     const isMatch = await bcrypt.compare(
       password,
