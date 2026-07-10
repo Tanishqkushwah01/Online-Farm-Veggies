@@ -10,6 +10,7 @@ import Dashboard from "../components/layouts/Farmer/dashboard/Dashboard";
 import Products from "../components/layouts/Farmer/Products/Products";
 import Orders from "../components/layouts/Farmer/Orders/Orders";
 import Reviews from "../components/layouts/Farmer/Reviews/Reviews";
+import NotificationsPage from "../components/layouts/Farmer/Notifications/NotificationsPage";
 
 const FarmerDashboard = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -30,13 +31,17 @@ const FarmerDashboard = () => {
     return <DeleteAccount />;
   }
 
+  if(activePage === "notifications"){
+    return <NotificationsPage setActivePage={setActivePage}/>
+  }
+
   return (
     <div className="h-screen w-screen overflow-hidden border-10 border-white">
       <div className="h-full w-full flex rounded-md bg-[#F1F1F1] overflow-hidden">
         <Sidebar activePage={activePage} setActivePage={setActivePage} />
 
         <div className="flex-1 flex flex-col">
-          <Header username="Tanishq kushwah" />
+          <Header username="Tanishq kushwah" setActivePage={setActivePage}/>
 
           <main className="flex-1 bg-gray-300 p-6 overflow-auto rounded-md no-scrollbar">
             {activePage === "dashboard" && (

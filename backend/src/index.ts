@@ -23,6 +23,8 @@ import farmerRouter from "./routes/farmer.route";
 
 import customerRouter from "./routes/customer.route";
 
+import notificationRouter from "./routes/notification.route";
+
 connectToDB();
 
 // Auth Routes
@@ -31,6 +33,8 @@ app.use("/api/auth",userRouter);
 app.use("/farmer",farmerRouter);
 
 app.use("/customer",customerRouter);
+
+app.use("/notifications", notificationRouter);
 
 app.listen(process.env.PORT,()=>{
 console.log("server running at 3000");

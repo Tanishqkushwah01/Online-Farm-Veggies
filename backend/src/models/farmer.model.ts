@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
 
-const farmerSchema= new mongoose.Schema({
+const farmerSchema = new mongoose.Schema({
 
-     username: {
+    username: {
         type: String,
         required: true,
         trim: true,
@@ -42,7 +42,7 @@ const farmerSchema= new mongoose.Schema({
         type: String,
         trim: true,
     },
-    bio:{
+    bio: {
         type: String,
         trim: true,
         maxlength: 500,
@@ -51,10 +51,14 @@ const farmerSchema= new mongoose.Schema({
         type: String,
         default: ""
     },
+    lastLogin: {
+        type: Date,
+        default: null,
+    },
 
     isVerified: {
         type: Boolean,
-        default:false,
+        default: false,
     },
 
     verificationToken: {
@@ -70,28 +74,28 @@ const farmerSchema= new mongoose.Schema({
     resetPasswordExpires: {
         type: Date,
         default: null,
-    },  
-    farmName:{
-        type:String,
-        default:""
     },
-    review:{
-        type:[mongoose.Schema.Types.ObjectId],
-        ref:"ReviewModel",
-        default:[]
+    farmName: {
+        type: String,
+        default: ""
     },
-    mainCrops:{
-        type:[String],
-        default:""
-    },  
-    farmAddress:{
-        type:String,
-        default:""
+    review: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "ReviewModel",
+        default: []
     },
-    isProfileCompleted:{
-        type:Boolean,
-        default:"false"
-    }   
+    mainCrops: {
+        type: [String],
+        default: ""
+    },
+    farmAddress: {
+        type: String,
+        default: ""
+    },
+    isProfileCompleted: {
+        type: Boolean,
+        default: "false"
+    }
 });
-const farmerModel = mongoose.model("Farmer",farmerSchema);
+const farmerModel = mongoose.model("Farmer", farmerSchema);
 export default farmerModel;

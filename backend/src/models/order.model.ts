@@ -42,7 +42,7 @@ const orderSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
-    
+
     orderCode: {
       type: String,
       unique: true,
@@ -56,6 +56,7 @@ const orderSchema = new mongoose.Schema(
         "Accepted",
         "Delivered",
         "Cancelled",
+        "Rejected",
       ],
       default: "Pending",
     },

@@ -1,16 +1,20 @@
 import {
+  AlertTriangle,
   ArrowLeft,
+  Ban,
   Bell,
-  CheckCircle,
   Clock,
+  Package,
+  Star,
   Trash2,
+  UserRound,
   XCircle,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNotification } from "../../../hooks/useNotification";
 import type { NotificationType } from "../../../context/NotificationContext";
 
-type NotificationProps = {
+type NotificationsPageProps = {
   setActivePage: React.Dispatch<React.SetStateAction<string>>;
 };
 
@@ -18,23 +22,64 @@ type NotificationStyle = {
   icon: React.ElementType;
   color: string;
   bg: string;
+  border: string;
+  unreadBg: string;
+  category: "Orders" | "Inventory" | "Reviews";
 };
 
 const notificationStyles: Partial<Record<NotificationType, NotificationStyle>> =
   {
-    order_accepted: {
-      icon: CheckCircle,
+    new_order: {
+      icon: Package,
       color: "text-green-600",
       bg: "bg-green-100",
+      border: "border-green-500",
+      unreadBg: "bg-green-50",
+      category: "Orders",
     },
-    order_rejected: {
+    order_cancelled: {
       icon: XCircle,
       color: "text-red-600",
       bg: "bg-red-100",
+      border: "border-red-500",
+      unreadBg: "bg-red-50",
+      category: "Orders",
+    },
+    product_low_stock: {
+      icon: AlertTriangle,
+      color: "text-orange-600",
+      bg: "bg-orange-100",
+      border: "border-orange-500",
+      unreadBg: "bg-orange-50",
+      category: "Inventory",
+    },
+    product_out_of_stock: {
+      icon: Ban,
+      color: "text-red-600",
+      bg: "bg-red-100",
+      border: "border-red-500",
+      unreadBg: "bg-red-50",
+      category: "Inventory",
+    },
+    new_product_review: {
+      icon: Star,
+      color: "text-yellow-600",
+      bg: "bg-yellow-100",
+      border: "border-yellow-500",
+      unreadBg: "bg-yellow-50",
+      category: "Reviews",
+    },
+    new_farmer_review: {
+      icon: UserRound,
+      color: "text-purple-600",
+      bg: "bg-purple-100",
+      border: "border-purple-500",
+      unreadBg: "bg-purple-50",
+      category: "Reviews",
     },
   };
 
-const filters = ["All", "Accepted", "Rejected", "Unread"];
+const filters = ["All", "Orders", "Inventory", "Reviews", "Unread"];
 
 const formatTime = (date: string) => {
   const time = new Date(date).getTime();
@@ -53,7 +98,7 @@ const formatTime = (date: string) => {
   return `${days} days ago`;
 };
 
-const Notifications = ({ setActivePage }: NotificationProps) => {
+const NotificationsPage = ({ setActivePage }: NotificationsPageProps) => {
   const [activeFilter, setActiveFilter] = useState("All");
 
   const {
@@ -69,53 +114,50 @@ const Notifications = ({ setActivePage }: NotificationProps) => {
     fetchNotifications(1, 20);
   }, [fetchNotifications]);
 
-  const customerNotifications = useMemo(() => {
-    return notifications.filter(
-      (item) => item.type === "order_accepted" || item.type === "order_rejected"
+  const farmerNotifications = useMemo(() => {
+    return notifications.filter((item) =>
+      [
+        "new_order",
+        "order_cancelled",
+        "product_low_stock",
+        "product_out_of_stock",
+        "new_product_review",
+        "new_farmer_review",
+      ].includes(item.type)
     );
   }, [notifications]);
 
-  const filteredNotifications = useMemo(() => {
-    if (activeFilter === "Accepted") {
-      return customerNotifications.filter(
-        (item) => item.type === "order_accepted"
-      );
-    }
-
-    if (activeFilter === "Rejected") {
-      return customerNotifications.filter(
-        (item) => item.type === "order_rejected"
-      );
-    }
-
-    if (activeFilter === "Unread") {
-      return customerNotifications.filter((item) => !item.isRead);
-    }
-
-    return customerNotifications;
-  }, [activeFilter, customerNotifications]);
-
-  const customerUnreadCount = customerNotifications.filter(
+  const farmerUnreadCount = farmerNotifications.filter(
     (item) => !item.isRead
   ).length;
 
-  const readCount = Math.max(
-    customerNotifications.length - customerUnreadCount,
-    0
-  );
+  const readCount = Math.max(farmerNotifications.length - farmerUnreadCount, 0);
+
+  const filteredNotifications = useMemo(() => {
+    if (activeFilter === "Unread") {
+      return farmerNotifications.filter((item) => !item.isRead);
+    }
+
+    if (activeFilter === "All") return farmerNotifications;
+
+    return farmerNotifications.filter((item) => {
+      const style = notificationStyles[item.type];
+      return style?.category === activeFilter;
+    });
+  }, [activeFilter, farmerNotifications]);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="min-h-full bg-gray-100 p-8">
       <div className="flex items-center justify-between gap-4">
         <button
-          onClick={() => setActivePage("home")}
+          onClick={() => setActivePage("dashboard")}
           className="flex cursor-pointer items-center gap-2 rounded-xl bg-green-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-green-700"
         >
           <ArrowLeft size={18} />
           Go Back
         </button>
 
-        {customerUnreadCount > 0 && (
+        {farmerUnreadCount > 0 && (
           <button
             onClick={readAllNotifications}
             className="cursor-pointer rounded-xl bg-slate-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
@@ -134,7 +176,7 @@ const Notifications = ({ setActivePage }: NotificationProps) => {
           <div>
             <h1 className="text-3xl font-bold">Notifications</h1>
             <p className="mt-1 text-green-100">
-              Track your order updates and important alerts.
+              Track your orders, reviews and stock alerts.
             </p>
           </div>
         </div>
@@ -144,14 +186,14 @@ const Notifications = ({ setActivePage }: NotificationProps) => {
         <div className="rounded-3xl bg-white p-5 shadow-sm">
           <p className="text-sm text-gray-500">Total Notifications</p>
           <h2 className="mt-1 text-3xl font-bold text-slate-900">
-            {customerNotifications.length}
+            {farmerNotifications.length}
           </h2>
         </div>
 
         <div className="rounded-3xl bg-white p-5 shadow-sm">
           <p className="text-sm text-gray-500">Unread</p>
           <h2 className="mt-1 text-3xl font-bold text-red-500">
-            {customerUnreadCount}
+            {farmerUnreadCount}
           </h2>
         </div>
 
@@ -211,7 +253,7 @@ const Notifications = ({ setActivePage }: NotificationProps) => {
                   className={`flex cursor-pointer items-start justify-between gap-5 rounded-2xl border-l-4 p-5 shadow-sm transition hover:shadow-md ${
                     item.isRead
                       ? "border-gray-300 bg-white"
-                      : "border-green-500 bg-green-50"
+                      : `${style.border} ${style.unreadBg}`
                   }`}
                 >
                   <div className="flex min-w-0 gap-4">
@@ -264,4 +306,4 @@ const Notifications = ({ setActivePage }: NotificationProps) => {
   );
 };
 
-export default Notifications;
+export default NotificationsPage;

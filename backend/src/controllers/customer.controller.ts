@@ -6,6 +6,7 @@ import orderModel from "../models/order.model";
 import mongoose from "mongoose";
 import productsReviewModel from "../models/productsReview.model";
 import farmerReviewModel from "../models/farmerReview.model";
+import { createNotification } from "../utilities/createNotification";
 
 
 export const toggleWishlist = async (req: Request, res: Response) => {
@@ -134,12 +135,12 @@ export const getProductById = async (req: Request, res: Response) => {
 
       review: myReview
         ? {
-            _id: myReview._id,
-            rating: myReview.rating,
-            review: myReview.review,
-            createdAt: myReview.createdAt,
-            username: req.user.username,
-          }
+          _id: myReview._id,
+          rating: myReview.rating,
+          review: myReview.review,
+          createdAt: myReview.createdAt,
+          username: req.user.username,
+        }
         : null,
     });
   } catch (error) {
@@ -239,6 +240,14 @@ export const addReview = async (req: Request, res: Response) => {
         review,
       });
 
+      await createNotification({
+        receiverId: product.farmerId,
+        receiverRole: "Farmer",
+        type: "new_product_review",
+        title: "New Product Review",
+        message: `${req.user.username} reviewed your product "${product.productName}".`,
+      });
+
       return res.status(201).json({
         success: true,
         message: "Review added successfully.",
@@ -274,6 +283,14 @@ export const addReview = async (req: Request, res: Response) => {
         farmerId: id,
         rating,
         review,
+      });
+
+      await createNotification({
+        receiverId: farmer._id,
+        receiverRole: "Farmer",
+        type: "new_farmer_review",
+        title: "New Farmer Review",
+        message: `${req.user.username} rated your farming service.`,
       });
 
       return res.status(201).json({
@@ -350,6 +367,121 @@ export const deleteReview = async (req: Request, res: Response) => {
   }
 };
 
+// export const createOrder = async (req: Request, res: Response) => {
+//   try {
+//     const customerId = req.user._id;
+
+//     const { productId, quantity, city, requiredDate } = req.body;
+
+//     if (!productId || !quantity || !city || !requiredDate) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "All fields are required",
+//       });
+//     }
+
+//     const product = await productModel.findById(productId);
+
+//     if (!product) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Product not found",
+//       });
+//     }
+
+//     if (!product.isAvailable) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Product is unavailable",
+//       });
+//     }
+
+//     if (quantity > product.quantity) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Insufficient stock available",
+//       });
+//     }
+
+//     const totalAmount = quantity * product.price;
+
+//     let orderCode = "";
+//     let exists = true;
+
+//     while (exists) {
+//       orderCode = `ORD-${Math.floor(100000 + Math.random() * 900000)}`;
+//       exists = !!(await orderModel.exists({ orderCode }));
+//     }
+
+//     const order = await orderModel.create({
+//       customerId,
+//       farmerId: product.farmerId,
+//       productId,
+//       quantity,
+//       totalAmount,
+//       shippingAddress: city,
+//       neededBy: new Date(requiredDate),
+//       orderCode,
+//     });
+
+//     product.quantity -= quantity;
+
+//     if (product.quantity <= 0) {
+//       product.quantity = 0;
+//       product.isAvailable = false;
+//     }
+
+//     await product.save();
+
+//     const populatedOrder: any = await orderModel
+//       .findById(order._id)
+//       .populate("productId", "productName image")
+//       .populate("farmerId", "farmName farmAddress city phoneNumber");
+
+//     if (!populatedOrder) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Order not found after creation",
+//       });
+//     }
+
+//     const formattedOrder = {
+//       _id: populatedOrder._id,
+//       productId: populatedOrder.productId?._id,
+//       farmerId: populatedOrder.farmerId?._id,
+
+//       productName: populatedOrder.productId?.productName,
+//       productImage: populatedOrder.productId?.image,
+
+//       orderCode: populatedOrder.orderCode,
+//       quantity: populatedOrder.quantity,
+//       totalPrice: populatedOrder.totalAmount,
+//       requiredDate: populatedOrder.neededBy,
+
+//       farmName: populatedOrder.farmerId?.farmName,
+//       location:
+//         populatedOrder.farmerId?.farmAddress || populatedOrder.farmerId?.city,
+//       phoneNumber: populatedOrder.farmerId?.phoneNumber,
+
+//       orderedOn: populatedOrder.createdAt,
+//       orderStatus: populatedOrder.orderStatus,
+//     };
+
+//     return res.status(201).json({
+//       success: true,
+//       message: "Order placed successfully",
+//       order: formattedOrder,
+//     });
+//   } catch (error: any) {
+//     console.error("Create Order Error:", error);
+
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal Server Error",
+//     });
+//   }
+// };
+
 export const createOrder = async (req: Request, res: Response) => {
   try {
     const customerId = req.user._id;
@@ -360,6 +492,31 @@ export const createOrder = async (req: Request, res: Response) => {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid product id",
+      });
+    }
+
+    const orderQuantity = Number(quantity);
+
+    if (!Number.isInteger(orderQuantity) || orderQuantity <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Quantity must be a positive number",
+      });
+    }
+
+    const neededByDate = new Date(requiredDate);
+
+    if (Number.isNaN(neededByDate.getTime())) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid required date",
       });
     }
 
@@ -379,14 +536,14 @@ export const createOrder = async (req: Request, res: Response) => {
       });
     }
 
-    if (quantity > product.quantity) {
+    if (orderQuantity > product.quantity) {
       return res.status(400).json({
         success: false,
         message: "Insufficient stock available",
       });
     }
 
-    const totalAmount = quantity * product.price;
+    const totalAmount = orderQuantity * product.price;
 
     let orderCode = "";
     let exists = true;
@@ -400,21 +557,20 @@ export const createOrder = async (req: Request, res: Response) => {
       customerId,
       farmerId: product.farmerId,
       productId,
-      quantity,
+      quantity: orderQuantity,
       totalAmount,
-      shippingAddress: city,
-      neededBy: new Date(requiredDate),
+      shippingAddress: city.trim(),
+      neededBy: neededByDate,
       orderCode,
     });
 
-    product.quantity -= quantity;
-
-    if (product.quantity <= 0) {
-      product.quantity = 0;
-      product.isAvailable = false;
-    }
-
-    await product.save();
+    await createNotification({
+      receiverId: product.farmerId,
+      receiverRole: "Farmer",
+      type: "new_order",
+      title: "New Order",
+      message: `You received a new order for ${product.productName}.`,
+    });
 
     const populatedOrder: any = await orderModel
       .findById(order._id)
@@ -442,8 +598,8 @@ export const createOrder = async (req: Request, res: Response) => {
       requiredDate: populatedOrder.neededBy,
 
       farmName: populatedOrder.farmerId?.farmName,
-      location:
-        populatedOrder.farmerId?.farmAddress || populatedOrder.farmerId?.city,
+      location:order.shippingAddress,
+        // populatedOrder.farmerId?.farmAddress || populatedOrder.farmerId?.city,
       phoneNumber: populatedOrder.farmerId?.phoneNumber,
 
       orderedOn: populatedOrder.createdAt,
@@ -510,20 +666,86 @@ export const getCustomerOrders = async (req: Request, res: Response) => {
   }
 };
 
+// export const deleteOrder = async (req: Request, res: Response) => {
+//   try {
+//     const { orderId } = req.params;
+//     const customerId = req.user; // auth middleware se
+
+//     const deletedOrder = await orderModel.findOneAndDelete({
+//       _id: orderId,
+//       customerId,
+//     });
+
+//     if (!deletedOrder) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Order not found.",
+//       });
+//     }
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Order deleted successfully.",
+//     });
+//   } catch (error) {
+//     console.log(error);
+
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal Server Error.",
+//     });
+//   }
+// };
+
 export const deleteOrder = async (req: Request, res: Response) => {
   try {
-    const { orderId } = req.params;
-    const customerId = req.user; // auth middleware se
+    const orderId = req.params.orderId as string;
+    const customerId = req.user._id;
 
-    const deletedOrder = await orderModel.findOneAndDelete({
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid order id.",
+      });
+    }
+
+    const order: any = await orderModel.findOne({
       _id: orderId,
       customerId,
     });
 
-    if (!deletedOrder) {
+    if (!order) {
       return res.status(404).json({
         success: false,
         message: "Order not found.",
+      });
+    }
+
+    if (order.orderStatus === "Accepted") {
+      const product = await productModel.findById(order.productId);
+
+      if (!product) {
+        return res.status(404).json({
+          success: false,
+          message: "Product not found.",
+        });
+      }
+
+      product.quantity += order.quantity;
+      product.isAvailable = product.quantity > 0;
+
+      await product.save();
+    }
+
+    await orderModel.deleteOne({ _id: order._id });
+
+    if (order.orderStatus === "Pending" || order.orderStatus === "Accepted") {
+      await createNotification({
+        receiverId: order.farmerId,
+        receiverRole: "Farmer",
+        type: "order_cancelled",
+        title: "Order Cancelled",
+        message: `Order ${order.orderCode} has been cancelled by the customer.`,
       });
     }
 
@@ -532,7 +754,7 @@ export const deleteOrder = async (req: Request, res: Response) => {
       message: "Order deleted successfully.",
     });
   } catch (error) {
-    console.log(error);
+    console.log("Delete Order Error:", error);
 
     return res.status(500).json({
       success: false,
@@ -581,12 +803,12 @@ export const getFarmerProfileById = async (req: Request, res: Response) => {
 
       review: myReview
         ? {
-            _id: myReview._id,
-            rating: myReview.rating,
-            review: myReview.review,
-            createdAt: myReview.createdAt,
-            username: req.user.username,
-          }
+          _id: myReview._id,
+          rating: myReview.rating,
+          review: myReview.review,
+          createdAt: myReview.createdAt,
+          username: req.user.username,
+        }
         : null,
     });
   } catch (error) {
@@ -599,7 +821,7 @@ export const getFarmerProfileById = async (req: Request, res: Response) => {
   }
 };
 
-export const getParticularOrder = async (  req: Request,  res: Response) => {
+export const getParticularOrder = async (req: Request, res: Response) => {
   try {
     const customerId = req.user._id;
     const { orderId } = req.params;

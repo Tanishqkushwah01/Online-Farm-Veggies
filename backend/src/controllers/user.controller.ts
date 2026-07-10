@@ -14,6 +14,12 @@ import farmerValidation from "../types/farmer.validation";
 import customerValidation from "../types/customer.validation";
 import signinValidation from "../types/signin.validation";
 import  {googleClient}  from "../utilities/googleConfig";
+import orderModel from "../models/order.model";
+import productModel from "../models/product.model";
+import productsReviewModel from "../models/productsReview.model";
+import farmerReviewModel from "../models/farmerReview.model";
+import wishlistModel from "../models/wishlist.model";
+import notificationModel from "../models/notification.model";
 
 /**
      * Register API
@@ -205,6 +211,103 @@ export const signup = async (req: Request, res: Response) => {
      * @route /api/auth/signup
 */
 
+// export const signin = async (req: Request, res: Response) => {
+//   try {
+//     const validatedData = signinValidation.safeParse(req.body);
+
+//     if (!validatedData.success) {
+//       return res.status(400).json({
+//         success: false,
+//         message: validatedData.error.issues[0].message,
+//         errors: validatedData.error.flatten().fieldErrors,
+//       });
+//     }
+
+//     const { email, phoneNumber, password } = validatedData.data;
+
+//     const query = email ? { email } : { phoneNumber };
+
+//     let user: any = await customerModel.findOne(query);
+
+//     if (!user) {
+//       user = await farmerModel.findOne(query);
+//     }
+
+//     if (!user) {
+//       return res.status(404).json({
+//         success: false,
+//         message: email
+//           ? "No account found with this email"
+//           : "No account found with this phone number",
+//       });
+//     }
+
+//     const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+//     if (!isPasswordCorrect) {
+//       return res.status(401).json({
+//         success: false,
+//         message: "Invalid password",
+//       });
+//     }
+
+//     if (!user.isVerified) {
+//       return res.status(403).json({
+//         success: false,
+//         message: "Please verify your email first",
+//       });
+//     }
+
+//     if (!process.env.JWT_SECRET) {
+//       return res.status(500).json({
+//         success: false,
+//         message: "JWT secret is missing",
+//       });
+//     }
+
+//     const token = jwt.sign(
+//       {
+//         UserId: user._id,
+//         role: user.role,
+//       },
+//       process.env.JWT_SECRET,
+//       {
+//         expiresIn: "7d",
+//       }
+//     );
+
+//     const isProfileCompleted =
+//       user.role === "Farmer" ? user.isProfileCompleted || false : null;
+
+//     const userObj = user.toObject();
+
+//     // Remove sensitive fields
+//     delete userObj.password;
+//     delete userObj.isVerified;
+//     delete userObj.verificationToken;
+//     delete userObj.verificationTokenExpires;
+//     delete userObj.resetPasswordToken;
+//     delete userObj.resetPasswordExpires;
+
+//     // console.log("userObj::", userObj);
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Login successful",
+//       user: userObj,
+//       token,
+//     });
+
+//   } catch (error) {
+//     console.error("Signin Error:", error);
+
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal server error",
+//     });
+//   }
+// };
+
 export const signin = async (req: Request, res: Response) => {
   try {
     const validatedData = signinValidation.safeParse(req.body);
@@ -222,9 +325,11 @@ export const signin = async (req: Request, res: Response) => {
     const query = email ? { email } : { phoneNumber };
 
     let user: any = await customerModel.findOne(query);
+    let userType: "Customer" | "Farmer" = "Customer";
 
     if (!user) {
       user = await farmerModel.findOne(query);
+      userType = "Farmer";
     }
 
     if (!user) {
@@ -259,6 +364,14 @@ export const signin = async (req: Request, res: Response) => {
       });
     }
 
+    const previousLogin = user.lastLogin || null;
+
+    if (userType === "Farmer") {
+      await farmerModel.findByIdAndUpdate(user._id, {
+        lastLogin: new Date(),
+      });
+    }
+
     const token = jwt.sign(
       {
         UserId: user._id,
@@ -270,12 +383,12 @@ export const signin = async (req: Request, res: Response) => {
       }
     );
 
-    const isProfileCompleted =
-      user.role === "Farmer" ? user.isProfileCompleted || false : null;
-
     const userObj = user.toObject();
 
-    // Remove sensitive fields
+    if (userType === "Farmer") {
+      userObj.lastLogin = previousLogin;
+    }
+
     delete userObj.password;
     delete userObj.isVerified;
     delete userObj.verificationToken;
@@ -283,15 +396,12 @@ export const signin = async (req: Request, res: Response) => {
     delete userObj.resetPasswordToken;
     delete userObj.resetPasswordExpires;
 
-    // console.log("userObj::", userObj);
-
     return res.status(200).json({
       success: true,
       message: "Login successful",
       user: userObj,
       token,
     });
-
   } catch (error) {
     console.error("Signin Error:", error);
 
@@ -302,15 +412,120 @@ export const signin = async (req: Request, res: Response) => {
   }
 };
 
-
 /**
      * Google Login API
      * @description: This API is used to login a user with it's google credentials.
      * @route /api/auth/`google?code=${code}`
 */
 
+// pk ka hai 
+// export const googleLogin = async (  req: Request,  res: Response) => {
+//   try {
+//     const { code } = req.body;
 
-export const googleLogin = async (  req: Request,  res: Response) => {
+//     if (!code) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Authorization code is required",
+//       });
+//     }
+
+//     // Exchange authorization code
+//     const { tokens } = await googleClient.getToken(code);
+
+//     googleClient.setCredentials(tokens);
+
+//     // Verify Google ID token
+//     const ticket = await googleClient.verifyIdToken({
+//       idToken: tokens.id_token!,
+//       audience: process.env.GOOGLE_CLIENT_ID,
+//     });
+
+//     const payload = ticket.getPayload();
+
+//     if (!payload) {
+//       return res.status(401).json({
+//         success: false,
+//         message: "Invalid Google token",
+//       });
+//     }
+
+//     const {
+//       email,
+//       name,
+//       picture,
+//       email_verified,
+//     } = payload;
+
+//     if (!email_verified) {
+//       return res.status(401).json({
+//         success: false,
+//         message: "Email is not verified by Google",
+//       });
+//     }
+
+//     // Search Customer
+//     let user: any = await customerModel.findOne({ email });
+//     let role = "Customer";
+
+//     // Search Farmer
+//     if (!user) {
+//       user = await farmerModel.findOne({ email });
+//       role = "Farmer";
+//     }
+
+//     // If user doesn't exist
+//     if (!user) {
+//       user = await customerModel.create({
+//         username: name,
+//         email,
+//         profilePicture: picture,
+//         password: "",
+//         isVerified: true,
+//         role: "Customer"
+//       });
+
+//       role = "Customer";
+//     }
+
+//     // Generate JWT
+//     const token = jwt.sign(
+//       {
+//         UserId: user._id,
+//         role,
+//       },
+//       process.env.JWT_SECRET!,
+//       {
+//         expiresIn: "7d",
+//       }
+//     );
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Google login successful",
+//       token,
+//       user: {
+//         _id: user._id,
+//         username: user.username,
+//         email: user.email,
+//         profilePicture: user.profilePicture,
+//         role,
+//       },
+//     });
+
+//   } catch (error: any) {
+//     console.error("Google Login Error:", error);
+
+//     return res.status(500).json({
+//       success: false,
+//       message: "Google Login Failed",
+//     });
+//   }
+// };
+
+
+// mera hai 
+export const googleLogin = async (req: Request, res: Response) => {
   try {
     const { code } = req.body;
 
@@ -321,12 +536,9 @@ export const googleLogin = async (  req: Request,  res: Response) => {
       });
     }
 
-    // Exchange authorization code
     const { tokens } = await googleClient.getToken(code);
-
     googleClient.setCredentials(tokens);
 
-    // Verify Google ID token
     const ticket = await googleClient.verifyIdToken({
       idToken: tokens.id_token!,
       audience: process.env.GOOGLE_CLIENT_ID,
@@ -341,12 +553,7 @@ export const googleLogin = async (  req: Request,  res: Response) => {
       });
     }
 
-    const {
-      email,
-      name,
-      picture,
-      email_verified,
-    } = payload;
+    const { email, name, picture, email_verified } = payload;
 
     if (!email_verified) {
       return res.status(401).json({
@@ -355,17 +562,14 @@ export const googleLogin = async (  req: Request,  res: Response) => {
       });
     }
 
-    // Search Customer
     let user: any = await customerModel.findOne({ email });
-    let role = "Customer";
+    let userType: "Customer" | "Farmer" = "Customer";
 
-    // Search Farmer
     if (!user) {
       user = await farmerModel.findOne({ email });
-      role = "Farmer";
+      userType = "Farmer";
     }
 
-    // If user doesn't exist
     if (!user) {
       user = await customerModel.create({
         username: name,
@@ -373,37 +577,57 @@ export const googleLogin = async (  req: Request,  res: Response) => {
         profilePicture: picture,
         password: "",
         isVerified: true,
-        role: "Customer"
+        role: "Customer",
       });
 
-      role = "Customer";
+      userType = "Customer";
     }
 
-    // Generate JWT
+    const previousLogin = user.lastLogin || null;
+
+    if (userType === "Farmer") {
+      await farmerModel.findByIdAndUpdate(user._id, {
+        lastLogin: new Date(),
+      });
+    }
+
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({
+        success: false,
+        message: "JWT secret is missing",
+      });
+    }
+
     const token = jwt.sign(
       {
         UserId: user._id,
-        role,
+        role: user.role,
       },
-      process.env.JWT_SECRET!,
+      process.env.JWT_SECRET,
       {
         expiresIn: "7d",
       }
     );
 
+    const userObj = user.toObject();
+
+    if (userType === "Farmer") {
+      userObj.lastLogin = previousLogin;
+    }
+
+    delete userObj.password;
+    delete userObj.isVerified;
+    delete userObj.verificationToken;
+    delete userObj.verificationTokenExpires;
+    delete userObj.resetPasswordToken;
+    delete userObj.resetPasswordExpires;
+
     return res.status(200).json({
       success: true,
       message: "Google login successful",
       token,
-      user: {
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        profilePicture: user.profilePicture,
-        role,
-      },
+      user: userObj,
     });
-
   } catch (error: any) {
     console.error("Google Login Error:", error);
 
@@ -817,30 +1041,116 @@ export const resetPassword = async (  req: Request,  res: Response) => {
  * @route: api/auth/profile/:id
  */
 
-export const deleteUser = async (  req: Request,  res: Response) => {
+export const deleteUser = async (req: Request, res: Response) => {
   try {
     const userId = req.user._id;
+    const role = req.user.role;
 
-    // Try deleting customer
-    let deletedUser:any;
-    if(req.user.role === "Customer"){
-     deletedUser = await customerModel.findByIdAndDelete(userId);
-    }else if(req.user.role === "Farmer"){
-      deletedUser = await farmerModel.findByIdAndDelete(userId);
-    }
-    // User not found
-    if (!deletedUser) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
+    if (role === "Customer") {
+      const customerOrders = await orderModel.find({
+        customerId: userId,
+        orderStatus: "Accepted",
+      });
+
+      for (const order of customerOrders) {
+        const product = await productModel.findById(order.productId);
+
+        if (product) {
+          product.quantity += order.quantity;
+          product.isAvailable = product.quantity > 0;
+          await product.save();
+        }
+      }
+
+      await orderModel.deleteMany({ customerId: userId });
+
+      await productsReviewModel.deleteMany({ customerId: userId });
+
+      await farmerReviewModel.deleteMany({ customerId: userId });
+
+      await wishlistModel.deleteMany({ customerId: userId });
+
+      await notificationModel.deleteMany({
+        receiverId: userId,
+        receiverRole: "Customer",
+      });
+
+      const deletedUser = await customerModel.findByIdAndDelete(userId);
+
+      if (!deletedUser) {
+        return res.status(404).json({
+          success: false,
+          message: "Customer not found",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "Customer account deleted successfully",
       });
     }
-    
-    return res.status(200).json({
-      success: true,
-      message: "User deleted successfully",
-    });
 
+    if (role === "Farmer") {
+      const farmerProducts = await productModel
+        .find({ farmerId: userId })
+        .select("_id");
+
+      const productIds = farmerProducts.map((product) => product._id);
+
+      await orderModel.deleteMany({
+        farmerId: userId,
+      });
+
+      await productsReviewModel.deleteMany({
+        productId: { $in: productIds },
+      });
+
+      await farmerReviewModel.deleteMany({
+        farmerId: userId,
+      });
+
+      await wishlistModel.deleteMany({
+        productId: { $in: productIds },
+      });
+
+      await wishlistModel.updateMany(
+        {},
+        {
+          $pull: {
+            products: { $in: productIds },
+            wishlistProducts: { $in: productIds },
+          },
+        }
+      );
+
+      await notificationModel.deleteMany({
+        receiverId: userId,
+        receiverRole: "Farmer",
+      });
+
+      await productModel.deleteMany({
+        farmerId: userId,
+      });
+
+      const deletedUser = await farmerModel.findByIdAndDelete(userId);
+
+      if (!deletedUser) {
+        return res.status(404).json({
+          success: false,
+          message: "Farmer not found",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "Farmer account deleted successfully",
+      });
+    }
+
+    return res.status(400).json({
+      success: false,
+      message: "Invalid user role",
+    });
   } catch (error) {
     console.error("Delete User Error:", error);
 

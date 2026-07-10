@@ -8,6 +8,7 @@ import productsReviewModel from "../models/productsReview.model";
 import farmerReviewModel from "../models/farmerReview.model";
 import mongoose from "mongoose";
 import orderModel from "../models/order.model";
+import { createNotification } from "../utilities/createNotification";
 
 
 export const createProduct = async (req: Request, res: Response) => {
@@ -63,31 +64,96 @@ export const createProduct = async (req: Request, res: Response) => {
   }
 };
 
-export const getFarmerProducts = async (  req: Request,  res: Response) => {
+// export const getFarmerProducts = async (  req: Request,  res: Response) => {
+//   try {
+
+//     const userId = req.user._id;
+
+//     const products = await productModel.find({
+//       farmerId: req.user._id,
+//     });
+
+//     return res.status(200).json({
+//       success: true,
+//       count: products.length,
+//       data: products,
+//     });
+
+
+//   } catch (error) {
+
+//     console.log(error);
+
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal Server Error",
+//     });
+
+//   }
+// };
+
+export const getFarmerProducts = async (req: Request, res: Response) => {
   try {
+    const farmerId = req.user._id;
 
-    const userId = req.user._id;
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 12;
+    const skip = (page - 1) * limit;
 
-    const products = await productModel.find({
-      farmerId: req.user._id,
-    });
+    const { search, category, stock } = req.query;
+
+    const filter: any = {
+      farmerId,
+    };
+
+    if (search) {
+      filter.productName = {
+        $regex: search,
+        $options: "i",
+      };
+    }
+
+    if (category && category !== "All Category") {
+      filter.category = category;
+    }
+
+    if (stock === "Out of Stock") {
+      filter.quantity = { $eq: 0 };
+    }
+
+    if (stock === "Low Stock") {
+      filter.quantity = {
+        $gt: 0,
+        $lte: 30,
+      };
+    }
+
+    if (stock === "Available") {
+      filter.quantity = {
+        $gt: 30,
+      };
+    }
+
+    const totalProducts = await productModel.countDocuments(filter);
+
+    const products = await productModel
+      .find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
     return res.status(200).json({
       success: true,
-      count: products.length,
-      data: products,
+      products,
+      currentPage: page,
+      totalPages: Math.ceil(totalProducts / limit),
+      totalProducts,
     });
-
-
   } catch (error) {
-
-    console.log(error);
-
     return res.status(500).json({
       success: false,
-      message: "Internal Server Error",
+      message: "Failed to get products",
     });
-
   }
 };
 
@@ -607,13 +673,61 @@ export const getOrderStats = async (req: Request, res: Response) => {
   }
 };
 
+// export const updateOrderStatus = async (req: Request, res: Response) => {
+//   try {
+//     const farmerId = req.user._id;
+//     const { orderId } = req.params;
+//     const { status } = req.body;
+
+//     const allowedStatus = ["Accepted", "Rejected", "Delivered"];
+
+//     if (!allowedStatus.includes(status)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid order status",
+//       });
+//     }
+
+//     const order = await orderModel.findOneAndUpdate(
+//       { _id: orderId, farmerId },
+//       { orderStatus: status },
+//       { new: true }
+//     );
+
+//     if (!order) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Order not found",
+//       });
+//     }
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Order status updated",
+//       order,
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal Server Error",
+//     });
+//   }
+// };
+
 export const updateOrderStatus = async (req: Request, res: Response) => {
   try {
     const farmerId = req.user._id;
-    const { orderId } = req.params;
+    const orderId = req.params.orderId as string;
     const { status } = req.body;
 
     const allowedStatus = ["Accepted", "Rejected", "Delivered"];
+
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid order id",
+      });
+    }
 
     if (!allowedStatus.includes(status)) {
       return res.status(400).json({
@@ -622,11 +736,10 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
       });
     }
 
-    const order = await orderModel.findOneAndUpdate(
-      { _id: orderId, farmerId },
-      { orderStatus: status },
-      { new: true }
-    );
+    const order: any = await orderModel.findOne({
+      _id: orderId,
+      farmerId,
+    });
 
     if (!order) {
       return res.status(404).json({
@@ -635,12 +748,137 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
       });
     }
 
+    if (order.orderStatus === "Delivered") {
+      return res.status(400).json({
+        success: false,
+        message: "Delivered order status cannot be changed",
+      });
+    }
+
+    if (order.orderStatus === status) {
+      return res.status(400).json({
+        success: false,
+        message: `Order is already ${status}`,
+      });
+    }
+
+    if (order.orderStatus === "Rejected") {
+      return res.status(400).json({
+        success: false,
+        message: "Rejected order status cannot be changed",
+      });
+    }
+
+    if (status === "Accepted") {
+      if (order.orderStatus !== "Pending") {
+        return res.status(400).json({
+          success: false,
+          message: "Only pending orders can be accepted",
+        });
+      }
+
+      const product: any = await productModel.findById(order.productId);
+
+      if (!product) {
+        return res.status(404).json({
+          success: false,
+          message: "Product not found",
+        });
+      }
+
+      if (!product.isAvailable) {
+        return res.status(400).json({
+          success: false,
+          message: "Product is unavailable",
+        });
+      }
+
+      if (order.quantity > product.quantity) {
+        return res.status(400).json({
+          success: false,
+          message: "Insufficient stock available",
+        });
+      }
+
+      product.quantity -= order.quantity;
+
+      if (product.quantity <= 0) {
+        product.quantity = 0;
+        product.isAvailable = false;
+      }
+
+      await product.save();
+
+      order.orderStatus = "Accepted";
+      await order.save();
+
+      await createNotification({
+        receiverId: order.customerId,
+        receiverRole: "Customer",
+        type: "order_accepted",
+        title: "Order Accepted",
+        message: `Your order ${order.orderCode} has been accepted.`,
+      });
+
+      if (product.quantity === 0) {
+        await createNotification({
+          receiverId: product.farmerId,
+          receiverRole: "Farmer",
+          type: "product_out_of_stock",
+          title: "Product Out of Stock",
+          message: `${product.productName} is now out of stock.`,
+        });
+      } else if (product.quantity <= 5) {
+        await createNotification({
+          receiverId: product.farmerId,
+          receiverRole: "Farmer",
+          type: "product_low_stock",
+          title: "Product Low Stock",
+          message: `${product.productName} stock is running low. Only ${product.quantity} left.`,
+        });
+      }
+    }
+
+    if (status === "Rejected") {
+      if (order.orderStatus !== "Pending") {
+        return res.status(400).json({
+          success: false,
+          message: "Only pending orders can be rejected",
+        });
+      }
+
+      order.orderStatus = "Rejected";
+      await order.save();
+
+      await createNotification({
+        receiverId: order.customerId,
+        receiverRole: "Customer",
+        type: "order_rejected",
+        title: "Order Rejected",
+        message: `Your order ${order.orderCode} has been rejected.`,
+      });
+    }
+
+    if (status === "Delivered") {
+      if (order.orderStatus !== "Accepted") {
+        return res.status(400).json({
+          success: false,
+          message: "Only accepted orders can be delivered",
+        });
+      }
+
+      order.orderStatus = "Delivered";
+      await order.save();
+    }
+
     return res.status(200).json({
       success: true,
       message: "Order status updated",
       order,
     });
   } catch (error) {
+    console.log("Update Order Status Error:", error);
+
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",

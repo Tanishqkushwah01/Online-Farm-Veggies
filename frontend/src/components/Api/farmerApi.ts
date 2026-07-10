@@ -43,17 +43,41 @@ export const createProduct = async (data: ProductRequest) => {
     });
 };
 
-export const getFarmerProducts = async () => {
+// export const getFarmerProducts = async () => {
+//     const token = localStorage.getItem("token");
+
+//     return await api.get("/products",
+//         {
+//             headers: {
+//                 Authorization: `Bearer ${token}`,
+//             },
+//         }
+//     );
+
+// };
+
+export const getFarmerProducts = (
+    page = 1,
+    limit = 12,
+    search = "",
+    category = "All Category",
+    stock = "All Stock"
+) => {
     const token = localStorage.getItem("token");
 
-    return await api.get("/products",
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        }
-    );
+    return api.get("/products", {
+        params: {
+            page,
+            limit,
+            search,
+            category,
+            stock,
+        },
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
 
+    });
 };
 
 export const updateProduct = (productId: string, data: any) => {
@@ -160,46 +184,46 @@ export const getOrderStats = async () => {
 };
 
 export const updateOrderStatus = async (orderId: string, status: string) => {
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  return await api.patch(
-    `/orders/${orderId}/status`,
-    { status },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+    return await api.patch(
+        `/orders/${orderId}/status`,
+        { status },
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
 };
 
 export const getDashboardStats = async () => {
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  return await api.get("/dashboard/stats", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+    return await api.get("/dashboard/stats", {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
 };
 
 
 export const getRecentCustomerReviews = async () => {
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  return await api.get("/dashboard/recent-reviews", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+    return await api.get("/dashboard/recent-reviews", {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
 };
 
 export const removeOrder = async (orderId: string) => {
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  return await api.delete(`/orders/${orderId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+    return await api.delete(`/orders/${orderId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
 };

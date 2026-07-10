@@ -1,78 +1,132 @@
-import { Bell, Plus, Search, User } from "lucide-react";
+import { Bell, CalendarDays, Clock3, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import ProfileCard from "./ProfileCard";
-import AddProduct from "./Products/AddProduct";
+import NotificationCard from "./Notifications/NotificationCard";
+import { useNotification } from "../../hooks/useNotification";
 
-const Header = ({ username }: { username: string }) => {
-  const [open, setOpen] = useState(false);
+type HeaderProps = {
+  username: string;
+  setActivePage: React.Dispatch<React.SetStateAction<string>>;
+};
+
+const Header = ({ username, setActivePage }: HeaderProps) => {
   const [profileOpen, setProfileOpen] = useState(false);
-  const userInfo = JSON.parse(localStorage.getItem("userInfo")!);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+
+  const { unreadCount } = useNotification();
+
+  const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
 
   const profileRef = useRef<HTMLDivElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
+    const handleClickOutside = (e: MouseEvent) => {
       if (
         profileRef.current &&
         !profileRef.current.contains(e.target as Node)
       ) {
         setProfileOpen(false);
       }
-    }
+
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(e.target as Node)
+      ) {
+        setNotificationOpen(false);
+      }
+    };
 
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  return (
-    <header className="relative h-24 bg-[#f1f1f1] flex items-center justify-between px-8 border-b border-gray-200">
-      {/* Left */}
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">
-          Welcome Back!
-        </h1>
+  const today = new Date();
 
-        <p className="mt-1 text-xl text-slate-600">
-          {username}
-        </p>
+  const formattedDate = today.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+
+  const dayName = today.toLocaleDateString("en-IN", {
+    weekday: "long",
+  });
+
+  const lastLogin = userInfo.lastLogin
+    ? new Date(userInfo.lastLogin).toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        hour: "numeric",
+        minute: "2-digit",
+      })
+    : "First Login";
+
+  return (
+    <header className="relative flex h-24 items-center justify-between border-b border-gray-200 bg-[#f1f1f1] px-8">
+      <div>
+        <h1 className="text-3xl font-bold text-slate-900">Welcome Back!</h1>
+        <p className="mt-1 text-xl text-slate-600">{username}</p>
       </div>
 
-      {/* Right */}
-      <div className="flex items-center gap-4">
-        {/* Search */}
-        <div className="relative">
-          <Search
-            size={20}
-            className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"
-          />
+      <div className="flex items-center gap-5">
+        <div className="group flex h-16 min-w-55 cursor-pointer items-center gap-4 rounded-2xl border border-gray-200 bg-[#f1f1f1] px-5 shadow-[0_6px_16px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:bg-gray-300 hover:shadow-[0_10px_24px_rgba(15,23,42,0.12)]">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/70 transition duration-300 group-hover:bg-white">
+            <Clock3 size={24} className="text-green-600" />
+          </div>
 
-          <input
-            type="text"
-            placeholder="Search here..."
-            className="w-112.5 h-12 rounded-2xl border border-slate-300 bg-white pl-14 pr-5 text-base outline-none transition-all focus:border-green-500"
-          />
+          <div>
+            <p className="text-base font-bold text-slate-900">Last Login</p>
+            <p className="text-sm font-medium text-slate-600">{lastLogin}</p>
+          </div>
         </div>
 
-        {/* Create */}
-        <button
-          onClick={() => setOpen(true)}
-          className="bg-white h-12 px-7 border border-slate-300 text-slate-700 rounded-2xl font-medium flex items-center gap-2 transition hover:bg-gray-300 cursor-pointer">
-          <Plus size={20} />
-          Add Product
-        </button>
+        <div className="group flex h-16 min-w-60 cursor-pointer items-center gap-4 rounded-2xl border border-gray-200 bg-[#f1f1f1] px-5 shadow-[0_6px_16px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1 hover:bg-gray-300 hover:shadow-[0_10px_24px_rgba(15,23,42,0.12)]">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/70 transition duration-300 group-hover:bg-white">
+            <CalendarDays size={24} className="text-slate-700" />
+          </div>
 
-        {/* Notification */}
-        <button className="flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-gray-300 cursor-pointer">
-          <Bell size={22} className="text-slate-700" />
-        </button>
+          <div>
+            <p className="text-base font-bold text-slate-900">
+              {formattedDate}
+            </p>
+            <p className="text-sm font-medium text-slate-600">{dayName}</p>
+          </div>
+        </div>
 
-        {/* Profile */}
+        <div ref={notificationRef} className="relative">
+          <button
+            onClick={() => {
+              setNotificationOpen((prev) => !prev);
+              setProfileOpen(false);
+            }}
+            className="relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition hover:bg-gray-300"
+          >
+            <Bell size={22} className="text-slate-700" />
+
+            {unreadCount > 0 && (
+              <span className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-green-600 ring-2 ring-[#f1f1f1]" />
+            )}
+          </button>
+
+          {notificationOpen && (
+            <NotificationCard
+              onClose={() => setNotificationOpen(false)}
+              onViewAll={() => {
+                setNotificationOpen(false);
+                setActivePage("notifications");
+              }}
+            />
+          )}
+        </div>
+
         <div ref={profileRef} className="relative">
           <button
-            onClick={() => setProfileOpen(!profileOpen)}
-            className="h-11 w-11 rounded-full bg-slate-300 hover:ring-2 hover:ring-green-500 transition cursor-pointer overflow-hidden"
+            onClick={() => {
+              setProfileOpen((prev) => !prev);
+              setNotificationOpen(false);
+            }}
+            className="h-11 w-11 cursor-pointer overflow-hidden rounded-full bg-slate-300 transition hover:ring-2 hover:ring-green-500"
           >
             {userInfo.profilePicture ? (
               <img
@@ -81,24 +135,15 @@ const Header = ({ username }: { username: string }) => {
                 className="h-full w-full object-cover"
               />
             ) : (
-              <div className="h-full w-full bg-[#D7E3F2] flex items-center justify-center">
+              <div className="flex h-full w-full items-center justify-center bg-[#D7E3F2]">
                 <User size={22} className="text-gray-600" />
               </div>
             )}
           </button>
 
-          {profileOpen && (
-            <ProfileCard
-              onClose={() => setProfileOpen(false)}
-            />
-          )}
+          {profileOpen && <ProfileCard onClose={() => setProfileOpen(false)} />}
         </div>
       </div>
-
-      <AddProduct
-        open={open}
-        onClose={() => setOpen(false)}
-      />
     </header>
   );
 };

@@ -5,25 +5,29 @@ import sliderImage2 from "../../../../assets/images/sliderImage2.jpeg";
 import sliderImage3 from "../../../../assets/images/sliderImage3.jpeg";
 
 
-      // "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1600",
-      // "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=1600",
-      // "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=1600",
+// "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1600",
+// "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=1600",
+// "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=1600",
 
 
 
 const slides = [
   {
     image:sliderImage1,
+    // image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1600",
+
     title: "Fresh Vegetables",
     subtitle: "Farm fresh vegetables delivered to your doorstep.",
   },
   {
-    image:sliderImage2,
+    image: sliderImage2,
+    // image: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=1600",
     title: "Organic Fruits",
     subtitle: "Healthy, juicy and naturally grown fruits.",
   },
   {
-    image:sliderImage3,
+    image: sliderImage3,
+    // image: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=1600",
     title: "Direct From Farmers",
     subtitle: "Support local farmers with every purchase.",
   },
@@ -78,15 +82,14 @@ export default function Slider() {
   };
 
   return (
-    <div className="relative w-full h-105 unded-3xl overflow-hidden shadow-xl group">
+    <div className="relative w-full h-105 rounded-3xl overflow-hidden shadow-xl group">
 
       <div
         onTransitionEnd={handleTransitionEnd}
-        className={`flex h-full ${
-          transition
-            ? "transition-transform duration-700 ease-in-out"
-            : ""
-        }`}
+        className={`flex h-full ${transition
+          ? "transition-transform duration-700 ease-in-out"
+          : ""
+          }`}
         style={{
           transform: `translateX(-${current * 100}%)`,
         }}
@@ -143,12 +146,11 @@ export default function Slider() {
               setTransition(true);
               setCurrent(index);
             }}
-            className={`h-3 rounded-full transition-all duration-300 cursor-pointer ${
-              (current === index ||
-                (current === slides.length && index === 0))
-                ? "bg-green-500 w-10"
-                : "bg-white w-3"
-            }`}
+            className={`h-3 rounded-full transition-all duration-300 cursor-pointer ${(current === index ||
+              (current === slides.length && index === 0))
+              ? "bg-green-500 w-10"
+              : "bg-white w-3"
+              }`}
           />
         ))}
       </div>
