@@ -13,9 +13,18 @@ import useOrder from "../../../hooks/useProductOrders";
 import useWebNavigate from "../../../hooks/useWebNavigate";
 import { getProductById } from "../../../Api/customerApi";
 import CancelOrder from "./CancelOrder";
+import OrderPagination from "./OrderPagination";
 
 const Orders = () => {
-  const { orders, loading ,removeOrderLocally} = useOrder();
+  const {
+    orders,
+    loading,
+    page,
+    totalPages,
+    setPage,
+    removeOrderLocally,
+    message,
+  } = useOrder();
   const { gotoProductDetails } = useWebNavigate();
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<{
@@ -55,18 +64,26 @@ const Orders = () => {
     );
   }
 
-  if (orders.length === 0) {
+  if (!loading && orders.length === 0) {
     return (
-      <div className="flex h-[70vh] items-center justify-center">
-        <div className="rounded-3xl border bg-white p-10 shadow">
-          <Package
-            className="mx-auto mb-4 text-gray-600 hover:text-green-600"
-            size={60}
-          />
-          <h2 className="text-center text-2xl font-bold">No Orders Found</h2>
-          <p className="mt-2 text-center text-gray-500">
-            You haven't placed any orders yet.
-          </p>
+      <div className="min-h-screen bg-[#F5F7F5] p-8">
+        <div className="mx-auto flex h-[70vh] max-w-7xl items-center justify-center">
+          <div className="rounded-3xl border bg-white p-10 shadow">
+            <Package
+              className="mx-auto mb-4 text-gray-600"
+              size={60}
+            />
+
+            <h2 className="text-center text-2xl font-bold">
+              {message || "No Orders Found"}
+            </h2>
+
+            <p className="mt-2 text-center text-gray-500">
+              {message === "Product not found"
+                ? "Try searching with another product name or order code."
+                : "You haven't placed any orders yet."}
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -74,8 +91,14 @@ const Orders = () => {
 
   return (
     <div className="min-h-screen bg-[#F5F7F5] p-8">
+
       <div className="mx-auto max-w-7xl">
         <h1 className="mb-8 text-4xl font-bold text-green-700">My Orders</h1>
+        {/* {message && orders.length > 0 && (
+          <div className="mb-6 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-green-700">
+            {message}
+          </div>
+        )} */}
 
         <div className="space-y-6">
           {orders.map((order) => (
@@ -230,19 +253,13 @@ const Orders = () => {
           }}
           onSuccess={(orderId) => removeOrderLocally(orderId)}
         />
-        //   <CancelOrder
-        //   orderId={selectedOrder.orderId}
-        //   productName={selectedOrder.productName}
-        //   orderCode={selectedOrder.orderCode}
-        //   onClose={() => {
-        //     setShowCancelModal(false);
-        //     setSelectedOrder(null);
-        //   }}
-        //   onSuccess={() => {
-        //     // fetchOrders();
-        //   }}
-        // />
+
       )}
+      <OrderPagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
     </div>
 
   );

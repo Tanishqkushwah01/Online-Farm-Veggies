@@ -9,9 +9,16 @@ import {
   ChevronRight,
 } from "lucide-react";
 
+// type HelpSupportProps = {
+//   setActivePage: React.Dispatch<React.SetStateAction<string>>;
+// };
+
+import { type ActivePage } from "../../../context/CustomerNavigationContext"; // path apne project ke hisaab se
+
 type HelpSupportProps = {
-  setActivePage: React.Dispatch<React.SetStateAction<string>>;
+  setActivePage: (page: ActivePage) => void;
 };
+
 
 const HelpSupport = ({ setActivePage }: HelpSupportProps) => {
   return (
@@ -28,7 +35,7 @@ const HelpSupport = ({ setActivePage }: HelpSupportProps) => {
         </button>
 
         {/* Header */}
-        <div className="bg-gradient-to-r from-green-600 to-green-500 rounded-3xl text-white p-10 shadow-lg">
+        <div className="bg-linear-to-r from-green-600 to-green-500 rounded-3xl text-white p-10 shadow-lg">
           <h1 className="text-4xl font-bold">
             Help & Support
           </h1>

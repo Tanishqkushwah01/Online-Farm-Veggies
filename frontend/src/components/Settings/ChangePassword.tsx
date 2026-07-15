@@ -4,8 +4,14 @@ import { changePasswordSchema } from "../Validation/ChangePassword.schema";
 import { changePassword } from "../Api/authApi";
 // import useWebNavigate from "../../hooks/useWebNavigate";
 
+// type ChangePasswordProps = {
+//   setActivePage: React.Dispatch<React.SetStateAction<string>>;
+// };
+
+import {type ActivePage } from "../context/CustomerNavigationContext"; // path apne project ke hisaab se
+
 type ChangePasswordProps = {
-  setActivePage: React.Dispatch<React.SetStateAction<string>>;
+  setActivePage: (page: ActivePage) => void;
 };
 
 const ChangePassword = ({ setActivePage }: ChangePasswordProps) => {

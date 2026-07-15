@@ -8,13 +8,18 @@ import {
   Globe,
 } from "lucide-react";
 
+// type PrivacyPolicyProps = {
+//   setActivePage: React.Dispatch<React.SetStateAction<string>>;
+// };
+import { type ActivePage } from "../../../context/CustomerNavigationContext"; // path apne project ke hisaab se
+
 type PrivacyPolicyProps = {
-  setActivePage: React.Dispatch<React.SetStateAction<string>>;
+  setActivePage: (page: ActivePage) => void;
 };
 
 const PrivacyPolicy = ({ setActivePage }: PrivacyPolicyProps) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 px-6 py-8">
+    <div className="min-h-screen bg-linear-to-br from-green-50 via-white to-emerald-50 px-6 py-8">
       <div className="max-w-6xl mx-auto">
         <button
           onClick={() => setActivePage("home")}
@@ -24,8 +29,8 @@ const PrivacyPolicy = ({ setActivePage }: PrivacyPolicyProps) => {
           Go Back
         </button>
 
-        <div className="overflow-hidden rounded-[32px] bg-white shadow-2xl border border-green-100">
-          <div className="relative bg-gradient-to-r from-green-700 via-green-600 to-emerald-500 px-8 md:px-14 py-14 text-white">
+        <div className="overflow-hidden rounded-4xl bg-white shadow-2xl border border-green-100">
+          <div className="relative bg-linear-to-r from-green-700 via-green-600 to-emerald-500 px-8 md:px-14 py-14 text-white">
             <div className="absolute right-8 top-8 h-28 w-28 rounded-full bg-white/10 blur-sm" />
             <div className="absolute right-28 bottom-8 h-16 w-16 rounded-full bg-white/10" />
 
@@ -156,7 +161,7 @@ const PrivacyPolicy = ({ setActivePage }: PrivacyPolicyProps) => {
                 date.
               </PolicySection>
 
-              <section className="rounded-[28px] bg-gradient-to-r from-green-700 to-emerald-500 p-8 text-white">
+              <section className="rounded-[28px] bg-linear-to-r from-green-700 to-emerald-500 p-8 text-white">
                 <h2 className="text-3xl font-bold mb-4">10. Contact Us</h2>
 
                 <p className="text-green-50 leading-8 mb-6">

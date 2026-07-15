@@ -39,5 +39,14 @@ router.get("/farmer/:farmerId", authMiddleware, customerController.getFarmerProf
 router.get("/orders/:orderId", authMiddleware, customerController.getParticularOrder);
 
 
+// searching ka chal rha hai isme samjha 
+
+router.get("/products", authMiddleware, customerController.getCustomerProducts);
+
+
+// ye farmer profile ka search hai 
+router.get("/farmer/:farmerId/products", authMiddleware, customerController.getCustomerFarmerProducts);
+
+
 
 export default router;

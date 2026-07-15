@@ -10,9 +10,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useNotification } from "../../../hooks/useNotification";
 import type { NotificationType } from "../../../context/NotificationContext";
 
-type NotificationProps = {
-  setActivePage: React.Dispatch<React.SetStateAction<string>>;
-};
+// type NotificationProps = {
+//   setActivePage: React.Dispatch<React.SetStateAction<string>>;
+// };
 
 type NotificationStyle = {
   icon: React.ElementType;
@@ -53,6 +53,11 @@ const formatTime = (date: string) => {
   return `${days} days ago`;
 };
 
+import { type ActivePage } from "../../../context/CustomerNavigationContext"; // path apne project ke hisaab se
+
+type NotificationProps = {
+  setActivePage: (page: ActivePage) => void;
+};
 const Notifications = ({ setActivePage }: NotificationProps) => {
   const [activeFilter, setActiveFilter] = useState("All");
 

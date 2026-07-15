@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { OrderContext } from "../context/OrderContext";
 
-const useProductOrders = () => {
+const useCusomterOrders = () => {
   const context = useContext(OrderContext);
 
   if (!context) {
@@ -11,4 +11,4 @@ const useProductOrders = () => {
   return context;
 };
 
-export default useProductOrders;
+export default useCusomterOrders;

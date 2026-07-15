@@ -120,6 +120,7 @@ import FarmerProfilePage from "./components/layouts/Customer/FarmerPages/FarmerP
 
 import { Toaster } from "react-hot-toast";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import SearchPage from "./components/layouts/Customer/Search/SearchPage";
 
 const App = () => {
   const GoogleAuthWrapper = () => {
@@ -163,6 +164,7 @@ const App = () => {
           {/* Customer routes */}
           <Route element={<CustomerLayout />}>
             <Route path="/customer" element={<CustomerDashboard />} />
+            <Route path="/customer/products" element={<SearchPage />} /> 
             <Route path="/customer/product/:id" element={<ProductDetails />} />
             <Route path="/customer/farmer/:farmerId" element={<FarmerProfilePage />} />
           </Route>
