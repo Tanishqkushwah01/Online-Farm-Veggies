@@ -10,9 +10,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useNotification } from "../../../hooks/useNotification";
 import type { NotificationType } from "../../../context/NotificationContext";
 
-// type NotificationProps = {
-//   setActivePage: React.Dispatch<React.SetStateAction<string>>;
-// };
 
 type NotificationStyle = {
   icon: React.ElementType;

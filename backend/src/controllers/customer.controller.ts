@@ -94,29 +94,6 @@ export const toggleWishlist = async (req: Request, res: Response) => {
   }
 };
 
-// export const getWishlist = async (req: Request, res: Response) => {
-//   try {
-//     const customerId = req.user._id;
-
-//     const wishlist = await wishlistModel.find({ customerId }).populate(
-//       "productId"
-//     );
-
-//     return res.status(200).json({
-//       success: true,
-//       wishlist,
-//     });
-//   } catch (error) {
-//     console.log(error);
-
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//     });
-//   }
-// };
-
-
 export const getWishlist = async (req: Request, res: Response) => {
   try {
     const customerId = new mongoose.Types.ObjectId(req.user._id);
@@ -576,51 +553,6 @@ export const createOrder = async (req: Request, res: Response) => {
   }
 };
 
-// export const getCustomerOrders = async (req: Request, res: Response) => {
-//   try {
-//     const customerId = req.user._id;
-
-//     const orders = await orderModel
-//       .find({ customerId })
-//       .populate("productId", "productName image price")
-//       .populate("farmerId", "farmName farmAddress city phoneNumber")
-//       .sort({ createdAt: -1 });
-
-//     const formattedOrders = orders.map((order: any) => ({
-//       _id: order._id,
-//       productId: order.productId?._id,
-//       farmerId: order.farmerId?._id,
-
-//       productName: order.productId?.productName,
-//       productImage: order.productId?.image,
-
-//       orderCode: order.orderCode,
-//       quantity: order.quantity,
-//       totalPrice: order.totalAmount,
-//       requiredDate: order.neededBy,
-
-//       farmName: order.farmerId?.farmName,
-//       location: order.farmerId?.farmAddress || order.farmerId?.city,
-//       phoneNumber: order.farmerId?.phoneNumber,
-
-//       orderedOn: order.createdAt,
-//       orderStatus: order.orderStatus,
-//     }));
-
-//     return res.status(200).json({
-//       success: true,
-//       orders: formattedOrders,
-//     });
-//   } catch (error) {
-//     console.log("Get Customer Orders Error:", error);
-
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//     });
-//   }
-// };
-
 export const getCustomerOrders = async (req: Request, res: Response) => {
   try {
     const customerId = new mongoose.Types.ObjectId(req.user._id);
@@ -743,8 +675,6 @@ export const getParticularOrder = async (req: Request, res: Response) => {
     });
   }
 };
-
-
 
 export const deleteOrder = async (req: Request, res: Response) => {
   try {
@@ -872,134 +802,7 @@ export const getFarmerProfileById = async (req: Request, res: Response) => {
   }
 };
 
-
-
-
-
 // searching applying 
-
-// export const getCustomerProducts = async (
-//   req: Request,
-//   res: Response
-// ) => {
-
-//   try {
-
-//     const escapeRegex = (text: string) => {
-//       return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-//     };
-
-
-//     const page = Number(req.query.page) || 1;
-//     const limit = Number(req.query.limit) || 20;
-//     const skip = (page - 1) * limit;
-//     const search = (req.query.search as string)?.trim() || "";
-//     const location = (req.query.location as string)?.trim() || "";
-//     const category = (req.query.category as string)?.trim() || "";
-//     const price = (req.query.price as string)?.trim() || "";
-//     const baseFilter: any = {
-//       isAvailable: true,
-//       quantity: {
-//         $gt: 0
-//       }
-//     };
-//     if (location && location !== "All Location") {
-//       baseFilter.city = {
-//         $regex: escapeRegex(location),
-//         $options: "i"
-//       };
-//     }
-
-//     let sort: any = { createdAt: -1 };
-
-//     if (price === "low") {
-//       sort = { price: 1 };
-//     }
-
-//     if (price === "high") {
-//       sort = { price: -1 };
-//     }
-
-//     // ==============================
-//     // SEARCH PRODUCTS
-//     // ==============================
-
-
-//     let searchFilter = { ...baseFilter };
-
-//     if (search) {
-//       searchFilter.productName = {
-//         $regex: escapeRegex(search),
-//         $options: "i"
-//       };
-//     }
-
-//     if (category && category !== "All Category") {
-//       searchFilter.category = category;
-//     }
-//     let products = await productModel
-//       .find(searchFilter)
-//       .sort(sort)
-//       .skip(skip)
-//       .limit(limit)
-//       .lean();
-
-//     const totalProducts = await productModel.countDocuments(searchFilter);
-
-//     // =====================================
-//     // SEARCH MIL GAYA BUT 10 YA LESS HAI
-//     // =====================================
-
-
-//     if (search && products.length > 0 && products.length <= 10) {
-//       const productCategory = products[0].category;
-//       const similarFilter: any = { ...baseFilter, category: productCategory };
-//       const similarProducts = await productModel
-//         .find(similarFilter)
-//         .sort(sort)
-//         .limit(20)
-//         .lean();
-
-
-
-//       return res.status(200).json({
-//         success: true, noSearchResult: false, showCategoryProducts: true, products, categoryProducts: similarProducts,
-//         currentPage: page, totalPages: Math.ceil(totalProducts / limit), totalProducts
-//       });
-//     }
-
-//     // =====================================
-//     // SEARCH ZERO RESULT
-//     // =====================================
-
-
-//     if (search && products.length === 0) {
-//       const fallbackProducts = await productModel
-//         .find(baseFilter)
-//         .sort(sort)
-//         .limit(20)
-//         .lean();
-//       return res.status(200).json({
-//         success: true, noSearchResult: true, message: "No products found", products: [], categoryProducts: fallbackProducts,
-//         currentPage: 1, totalPages: 1, totalProducts: fallbackProducts.length
-//       });
-//     }
-
-//     // =====================================
-//     // NORMAL SEARCH 20+
-//     // =====================================
-
-//     return res.status(200).json({
-//       success: true, noSearchResult: false, showCategoryProducts: false, products, categoryProducts: [], currentPage: page,
-//       totalPages: Math.ceil(totalProducts / limit), totalProducts
-//     });
-//   }
-//   catch (error) {
-//     console.log(error);
-//     return res.status(500).json({ success: false, message: "Internal Server Error" });
-//   }
-// };
-
 
 export const getCustomerProducts = async (req: Request, res: Response) => {
   try {

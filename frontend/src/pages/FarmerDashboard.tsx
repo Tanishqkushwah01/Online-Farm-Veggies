@@ -28,7 +28,7 @@ const FarmerDashboard = () => {
   }
 
   if (activePage === "DeleteAccount") {
-    return <DeleteAccount />;
+    return <DeleteAccount setActivePage={setActivePage}/>;
   }
 
   if(activePage === "notifications"){

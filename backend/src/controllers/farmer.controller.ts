@@ -64,34 +64,6 @@ export const createProduct = async (req: Request, res: Response) => {
   }
 };
 
-// export const getFarmerProducts = async (  req: Request,  res: Response) => {
-//   try {
-
-//     const userId = req.user._id;
-
-//     const products = await productModel.find({
-//       farmerId: req.user._id,
-//     });
-
-//     return res.status(200).json({
-//       success: true,
-//       count: products.length,
-//       data: products,
-//     });
-
-
-//   } catch (error) {
-
-//     console.log(error);
-
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//     });
-
-//   }
-// };
-
 export const getFarmerProducts = async (req: Request, res: Response) => {
   try {
     const farmerId = req.user._id;
@@ -672,47 +644,6 @@ export const getOrderStats = async (req: Request, res: Response) => {
     });
   }
 };
-
-// export const updateOrderStatus = async (req: Request, res: Response) => {
-//   try {
-//     const farmerId = req.user._id;
-//     const { orderId } = req.params;
-//     const { status } = req.body;
-
-//     const allowedStatus = ["Accepted", "Rejected", "Delivered"];
-
-//     if (!allowedStatus.includes(status)) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Invalid order status",
-//       });
-//     }
-
-//     const order = await orderModel.findOneAndUpdate(
-//       { _id: orderId, farmerId },
-//       { orderStatus: status },
-//       { new: true }
-//     );
-
-//     if (!order) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Order not found",
-//       });
-//     }
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "Order status updated",
-//       order,
-//     });
-//   } catch (error) {
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//     });
-//   }
-// };
 
 export const updateOrderStatus = async (req: Request, res: Response) => {
   try {

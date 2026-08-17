@@ -9,9 +9,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-// type HelpSupportProps = {
-//   setActivePage: React.Dispatch<React.SetStateAction<string>>;
-// };
 
 import { type ActivePage } from "../../../context/CustomerNavigationContext"; // path apne project ke hisaab se
 

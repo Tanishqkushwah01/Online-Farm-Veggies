@@ -8,16 +8,7 @@ import { CustomerFarmerProductProvider } from "../../context/CustomerFarmerProdu
 
 const CustomerLayout = () => {
   return (
-    // <CustomerProductProvider>
-    //   <WishlistProvider>
-    //     <OrderProvider>
-    //       <NotificationProvider>
-    //         <Outlet />
-    //       </NotificationProvider>
-    //     </OrderProvider>
-    //   </WishlistProvider>
-    // </CustomerProductProvider>
-    <CustomerNavigationProvider>
+       <CustomerNavigationProvider>
       <CustomerFarmerProductProvider>
         <CustomerProductProvider>
           <WishlistProvider>

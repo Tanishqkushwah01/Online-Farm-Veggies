@@ -11,21 +11,7 @@ import axios from "axios";
 
 const Login = () => {
 
-    // const responseGoogle = async (
-    //     authResult: CodeResponse
-    // ) => {
-    //     try {
-    //         if(authResult['code']){
-
-    //         }
-    //         console.log(authResult);
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    // };
-
-
-    const navigate = useNavigate();
+       const navigate = useNavigate();
 
     const googleLogin = useGoogleLogin({
         flow: "auth-code",

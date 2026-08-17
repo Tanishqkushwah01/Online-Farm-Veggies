@@ -16,7 +16,7 @@ type Props = {
 
 const FarmerProfileCard = ({ farmer, productsCount }: Props) => {
   return (
-    <section className="rounded-[32px] border border-gray-200 bg-white p-6 shadow-sm">
+    <section className="rounded-4xl border border-gray-200 bg-white p-6 shadow-sm">
       <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
         <div className="rounded-[28px] bg-[#F0FDF4] p-6">
           <div className="relative mx-auto h-40 w-40">

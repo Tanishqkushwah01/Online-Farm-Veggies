@@ -1,72 +1,4 @@
-// import {
-//   createContext,
-//   useEffect,
-//   useState,
-// } from "react";
-// import type { ReactNode } from "react";
-// import { getFarmerProducts } from "../Api/farmerApi";
-
-// export type Product = {
-//   _id: string;
-//   productName: string;
-//   category: string;
-//   price: number;
-//   quantity: number;
-//   review: number;
-//   image: string;
-// };
-
-// type ProductContextType = {
-//   products: Product[];
-//   loading: boolean;
-//   fetchProducts: () => Promise<void>;
-// };
-
-// export const ProductContext = createContext<ProductContextType | null>(null);
-
-// export const ProductProvider = ({
-//   children,
-// }: {
-//   children: ReactNode;
-// }) => {
-//   const [products, setProducts] = useState<Product[]>([]);
-//   const [loading, setLoading] = useState(false);
-
-//   const fetchProducts = async () => {
-//     try {
-//       setLoading(true);
-
-//       const response = await getFarmerProducts();
-
-//       if (response.data.success) {
-//         setProducts(response.data.data);
-//       }
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchProducts();
-//   }, []);
-
-//   return (
-//     <ProductContext.Provider
-//       value={{
-//         products,
-//         loading,
-//         fetchProducts,
-//       }}
-//     >
-//       {children}
-//     </ProductContext.Provider>
-//   );
-// };
-import {
-  createContext,
-  useEffect,
-  useState,
-} from "react";
+import {  createContext,  useEffect,  useState} from "react";
 import type { ReactNode } from "react";
 import { getFarmerProducts } from "../Api/farmerApi";
 import type {
@@ -107,11 +39,8 @@ type ProductContextType = {
 
 export const ProductContext = createContext<ProductContextType | null>(null);
 
-export const ProductProvider = ({
-  children,
-}: {
-  children: ReactNode;
-}) => {
+export const ProductProvider = ({ children }: { children: ReactNode }) => {
+
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -120,10 +49,8 @@ export const ProductProvider = ({
   const [totalProducts, setTotalProducts] = useState(0);
 
   const [search, setSearch] = useState("");
-  const [category, setCategory] =
-    useState<CategoryFilter>("All Category");
-  const [stock, setStock] =
-    useState<StockFilter>("All Stock");
+  const [category, setCategory] = useState<CategoryFilter>("All Category");
+  const [stock, setStock] = useState<StockFilter>("All Stock");
 
   const fetchProducts = async (currentPage = page) => {
     try {

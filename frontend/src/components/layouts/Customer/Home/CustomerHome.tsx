@@ -35,7 +35,7 @@ const CustomerHome = () => {
   }
 
   if (activePage === "DeleteAccount") {
-    return <DeleteAccount />;
+    return <DeleteAccount setActivePage={setActivePage}/>;
   }
 
   return (

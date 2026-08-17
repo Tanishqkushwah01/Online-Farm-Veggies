@@ -4,10 +4,7 @@ import notificationModel from "../models/notification.model";
 
 type ReceiverRole = "Farmer" | "Customer";
 
-type AuthUser = {
-  _id?: string | mongoose.Types.ObjectId;
-  role?: string;
-};
+type AuthUser = { _id?: string | mongoose.Types.ObjectId; role?: string };
 
 const getReceiverRole = (role?: string): ReceiverRole | null => {
   if (!role) return null;
@@ -142,10 +139,7 @@ export const markNotificationAsRead = async (req: Request, res: Response) => {
   }
 };
 
-export const markAllNotificationsAsRead = async (
-  req: Request,
-  res: Response
-) => {
+export const markAllNotificationsAsRead = async (  req: Request,  res: Response) => {
   try {
     const { receiverId, receiverRole } = getAuthUser(req);
 

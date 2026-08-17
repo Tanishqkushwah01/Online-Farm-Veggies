@@ -5,11 +5,6 @@ import sliderImage2 from "../../../../assets/images/sliderImage2.jpeg";
 import sliderImage3 from "../../../../assets/images/sliderImage3.jpeg";
 
 
-// "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1600",
-// "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=1600",
-// "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=1600",
-
-
 
 const slides = [
   {

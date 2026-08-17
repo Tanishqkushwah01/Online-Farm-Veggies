@@ -1,8 +1,4 @@
-import {
-  createContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useEffect, useState } from "react";
 import { getFarmerOrders } from "../Api/farmerApi";
 
 type FarmerOrdersContextType = {
@@ -12,14 +8,9 @@ type FarmerOrdersContextType = {
   setOrders: React.Dispatch<React.SetStateAction<any[]>>;
 };
 
-export const FarmerOrdersContext =
-  createContext<FarmerOrdersContextType | null>(null);
+export const FarmerOrdersContext = createContext<FarmerOrdersContextType | null>(null);
 
-export const FarmerOrdersProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const FarmerOrdersProvider = ({ children }: { children: React.ReactNode }) => {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
