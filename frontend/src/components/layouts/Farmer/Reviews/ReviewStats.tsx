@@ -1,3 +1,122 @@
+// import { useEffect, useState } from "react";
+// import {
+//   Star,
+//   MessageSquare,
+//   ThumbsUp,
+//   ThumbsDown,
+// } from "lucide-react";
+// import { getFarmerReviewStats } from "../../../Api/farmerApi";
+
+// type ReviewStatsProps = {
+//   reviewType: "customer" | "product";
+// };
+
+// const ReviewStats = ({ reviewType }: ReviewStatsProps) => {
+//   const [statsData, setStatsData] = useState({
+//     averageRating: 0,
+//     totalReviews: 0,
+//     positiveReviews: 0,
+//     negativeReviews: 0,
+//   });
+
+//   const fetchReviewStats = async () => {
+//     try {
+//       const response = await getFarmerReviewStats(reviewType);
+
+//       if (response.data.success) {
+//         setStatsData(response.data.stats);
+//       }
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchReviewStats();
+//   }, [reviewType]);
+
+//   const positivePercent =
+//     statsData.totalReviews === 0
+//       ? 0
+//       : ((statsData.positiveReviews / statsData.totalReviews) * 100).toFixed(1);
+
+//   const negativePercent =
+//     statsData.totalReviews === 0
+//       ? 0
+//       : ((statsData.negativeReviews / statsData.totalReviews) * 100).toFixed(1);
+
+//   const stats = [
+//     {
+//       title:
+//         reviewType === "product"
+//           ? "Average Product Rating"
+//           : "Average Farmer Rating",
+//       value: statsData.averageRating,
+//       subtitle: `Based on ${statsData.totalReviews} reviews`,
+//       icon: <Star size={28} />,
+//       color: "bg-green-100 text-green-600",
+//     },
+//     {
+//       title:
+//         reviewType === "product"
+//           ? "Product Reviews"
+//           : "Farmer Reviews",
+//       value: statsData.totalReviews,
+//       subtitle: "Total reviews",
+//       icon: <MessageSquare size={28} />,
+//       color: "bg-blue-100 text-blue-600",
+//     },
+//     {
+//       title: "Positive Reviews",
+//       value: statsData.positiveReviews,
+//       subtitle: `${positivePercent}% of total`,
+//       icon: <ThumbsUp size={28} />,
+//       color: "bg-green-100 text-green-600",
+//     },
+//     {
+//       title: "Negative Reviews",
+//       value: statsData.negativeReviews,
+//       subtitle: `${negativePercent}% of total`,
+//       icon: <ThumbsDown size={28} />,
+//       color: "bg-red-100 text-red-600",
+//     },
+//   ];
+
+//   return (
+//     <div className="mt-6 grid grid-cols-4 gap-5">
+//       {stats.map((item) => (
+//         <div
+//           key={item.title}
+//           className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+//         >
+//           <div>
+//             <p className="font-medium text-gray-600">{item.title}</p>
+
+//             <h2 className="mt-2 text-3xl font-bold text-slate-900">
+//               {item.value}
+//             </h2>
+
+//             <p className="mt-2 text-sm font-semibold text-green-600">
+//               {item.subtitle}
+//             </p>
+//           </div>
+
+//           <div
+//             className={`flex h-14 w-14 items-center justify-center rounded-full ${item.color}`}
+//           >
+//             {item.icon}
+//           </div>
+//         </div>
+//       ))}
+//     </div>
+//   );
+// };
+
+// export default ReviewStats;
+
+
+
+
 import { useEffect, useState } from "react";
 import {
   Star,
@@ -38,12 +157,20 @@ const ReviewStats = ({ reviewType }: ReviewStatsProps) => {
   const positivePercent =
     statsData.totalReviews === 0
       ? 0
-      : ((statsData.positiveReviews / statsData.totalReviews) * 100).toFixed(1);
+      : (
+          (statsData.positiveReviews /
+            statsData.totalReviews) *
+          100
+        ).toFixed(1);
 
   const negativePercent =
     statsData.totalReviews === 0
       ? 0
-      : ((statsData.negativeReviews / statsData.totalReviews) * 100).toFixed(1);
+      : (
+          (statsData.negativeReviews /
+            statsData.totalReviews) *
+          100
+        ).toFixed(1);
 
   const stats = [
     {
@@ -54,7 +181,8 @@ const ReviewStats = ({ reviewType }: ReviewStatsProps) => {
       value: statsData.averageRating,
       subtitle: `Based on ${statsData.totalReviews} reviews`,
       icon: <Star size={28} />,
-      color: "bg-green-100 text-green-600",
+      color:
+        "bg-green-100 text-green-600 dark:bg-[#123126] dark:text-[#00c767]",
     },
     {
       title:
@@ -64,45 +192,67 @@ const ReviewStats = ({ reviewType }: ReviewStatsProps) => {
       value: statsData.totalReviews,
       subtitle: "Total reviews",
       icon: <MessageSquare size={28} />,
-      color: "bg-blue-100 text-blue-600",
+      color:
+        "bg-blue-100 text-blue-600 dark:bg-[#122432] dark:text-[#66b8ff]",
     },
     {
       title: "Positive Reviews",
       value: statsData.positiveReviews,
       subtitle: `${positivePercent}% of total`,
       icon: <ThumbsUp size={28} />,
-      color: "bg-green-100 text-green-600",
+      color:
+        "bg-green-100 text-green-600 dark:bg-[#123126] dark:text-[#00c767]",
     },
     {
       title: "Negative Reviews",
       value: statsData.negativeReviews,
       subtitle: `${negativePercent}% of total`,
       icon: <ThumbsDown size={28} />,
-      color: "bg-red-100 text-red-600",
+      color:
+        "bg-red-100 text-red-600 dark:bg-[#321d24] dark:text-[#ff6578]",
     },
   ];
 
   return (
-    <div className="mt-6 grid grid-cols-4 gap-5">
+    <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
       {stats.map((item) => (
         <div
           key={item.title}
-          className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+          className="
+            flex
+            min-w-0
+            items-center
+            justify-between
+            gap-4
+            rounded-xl
+            border
+            border-gray-200
+            bg-white
+            p-5
+            shadow-sm
+            transition-colors
+            duration-200
+            sm:p-6
+            dark:border-[#29343c]
+            dark:bg-[#141c23]
+          "
         >
-          <div>
-            <p className="font-medium text-gray-600">{item.title}</p>
+          <div className="min-w-0">
+            <p className="wrap-break-word font-medium text-gray-600 dark:text-[#9aa7b1]">
+              {item.title}
+            </p>
 
-            <h2 className="mt-2 text-3xl font-bold text-slate-900">
+            <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl dark:text-[#f5f7f8]">
               {item.value}
             </h2>
 
-            <p className="mt-2 text-sm font-semibold text-green-600">
+            <p className="mt-2 wrap-break-word text-sm font-semibold text-green-600 dark:text-[#00c767]">
               {item.subtitle}
             </p>
           </div>
 
           <div
-            className={`flex h-14 w-14 items-center justify-center rounded-full ${item.color}`}
+            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full sm:h-14 sm:w-14 ${item.color}`}
           >
             {item.icon}
           </div>

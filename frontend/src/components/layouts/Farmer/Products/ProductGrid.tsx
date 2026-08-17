@@ -1,3 +1,120 @@
+// import { useEffect, useState } from "react";
+// import ProductCard from "./ProductCard";
+// import AddProduct from "./AddProduct";
+// import ProductPagination from "./ProductPagination";
+// import { deleteProduct } from "../../../Api/farmerApi";
+// import { useProductHighlight } from "../../../hooks/useProductHighlight";
+// import { useFarmerProducts } from "../../../hooks/useFarmerProducts";
+
+// const ProductGrid = () => {
+//   const {
+//     products,
+//     loading,
+//     page,
+//     totalPages,
+//     fetchProducts,
+//     handlePrevious,
+//     handleNext,
+//   } = useFarmerProducts();
+
+//   const { highlightProductId, clearHighlight } = useProductHighlight();
+
+//   const [openProduct, setOpenProduct] = useState(false);
+//   const [editProduct, setEditProduct] = useState<any | null>(null);
+
+//   useEffect(() => {
+//     if (!highlightProductId || products.length === 0) return;
+
+//     const timer = setTimeout(() => {
+//       const element = document.getElementById(`product-${highlightProductId}`);
+//       const container = element?.closest("main");
+
+//       if (!element || !container) return;
+
+//       const containerTop = container.getBoundingClientRect().top;
+//       const elementTop = element.getBoundingClientRect().top;
+
+//       container.scrollTo({
+//         top: container.scrollTop + elementTop - containerTop - 40,
+//         behavior: "smooth",
+//       });
+
+//       setTimeout(() => {
+//         clearHighlight();
+//       }, 1800);
+//     }, 100);
+
+//     return () => clearTimeout(timer);
+//   }, [highlightProductId, products.length, clearHighlight]);
+
+//   const handleEdit = (product: any) => {
+//     setEditProduct(product);
+//     setOpenProduct(true);
+//   };
+
+//   const handleCloseModal = () => {
+//     setOpenProduct(false);
+//     setEditProduct(null);
+//   };
+
+//   const handleDelete = async (id: string) => {
+//     try {
+//       const response = await deleteProduct(id);
+
+//       if (response.data.success) {
+//         await fetchProducts(page);
+//       }
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   };
+
+//   if (loading) return <h1>Loading...</h1>;
+
+//   if (products.length === 0) return <h1>No Products Found</h1>;
+
+//   return (
+//     <>
+//       <div className="grid grid-cols-4 gap-6">
+//         {products.map((product) => (
+//           <div
+//             id={`product-${product._id}`}
+//             key={product._id}
+//             className={`rounded-xl transition duration-300 ${
+//               highlightProductId === product._id
+//                 ? "ring-4 ring-green-500 shadow-xl"
+//                 : ""
+//             }`}
+//           >
+//             <ProductCard
+//               product={product}
+//               onDelete={handleDelete}
+//               onEdit={handleEdit}
+//             />
+//           </div>
+//         ))}
+//       </div>
+
+//       <ProductPagination
+//         page={page}
+//         totalPages={totalPages}
+//         onPrevious={handlePrevious}
+//         onNext={handleNext}
+//       />
+
+//       <AddProduct
+//         open={openProduct}
+//         onClose={handleCloseModal}
+//         editProduct={editProduct}
+//       />
+//     </>
+//   );
+// };
+
+// export default ProductGrid;
+
+
+
 import { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import AddProduct from "./AddProduct";
@@ -17,25 +134,39 @@ const ProductGrid = () => {
     handleNext,
   } = useFarmerProducts();
 
-  const { highlightProductId, clearHighlight } = useProductHighlight();
+  const {
+    highlightProductId,
+    clearHighlight,
+  } = useProductHighlight();
 
   const [openProduct, setOpenProduct] = useState(false);
-  const [editProduct, setEditProduct] = useState<any | null>(null);
+  const [editProduct, setEditProduct] =
+    useState<any | null>(null);
 
   useEffect(() => {
     if (!highlightProductId || products.length === 0) return;
 
     const timer = setTimeout(() => {
-      const element = document.getElementById(`product-${highlightProductId}`);
+      const element = document.getElementById(
+        `product-${highlightProductId}`
+      );
+
       const container = element?.closest("main");
 
       if (!element || !container) return;
 
-      const containerTop = container.getBoundingClientRect().top;
-      const elementTop = element.getBoundingClientRect().top;
+      const containerTop =
+        container.getBoundingClientRect().top;
+
+      const elementTop =
+        element.getBoundingClientRect().top;
 
       container.scrollTo({
-        top: container.scrollTop + elementTop - containerTop - 40,
+        top:
+          container.scrollTop +
+          elementTop -
+          containerTop -
+          40,
         behavior: "smooth",
       });
 
@@ -45,7 +176,11 @@ const ProductGrid = () => {
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [highlightProductId, products.length, clearHighlight]);
+  }, [
+    highlightProductId,
+    products.length,
+    clearHighlight,
+  ]);
 
   const handleEdit = (product: any) => {
     setEditProduct(product);
@@ -69,20 +204,36 @@ const ProductGrid = () => {
     }
   };
 
-  if (loading) return <h1>Loading...</h1>;
+  if (loading) {
+    return (
+      <div className="flex min-h-60 items-center justify-center">
+        <h1 className="text-lg font-semibold text-gray-500 dark:text-[#9aa7b1]">
+          Loading...
+        </h1>
+      </div>
+    );
+  }
 
-  if (products.length === 0) return <h1>No Products Found</h1>;
+  if (products.length === 0) {
+    return (
+      <div className="flex min-h-60 items-center justify-center">
+        <h1 className="text-lg font-semibold text-gray-500 dark:text-[#9aa7b1]">
+          No Products Found
+        </h1>
+      </div>
+    );
+  }
 
   return (
     <>
-      <div className="grid grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {products.map((product) => (
           <div
             id={`product-${product._id}`}
             key={product._id}
-            className={`rounded-xl transition duration-300 ${
+            className={`min-w-0 rounded-xl transition duration-300 ${
               highlightProductId === product._id
-                ? "ring-4 ring-green-500 shadow-xl"
+                ? "ring-4 ring-green-500 shadow-xl dark:ring-[#00c767]"
                 : ""
             }`}
           >
